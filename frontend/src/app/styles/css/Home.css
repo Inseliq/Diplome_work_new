@@ -1,0 +1,25 @@
+.wrapper {
+  &.home {
+    width: 100%;
+    height: 100%;
+
+    .bg_color {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+    }
+
+    .container {
+      max-width: 1400px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 1;
+
+      section.index {
+
+      }
+    }
+  }
+}
