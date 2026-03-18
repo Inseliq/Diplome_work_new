@@ -1,3 +1,142 @@
+/* ============================================================
+   FONT FACES
+   ============================================================ */
+
+@font-face {
+  font-family: 'JetBrains Mono __CM';
+  src: url('../assets/fonts/JetBrainsMono-Italic-VariableFont_wght.ttf') format('truetype');
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono __CM';
+  src: url('../assets/fonts/JetBrainsMono-VariableFont_wght.ttf') format('truetype');
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Russon One __CM';
+  src: url('../assets/fonts/RussoOne-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+
 :root {
-  
+  /* ── Palette ── */
+  --deep-black:          #000000;
+  --dark-gray:           #171717;
+  --gray:                #1f1f1f;
+  --light-gray:          #333333;
+  --main-accent:         #582BBA;
+  --main-accent-effect:  #835de4;
+  --second-accent:       #FF5000;
+  --third-accent:        #FAB81B;
+  --mute:                #444444;
+  --text:                #DDDDDD;
+  --text-effect:         #FFFFFF;
+
+  /* ── Extended palette ── */
+  --text-muted:          #888888;
+  --text-dim:            #555555;
+  --success:             #22c55e;
+  --danger:              #ef4444;
+  --warning:             #FAB81B;
+  --info:                #38bdf8;
+
+  /* ── Glass & transparency ── */
+  --glass-bg:            rgba(255, 255, 255, 0.04);
+  --glass-bg-hover:      rgba(255, 255, 255, 0.08);
+  --glass-bg-strong:     rgba(255, 255, 255, 0.10);
+  --glass-border:        rgba(255, 255, 255, 0.08);
+  --glass-border-hover:  rgba(255, 255, 255, 0.16);
+  --card-bg:             rgba(23, 23, 23, 0.85);
+  --overlay:             rgba(0, 0, 0, 0.55);
+  --overlay-strong:      rgba(0, 0, 0, 0.80);
+
+  /* ── Accent glow ── */
+  --border-accent:       rgba(88, 43, 186, 0.35);
+  --purple-glow:         rgba(88, 43, 186, 0.25);
+  --purple-glow-soft:    rgba(88, 43, 186, 0.12);
+  --purple-glow-strong:  rgba(131, 93, 228, 0.45);
+  --orange-glow:         rgba(255, 80, 0, 0.25);
+  --gold-glow:           rgba(250, 184, 27, 0.25);
+
+  /* ── Typography ── */
+  --font-main:           'JetBrains Mono __CM', 'Courier New', monospace;
+  --font-heading:        'Russon One __CM', Georgia, serif;
+
+  --text-xs:   0.70rem;   /* 11px */
+  --text-sm:   0.813rem;  /* 13px */
+  --text-base: 0.938rem;  /* 15px */
+  --text-md:   1.063rem;  /* 17px */
+  --text-lg:   1.25rem;   /* 20px */
+  --text-xl:   1.5rem;    /* 24px */
+  --text-2xl:  2rem;      /* 32px */
+  --text-3xl:  2.5rem;    /* 40px */
+  --text-4xl:  3.25rem;   /* 52px */
+  --text-5xl:  4.5rem;    /* 72px */
+
+  --leading-tight:  1.15;
+  --leading-normal: 1.55;
+  --leading-relaxed:1.75;
+
+  /* ── Spacing scale ── */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+  --sp-24: 96px;
+  --sp-32: 128px;
+
+  /* ── Layout ── */
+  --container-max:  1280px;
+  --container-pad:  clamp(16px, 4vw, 48px);
+  --header-height:  72px;
+  --section-gap:    clamp(64px, 8vw, 120px);
+
+  /* ── Border radii ── */
+  --radius-xs:  4px;
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --radius-xl:  28px;
+  --radius-2xl: 40px;
+  --radius-full: 9999px;
+
+  /* ── Transitions ── */
+  --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out:   cubic-bezier(0.65, 0, 0.35, 1);
+  --transition:    0.25s var(--ease-out);
+  --transition-md: 0.4s  var(--ease-out);
+  --transition-slow: 0.65s var(--ease-out);
+
+  /* ── Shadows ── */
+  --shadow-sm:     0 2px 8px  rgba(0,0,0,0.35);
+  --shadow-card:   0 4px 24px rgba(0,0,0,0.45);
+  --shadow-lg:     0 8px 40px rgba(0,0,0,0.60);
+  --shadow-xl:     0 16px 64px rgba(0,0,0,0.75);
+  --shadow-accent: 0 0 32px var(--purple-glow);
+  --shadow-accent-strong: 0 0 56px var(--purple-glow-strong);
+  --shadow-inset:  inset 0 1px 0 rgba(255,255,255,0.06);
+
+  /* ── Z-index layers ── */
+  --z-base:    0;
+  --z-above:   10;
+  --z-nav:     100;
+  --z-dropdown:200;
+  --z-modal:   300;
+  --z-toast:   400;
+  --z-cursor:  500;
 }
