@@ -1,0 +1,83 @@
+/* ============================================================
+   CLAN PAGE
+   ============================================================ */
+
+.wrapper.clan {
+  padding-top: calc(var(--header-height) + var(--sp-12));
+  padding-bottom: var(--section-gap);
+
+  /* ── Page header ── */
+  .clan__header {
+    text-align: center;
+    margin-bottom: var(--sp-12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-4);
+
+    .clan__header-label {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--third-accent);
+      background: rgba(250,184,27,0.08);
+      border: 1px solid rgba(250,184,27,0.25);
+      padding: 5px 16px;
+      border-radius: var(--radius-full);
+    }
+
+    .clan__title {
+      font-size: clamp(var(--text-3xl), 6vw, var(--text-5xl));
+      background: linear-gradient(135deg, var(--text-effect) 30%, var(--third-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .clan__subtitle {
+      font-size: var(--text-lg);
+      color: var(--text-muted);
+      max-width: 480px;
+    }
+  }
+
+  /* ── Grid: 2 колонки ── */
+  .clan__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-5);
+
+    /* Последняя нечётная — на всю ширину */
+    .service-card:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      gap: var(--sp-8);
+
+      .service-card__body  { flex: 1; }
+      .service-card__footer { margin-top: 0; align-self: flex-end; }
+    }
+  }
+}
+
+/* ── Телефон: 1 колонка ── */
+@media (max-width: 640px) {
+  .wrapper.clan {
+    padding-top: calc(var(--header-height) + var(--sp-8));
+
+    .clan__header { margin-bottom: var(--sp-8); }
+
+    .clan__grid {
+      grid-template-columns: 1fr;
+
+      .service-card:last-child:nth-child(odd) {
+        grid-column: auto;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .service-card__footer { margin-top: auto; align-self: auto; }
+      }
+    }
+  }
+}

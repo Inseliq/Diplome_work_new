@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import logoFull from '/images/logo-full.svg';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import logoFull from '../../assets/images/logo-full.svg';
 
 const NAV_LINKS = [
   { to: '/', label: 'Главная' },
@@ -12,9 +12,11 @@ const NAV_LINKS = [
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isAuthed, setIsAuthed] = useState(false); // заменить на реальный контекст
+  const [isAuthed, setIsAuthed] = useState(false);
   const menuRef = useRef(null);
   const burgerRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   /* Scroll detection */
   useEffect(() => {
@@ -30,26 +32,39 @@ function Header() {
         menuOpen &&
         menuRef.current && !menuRef.current.contains(e.target) &&
         burgerRef.current && !burgerRef.current.contains(e.target)
-      ) {
-        setMenuOpen(false);
-      }
+      ) setMenuOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [menuOpen]);
 
-  /* Close menu on route change / resize */
+  /* Close menu on resize */
   useEffect(() => {
     const onResize = () => { if (window.innerWidth >= 768) setMenuOpen(false); };
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  /* Prevent body scroll when menu open */
+  /* Lock body scroll when menu open */
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
+
+  /**
+   * Клик по ссылке:
+   * — если уже на этой странице → только скролим вверх
+   * — если другая страница → navigate (Layout сам скролит через useScrollToTopOnNavigate)
+   */
+  const handleNavClick = (e, to) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    if (location.pathname === to) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      navigate(to);
+    }
+  };
 
   return (
     <>
@@ -57,36 +72,36 @@ function Header() {
         <div className="container header__inner">
 
           {/* Logo */}
-          <Link to="/" className="header__logo" onClick={() => setMenuOpen(false)}>
+          <a
+            href="/"
+            className="header__logo"
+            onClick={(e) => handleNavClick(e, '/')}
+          >
             <img src={logoFull} alt="CosmoManager" className="header__logo-img" />
-          </Link>
+          </a>
 
           {/* Desktop nav */}
           <nav className="header__nav" aria-label="Основная навигация">
             {NAV_LINKS.map(({ to, label }) => (
-              <NavLink
+              <a
                 key={to}
-                to={to}
-                className={({ isActive }) =>
-                  `header__nav-link${isActive ? ' header__nav-link--active' : ''}`
-                }
-                end={to === '/'}
+                href={to}
+                onClick={(e) => handleNavClick(e, to)}
+                className={`header__nav-link${location.pathname === to ? ' header__nav-link--active' : ''}`}
               >
                 {label}
-              </NavLink>
+              </a>
             ))}
           </nav>
 
           {/* Desktop actions */}
           <div className="header__actions">
-            {/* Support */}
             <button className="btn btn-ghost btn-icon header__support" title="Поддержать проект">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
             </button>
 
-            {/* Auth */}
             {isAuthed ? (
               <>
                 <button className="btn btn-ghost header__profile">
@@ -116,7 +131,7 @@ function Header() {
             )}
           </div>
 
-          {/* Burger (mobile) */}
+          {/* Burger */}
           <button
             ref={burgerRef}
             className={`header__burger${menuOpen ? ' header__burger--open' : ''}`}
@@ -124,14 +139,12 @@ function Header() {
             aria-label="Меню"
             aria-expanded={menuOpen}
           >
-            <span />
-            <span />
-            <span />
+            <span /><span /><span />
           </button>
         </div>
       </header>
 
-      {/* Mobile menu backdrop */}
+      {/* Mobile backdrop */}
       <div
         className={`mobile-backdrop${menuOpen ? ' mobile-backdrop--visible' : ''}`}
         onClick={() => setMenuOpen(false)}
@@ -160,17 +173,14 @@ function Header() {
 
         <div className="mobile-menu__links">
           {NAV_LINKS.map(({ to, label }) => (
-            <NavLink
+            <a
               key={to}
-              to={to}
-              className={({ isActive }) =>
-                `mobile-menu__link${isActive ? ' mobile-menu__link--active' : ''}`
-              }
-              end={to === '/'}
-              onClick={() => setMenuOpen(false)}
+              href={to}
+              onClick={(e) => handleNavClick(e, to)}
+              className={`mobile-menu__link${location.pathname === to ? ' mobile-menu__link--active' : ''}`}
             >
               {label}
-            </NavLink>
+            </a>
           ))}
         </div>
 

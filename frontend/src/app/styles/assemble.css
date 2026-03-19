@@ -1,9 +1,16 @@
 /* ============================================================
-   ASSEMBLE — собирает все стили проекта
+   ASSEMBLE — все стили проекта
    ============================================================ */
 
-/* UI & Layout */
+/* Layout */
 @import url(./ui/layout.css);
+
+/* Shared components */
+@import url(./ui/service-card.css);
 
 /* Pages */
 @import url(./css/Home.css);
+@import url(./css/Services.css);
+@import url(./css/Clan.css);
+@import url(./css/Tournaments.css);
+@import url(./css/News.css);

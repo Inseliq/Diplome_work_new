@@ -103,15 +103,6 @@ function Home() {
   useEffect(() => { const t = setTimeout(() => setHeroVisible(true), 300); return () => clearTimeout(t); }, []);
 
 
-  useEffect(() => {
-    const targets = document.querySelectorAll('.reveal');
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('reveal--visible'); obs.unobserve(e.target); } }),
-      { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
-    );
-    targets.forEach((t) => obs.observe(t));
-    return () => obs.disconnect();
-  }, []);
 
   const handleHeroCta = () => {
     localStorage.setItem('cm_visited', '1');
@@ -145,7 +136,6 @@ function Home() {
           </h1>
 
           <div className="home__hero-desc">
-            <p>Универсальная платформа для управления кланом в&nbsp;Мир Танков — статистика, казна, рекрутинг и стратегия в одном месте.</p>
             <p>Всё, что нужно командиру: от глобальной карты до аналитики каждого бойца.</p>
           </div>
 
@@ -169,11 +159,6 @@ function Home() {
               <img src={clanEvg} alt="EVG" className="home__hero-collab-img home__hero-collab-img--gold" />
             </div>
           </div>
-        </div>
-
-        <div className="home__hero-scroll">
-          <div className="home__hero-scroll-line" />
-          <span>scroll</span>
         </div>
       </section>
 

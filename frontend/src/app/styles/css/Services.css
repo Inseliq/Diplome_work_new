@@ -1,0 +1,93 @@
+/* ============================================================
+   SERVICES PAGE
+   ============================================================ */
+
+.wrapper.services {
+  padding-top: calc(var(--header-height) + var(--sp-12));
+  padding-bottom: var(--section-gap);
+
+  /* ── Page header ── */
+  .services__header {
+    text-align: center;
+    margin-bottom: var(--sp-12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-4);
+
+    .services__header-label {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--main-accent-effect);
+      background: rgba(131,93,228,0.1);
+      border: 1px solid var(--border-accent);
+      padding: 5px 16px;
+      border-radius: var(--radius-full);
+    }
+
+    .services__title {
+      font-size: clamp(var(--text-3xl), 6vw, var(--text-5xl));
+      background: linear-gradient(135deg, var(--text-effect) 30%, var(--main-accent-effect));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .services__subtitle {
+      font-size: var(--text-lg);
+      color: var(--text-muted);
+      max-width: 480px;
+    }
+  }
+
+  /* ── Grid: 3 колонки ── */
+  .services__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-5);
+  }
+}
+
+/* ── Планшет: 2 колонки, последняя нечётная — на всю ширину ── */
+@media (max-width: 1024px) {
+  .wrapper.services .services__grid {
+    grid-template-columns: repeat(2, 1fr);
+
+    /* Если карточек нечётное число — последняя растягивается */
+    .service-card:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+
+      /* В широком варианте контент горизонтально */
+      flex-direction: row;
+      align-items: center;
+      gap: var(--sp-8);
+
+      .service-card__body { flex: 1; }
+      .service-card__footer { margin-top: 0; align-self: flex-end; }
+    }
+  }
+}
+
+/* ── Телефон: 1 колонка ── */
+@media (max-width: 640px) {
+  .wrapper.services {
+    padding-top: calc(var(--header-height) + var(--sp-8));
+
+    .services__header { margin-bottom: var(--sp-8); }
+
+    .services__grid {
+      grid-template-columns: 1fr;
+
+      /* Отменяем горизонтальное растягивание на маленьких */
+      .service-card:last-child:nth-child(odd) {
+        grid-column: auto;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .service-card__footer { margin-top: auto; align-self: auto; }
+      }
+    }
+  }
+}

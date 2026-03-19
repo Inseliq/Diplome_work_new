@@ -1,0 +1,177 @@
+/* ============================================================
+   SERVICE CARD — общий компонент карточки для Services / Clan / Tournaments
+   ============================================================ */
+
+.service-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
+  background: var(--card-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-md),
+    box-shadow var(--transition-md),
+    transform var(--transition-md);
+
+  /* Свечение при ховере через псевдоэлемент */
+  .service-card__glow-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--card-glow, rgba(88, 43, 186, 0.1));
+    opacity: 0;
+    transition: opacity var(--transition-md);
+    pointer-events: none;
+  }
+
+  &:hover {
+    border-color: var(--card-color, var(--border-accent));
+    box-shadow: 0 8px 40px var(--card-glow, var(--purple-glow));
+    transform: translateY(-4px);
+
+    .service-card__glow-bg {
+      opacity: 1;
+    }
+
+    .service-card__footer {
+      color: var(--card-color, var(--main-accent-effect));
+      gap: var(--sp-3);
+    }
+  }
+
+  /* ── Icon ── */
+  .service-card__icon-wrap {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+    transition:
+      border-color var(--transition),
+      background var(--transition);
+
+    &.service-card__icon-wrap--lg {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-lg);
+    }
+  }
+
+  &:hover .service-card__icon-wrap {
+    background: var(--card-glow, rgba(88, 43, 186, 0.15));
+    border-color: var(--card-color, var(--border-accent));
+  }
+
+  .service-card__icon {
+    font-size: 1.6rem;
+    line-height: 1;
+
+    .service-card__icon-wrap--lg & {
+      font-size: 2rem;
+    }
+  }
+
+  /* ── Top row (icon + tag) ── */
+  .service-card__top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+  }
+
+  .service-card__tag {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  /* ── Body ── */
+  .service-card__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .service-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--text-effect);
+    line-height: var(--leading-tight);
+    transition: color var(--transition);
+
+    &.service-card__title--lg {
+      font-size: var(--text-2xl);
+    }
+  }
+
+  &:hover .service-card__title {
+    color: var(--card-color, var(--text-effect));
+  }
+
+  .service-card__desc {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* ── Badges row (Tournaments) ── */
+  .service-card__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+
+  .service-card__badge {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid;
+    opacity: 0.75;
+    transition: opacity var(--transition);
+  }
+
+  &:hover .service-card__badge {
+    opacity: 1;
+  }
+
+  /* ── Footer ── */
+  .service-card__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    color: var(--text-dim);
+    transition:
+      color var(--transition),
+      gap var(--transition);
+    margin-top: auto;
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  .service-card__link {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  /* ── Large variant (Tournaments) ── */
+  &.service-card--large {
+    padding: var(--sp-8);
+    gap: var(--sp-5);
+  }
+}
