@@ -47,6 +47,56 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--sp-5);
+    margin-bottom: var(--sp-5);
+  }
+
+  /* ── Широкая карточка событий ── */
+  .tournaments__events-card {
+    .service-card--wide {
+      padding: var(--sp-8);
+      gap: var(--sp-5);
+    }
+
+    .tournaments__events-inner {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-10);
+    }
+
+    .tournaments__events-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+      min-width: 0;
+    }
+
+    .tournaments__events-stats {
+      display: flex;
+      gap: var(--sp-6);
+      flex-shrink: 0;
+    }
+
+    .tournaments__events-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-1);
+      min-width: 64px;
+
+      .tournaments__events-stat-num {
+        font-family: var(--font-heading);
+        font-size: var(--text-4xl);
+        line-height: 1;
+      }
+
+      .tournaments__events-stat-label {
+        font-size: var(--text-xs);
+        color: var(--text-dim);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+    }
   }
 }
 
@@ -58,5 +108,16 @@
     .tournaments__header { margin-bottom: var(--sp-8); }
 
     .tournaments__grid { grid-template-columns: 1fr; }
+
+    .tournaments__events-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--sp-5);
+    }
+
+    .tournaments__events-stats {
+      width: 100%;
+      justify-content: space-around;
+    }
   }
 }

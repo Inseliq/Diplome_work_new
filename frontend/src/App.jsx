@@ -13,6 +13,9 @@ import Clan from './app/pages/Clan';
 import Tournaments from './app/pages/Tournaments';
 import News from './app/pages/News';
 import NewsDetail from './app/pages/NewsDetail';
+import Events from './app/pages/Events';
+import EventDetail from './app/pages/EventDetail';
+import Social from './app/pages/Social';
 
 function App() {
   return (
@@ -24,6 +27,9 @@ function App() {
         <Route path="tournaments" element={<Tournaments />} />
         <Route path="news" element={<News />} />
         <Route path="news/:id" element={<NewsDetail />} />
+        <Route path="events" element={<Events />} />
+        <Route path="events/:id" element={<EventDetail />} />
+        <Route path="social-media" element={<Social />} />
       </Route>
     </Routes>
   );

@@ -3,10 +3,17 @@ import { useLocation } from 'react-router-dom';
 
 const TITLE_MAP = {
   '/': 'CosmoManager – Главная',
-  '/services': 'CosmoManager – Сервисы',
+  'services': 'CosmoManager – Сервисы',
+  'clan': 'CosmoManager – Клан',
+  'tournaments': 'CosmoManager – Турниры',
+  'news': 'CosmoManager – Новости',
+  'news/:id': 'CosmoManager – Новость',
+  'events': 'CosmoManager – События',
+  'events/:id': 'CosmoManager – Событие',
+  'social-media': 'CosmoManager – Соц. Сети',
 };
 
-export function usePageTitle(basename = '') {
+export function usePageTitle(basename = '/') {
   const { pathname } = useLocation();
 
   useEffect(() => {
