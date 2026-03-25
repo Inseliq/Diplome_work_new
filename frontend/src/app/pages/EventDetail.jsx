@@ -1,28 +1,40 @@
 import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { EVENTS_DATA, STATUS_CONFIG, CATEGORY_COLORS } from '../data/eventsData';
+import { useEventDetail } from '../hooks/useEventDetail';
+import { useEvents } from '../hooks/useEvents';
+import { STATUS_CONFIG, CATEGORY_COLORS } from '../data/eventsData';
 import { parseMarkup } from '../utils/parseMarkup';
-
-const SORTED = [...EVENTS_DATA].sort(
-  (a, b) => new Date(b.dateStartISO) - new Date(a.dateStartISO)
-);
+import { LoadingSpinner, FallbackBanner } from '../components/ui/StatusComponents';
 
 function EventDetail() {
   const { id } = useParams();
-  const item = EVENTS_DATA.find((e) => e.id === Number(id));
+  const { event: item, loading, isFallback } = useEventDetail(id);
+  const { events: allEvents } = useEvents();
 
-  if (!item) return <Navigate to="/events" replace />;
+  if (loading) {
+    return (
+      <div className="wrapper event-detail">
+        <div className="container">
+          <LoadingSpinner text="Загружаем событие..." />
+        </div>
+      </div>
+    );
+  }
+
+  if (!loading && !item) return <Navigate to="/events" replace />;
 
   const st = STATUS_CONFIG[item.status];
-  const cat = CATEGORY_COLORS[item.category] || CATEGORY_COLORS['Игровой ивент'];
+  const cat = CATEGORY_COLORS[item.category] || CATEGORY_COLORS['Событие'];
 
-  const related = SORTED.filter((e) => e.id !== item.id).slice(0, 3);
+  const related = [...allEvents]
+    .sort((a, b) => new Date(b.dateStartISO) - new Date(a.dateStartISO))
+    .filter((e) => e.id !== item.id)
+    .slice(0, 3);
 
   return (
     <div className="wrapper event-detail">
       <div className="container">
 
-        {/* Breadcrumb */}
         <nav className="event-detail__breadcrumb reveal">
           <Link to="/" className="event-detail__crumb">Главная</Link>
           <span className="event-detail__crumb-sep">/</span>
@@ -31,12 +43,10 @@ function EventDetail() {
           <span className="event-detail__crumb event-detail__crumb--active">{item.title}</span>
         </nav>
 
+        {isFallback && <FallbackBanner />}
+
         <div className="event-detail__layout">
-
-          {/* ── Article ── */}
           <article className="event-detail__article reveal">
-
-            {/* Hero */}
             <div className="event-detail__hero">
               {item.image
                 ? <img src={item.image} alt={item.title} className="event-detail__hero-img" />
@@ -45,7 +55,6 @@ function EventDetail() {
               <div className="event-detail__hero-overlay" />
             </div>
 
-            {/* Info bar */}
             <div className="event-detail__infobar">
               <span className="event-detail__status"
                 style={{ color: st.color, background: st.bg, borderColor: st.border }}>
@@ -72,32 +81,31 @@ function EventDetail() {
 
             <h1 className="event-detail__title">{item.title}</h1>
             <p className="event-detail__excerpt">{item.excerpt}</p>
-
             <div className="event-detail__divider" />
 
-            {/* Content */}
             <div className="event-detail__content markup">
-              {parseMarkup(item.content)}
+              {item.content
+                ? parseMarkup(item.content)
+                : <p className="markup-p" style={{ color: 'var(--text-dim)' }}>Содержимое недоступно.</p>
+              }
             </div>
 
             <div className="event-detail__back">
               <Link to="/events" className="btn btn-ghost">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
+                  <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
                 </svg>
                 Все события
               </Link>
             </div>
           </article>
 
-          {/* ── Sidebar ── */}
           <aside className="event-detail__sidebar reveal">
             <h4 className="event-detail__sidebar-title">Другие события</h4>
             <div className="event-detail__related">
               {related.map((e) => {
                 const rst = STATUS_CONFIG[e.status];
-                const rcat = CATEGORY_COLORS[e.category] || CATEGORY_COLORS['Игровой ивент'];
+                const rcat = CATEGORY_COLORS[e.category] || CATEGORY_COLORS['Событие'];
                 return (
                   <Link key={e.id} to={`/events/${e.id}`} className="event-detail__related-item">
                     <div className="event-detail__related-thumb"
@@ -106,22 +114,17 @@ function EventDetail() {
                     </div>
                     <div className="event-detail__related-body">
                       <div className="event-detail__related-top">
-                        <span className="event-detail__related-status"
-                          style={{ color: rst.color }}>{rst.label}</span>
-                        <span className="event-detail__related-cat"
-                          style={{ color: rcat.color }}>{e.category}</span>
+                        <span className="event-detail__related-status" style={{ color: rst.color }}>{rst.label}</span>
+                        <span className="event-detail__related-cat" style={{ color: rcat.color }}>{e.category}</span>
                       </div>
                       <p className="event-detail__related-title">{e.title}</p>
-                      <time className="event-detail__related-dates">
-                        {e.dateStart} — {e.dateEnd}
-                      </time>
+                      <time className="event-detail__related-dates">{e.dateStart} — {e.dateEnd}</time>
                     </div>
                   </Link>
                 );
               })}
             </div>
           </aside>
-
         </div>
       </div>
     </div>

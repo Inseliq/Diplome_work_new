@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import logoFullVertical from '/images/logo-full.vertical.svg';
-import clanEvg from '/images/logo-full.vertical.svg'; // замените на /images/clan-evg.svg когда файл появится
+import clanEvg from '/images/logo-full.vertical.svg';
 import BannerSlider from '../components/ui/BannerSlider';
+import { useNews } from '../hooks/useNews';
+import { useEvents } from '../hooks/useEvents';
+import { STATUS_CONFIG, CATEGORY_COLORS as EVENT_CAT_COLORS } from '../data/eventsData';
+import { CATEGORY_COLORS as NEWS_CAT_COLORS } from '../data/newsData';
 
 const BANNER_SLIDES_1 = [
   { id: 1, type: 'event', title: 'Глобальная карта: Сезон «Стальная воля»', desc: 'Сражайтесь за территории на глобальной карте и получайте уникальные награды. Сезон продлится до конца месяца.', btnLabel: 'Подробнее', btnHref: '#', bgGradient: 'linear-gradient(135deg, #1a0540 0%, #2d0870 40%, #582BBA 100%)' },
@@ -23,20 +27,6 @@ const SERVICES_STUB = [
   { id: 4, icon: '🎯', title: 'Рекрутинг', desc: 'Заявки от игроков, фильтрация по статистике и автоответы.' },
   { id: 5, icon: '📅', title: 'Планировщик боёв', desc: 'Расписание тренировок, кланвар и уведомления участникам.' },
   { id: 6, icon: '🏆', title: 'Турниры', desc: 'Запись, сетки и трансляция результатов клановых турниров.' },
-];
-
-const NEWS_STUB = [
-  { id: 1, title: 'Обновление 1.24: все изменения балансировки', date: '14 марта 2025', href: '#' },
-  { id: 2, title: 'Топ-10 лучших ТТ для кланваров в 2025 году', date: '10 марта 2025', href: '#' },
-  { id: 3, title: 'Гайд по провинциям: как захватить и удержать', date: '7 марта 2025', href: '#' },
-  { id: 4, title: 'Интервью с лучшим кланом сезона «Стальная воля»', date: '4 марта 2025', href: '#' },
-  { id: 5, title: 'CosmoManager 1.0: история создания проекта', date: '1 марта 2025', href: '#' },
-];
-
-const EVENTS_STUB = [
-  { id: 1, status: 'active', title: 'Сезон ГК «Стальная воля»', date: '1 – 31 марта 2025', desc: 'Глобальная кампания за территории.', href: '#' },
-  { id: 2, status: 'active', title: 'Турнир «Железный кулак» #12', date: '15 – 17 марта 2025', desc: 'Еженедельные клановые 7/42 бои.', href: '#' },
-  { id: 3, status: 'ended', title: 'Ивент «Зимний фронт»', date: 'Январь 2025', desc: 'Специальные задания и уникальные награды.', href: '#' },
 ];
 
 const TOURNAMENTS_STUB = [
@@ -99,10 +89,23 @@ function Home() {
   const [donateCollected] = useState(18750);
   const section2Ref = useRef(null);
 
+  // ── Данные с API / фоллбек ──
+  const { news } = useNews();
+  const { events } = useEvents();
+
+  // 5 свежих новостей для главной
+  const latestNews = [...news]
+    .sort((a, b) => new Date(b.dateISO) - new Date(a.dateISO))
+    .slice(0, 5);
+
+  // 3 ближайших события для главной (активные + скоро)
+  const latestEvents = events
+    .filter((e) => e.status === 'active' || e.status === 'soon')
+    .sort((a, b) => new Date(a.dateStartISO) - new Date(b.dateStartISO))
+    .slice(0, 3);
+
   useEffect(() => { setHasVisited(!!localStorage.getItem('cm_visited')); }, []);
   useEffect(() => { const t = setTimeout(() => setHeroVisible(true), 300); return () => clearTimeout(t); }, []);
-
-
 
   const handleHeroCta = () => {
     localStorage.setItem('cm_visited', '1');
@@ -122,31 +125,25 @@ function Home() {
           <div className="home__hero-stars" />
         </div>
         <div className="home__hero-overlay" />
-
         <div className={`home__hero-content${heroVisible ? ' home__hero-content--visible' : ''}`}>
           <div className="home__hero-badges">
             <span className="home__hero-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>Скорость</span>
             <span className="home__hero-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>Удобство</span>
             <span className="home__hero-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>Универсальность</span>
           </div>
-
           <h1 className="home__hero-title">
             Добро пожаловать в<br />
             <span className="home__hero-title-accent">CosmoManager!</span>
           </h1>
-
           <div className="home__hero-desc">
             <p>Всё, что нужно командиру: от глобальной карты до аналитики каждого бойца.</p>
           </div>
-
           <button className="btn btn-primary btn-lg home__hero-cta" onClick={handleHeroCta}>
             {hasVisited
               ? (<>Продолжить <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></>)
               : (<>Начать <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg></>)
             }
           </button>
-
-          {/* Обе картинки — одинаковые логотипы */}
           <div className="home__hero-collab">
             <div className="home__hero-collab-item">
               <div className="home__hero-collab-glow" />
@@ -155,7 +152,6 @@ function Home() {
             <span className="home__hero-collab-x">×</span>
             <div className="home__hero-collab-item">
               <div className="home__hero-collab-glow home__hero-collab-glow--gold" />
-              {/* замените на clanEvg когда будет файл clan-evg.svg */}
               <img src={clanEvg} alt="EVG" className="home__hero-collab-img home__hero-collab-img--gold" />
             </div>
           </div>
@@ -191,7 +187,7 @@ function Home() {
         </div>
       </section>
 
-      {/* §4 NEWS & EVENTS */}
+      {/* §4 NEWS & EVENTS — данные из API */}
       <section className="home__section">
         <div className="container">
           <div className="section-heading reveal">
@@ -199,36 +195,54 @@ function Home() {
             <Link to="/news" className="section-link">Все новости →</Link>
           </div>
           <div className="home__news-layout reveal">
+
+            {/* Новости */}
             <div className="home__news-col">
               <h4 className="home__news-col-title">Последние новости</h4>
               <div className="home__news-list">
-                {NEWS_STUB.map((n, i) => (
-                  <a key={n.id} href={n.href} className="home__news-item">
+                {latestNews.length > 0 ? latestNews.map((n, i) => (
+                  <Link key={n.id} to={`/news/${n.id}`} className="home__news-item">
                     <div className="home__news-item-num">{String(i + 1).padStart(2, '0')}</div>
                     <div className="home__news-item-body">
                       <p className="home__news-item-title">{n.title}</p>
                       <span className="home__news-item-date">{n.date}</span>
                     </div>
                     <svg className="home__news-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
-                  </a>
-                ))}
+                  </Link>
+                )) : (
+                  <p style={{ color: 'var(--text-dim)', fontSize: 'var(--text-sm)', padding: 'var(--sp-4)' }}>
+                    Загрузка новостей...
+                  </p>
+                )}
               </div>
             </div>
+
+            {/* События */}
             <div className="home__events-col">
               <h4 className="home__news-col-title">Текущие события</h4>
               <div className="home__events-list">
-                {EVENTS_STUB.map((ev) => (
-                  <a key={ev.id} href={ev.href} className="home__event-card card">
-                    <div className="home__event-card-header">
-                      <span className={`badge ${ev.status === 'active' ? 'badge-active' : 'badge-ended'}`}>{ev.status === 'active' ? '● Активно' : '✕ Завершено'}</span>
-                      <span className="home__event-card-date">{ev.date}</span>
-                    </div>
-                    <h5 className="home__event-card-title">{ev.title}</h5>
-                    <p className="home__event-card-desc">{ev.desc}</p>
-                  </a>
-                ))}
+                {latestEvents.length > 0 ? latestEvents.map((ev) => {
+                  const st = STATUS_CONFIG[ev.status];
+                  return (
+                    <Link key={ev.id} to={`/events/${ev.id}`} className="home__event-card card">
+                      <div className="home__event-card-header">
+                        <span className={`badge ${ev.status === 'active' ? 'badge-active' : 'badge-event'}`}>
+                          {ev.status === 'active' ? '● Активно' : '◈ Скоро'}
+                        </span>
+                        <span className="home__event-card-date">{ev.dateStart}</span>
+                      </div>
+                      <h5 className="home__event-card-title">{ev.title}</h5>
+                      <p className="home__event-card-desc">{ev.excerpt}</p>
+                    </Link>
+                  );
+                }) : (
+                  <p style={{ color: 'var(--text-dim)', fontSize: 'var(--text-sm)', padding: 'var(--sp-4)' }}>
+                    Загрузка событий...
+                  </p>
+                )}
               </div>
             </div>
+
           </div>
         </div>
       </section>
