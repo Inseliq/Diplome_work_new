@@ -6,7 +6,7 @@ import BannerSlider from '../components/ui/BannerSlider';
 import { useNews } from '../hooks/useNews';
 import { useEvents } from '../hooks/useEvents';
 import { STATUS_CONFIG, CATEGORY_COLORS as EVENT_CAT_COLORS } from '../data/eventsData';
-import { CATEGORY_COLORS as NEWS_CAT_COLORS } from '../data/newsData';
+import { CUSTOMS_DATA, TOURNAMENT_TYPES, TIER_ROMAN } from '../data/customsData';
 
 const BANNER_SLIDES_1 = [
   { id: 1, type: 'event', title: 'Глобальная карта: Сезон «Стальная воля»', desc: 'Сражайтесь за территории на глобальной карте и получайте уникальные награды. Сезон продлится до конца месяца.', btnLabel: 'Подробнее', btnHref: '#', bgGradient: 'linear-gradient(135deg, #1a0540 0%, #2d0870 40%, #582BBA 100%)' },
@@ -21,12 +21,12 @@ const BANNER_SLIDES_2 = [
 ];
 
 const SERVICES_STUB = [
-  { id: 1, icon: '🗺️', title: 'Глобальная карта', desc: 'Управление боями на ГК, планирование провинций и отчёты.' },
-  { id: 2, icon: '📊', title: 'Аналитика клана', desc: 'Статистика игроков, рейтинги активности и боевой эффективности.' },
-  { id: 3, icon: '💰', title: 'Казна клана', desc: 'Учёт золота, выплаты и история транзакций клана.' },
-  { id: 4, icon: '🎯', title: 'Рекрутинг', desc: 'Заявки от игроков, фильтрация по статистике и автоответы.' },
-  { id: 5, icon: '📅', title: 'Планировщик боёв', desc: 'Расписание тренировок, кланвар и уведомления участникам.' },
-  { id: 6, icon: '🏆', title: 'Турниры', desc: 'Запись, сетки и трансляция результатов клановых турниров.' },
+  { id: 1, path: '/achievements/marks', icon: '/images/services/marks.service.svg', title: 'Отметки на орудии', desc: 'Показатель степени мастерства игроков на танке.' },
+  { id: 2, path: '/achievements/masters', icon: '/images/services/masters.service.svg', title: 'Знак классности мастер', desc: 'Необходимое количество опыта для взятия мастера на танке.' },
+  { id: 3, path: '/tournaments', icon: '/images/services/tournaments.service.svg', title: 'Турниры', desc: 'Запись, сетки, трансляции и результаты кастомных турниров.' },
+  { id: 5, path: '', icon: '/images/services/achievements.service.svg', title: 'Достижения', desc: 'Ваши достижения в удобном и подробном формате.' },
+  { id: 6, path: '/clan', icon: '/images/services/clans.service.svg', title: 'Клан', desc: 'Клановые события, активация резервов, глобальная карта и статистика.' },
+  { id: 4, path: '', icon: '/images/services/recruts.service.svg', title: 'Рекрутинг', desc: 'Параметры для вступления в клан. Академка и основа.' },
 ];
 
 const TOURNAMENTS_STUB = [
@@ -43,32 +43,51 @@ const SOCIAL_LINKS = [
   { id: 'wot', label: 'Клан WoT', icon: 'tank', href: '#', subs: '45 чел.', color: '#FAB81B', desc: 'Страница клана EVG' },
 ];
 
-function TournamentCard({ t }) {
-  const pct = Math.round((t.participants / t.maxParticipants) * 100);
+const homeTournaments = [...CUSTOMS_DATA]
+  .sort((a, b) => {
+    const order = { active: 0, registration: 1, upcoming: 2, finished: 3 };
+    return (order[a.status] ?? 9) - (order[b.status] ?? 9);
+  })
+  .slice(0, 4);
+
+function HomeTournamentCard({ t }) {
+  const type = TOURNAMENT_TYPES[t.type];
+
   return (
-    <div className="tournament-card">
-      <div className="tournament-card__header">
-        <span className="tournament-card__format">{t.format}</span>
-        <span className={`tournament-card__stage${t.stage === 'Финал' ? ' tournament-card__stage--final' : ''}`}>{t.stage}</span>
+    <div className="home-tournament card">
+
+      <div className="home-tournament__top">
+        <span
+          className="home-tournament__type"
+          style={{ color: type.color }}
+        >
+          {type.label}
+        </span>
+
+        <span className="home-tournament__tier">
+          {TIER_ROMAN[t.tier]}
+        </span>
       </div>
-      <h4 className="tournament-card__title">{t.title}</h4>
-      <div className="tournament-card__meta">
-        <div className="tournament-card__meta-item">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
-          {t.date}
-        </div>
-        <div className="tournament-card__meta-item tournament-card__prize">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="6" /><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" /></svg>
-          {t.prize}
-        </div>
+
+      <h4 className="home-tournament__title">{t.name}</h4>
+
+      <p className="home-tournament__desc">
+        {t.description.slice(0, 80)}...
+      </p>
+
+      <div className="home-tournament__meta">
+        <span>{t.format}</span>
       </div>
-      <div className="tournament-card__progress">
-        <div className="tournament-card__progress-bar">
-          <div className="tournament-card__progress-fill" style={{ width: `${pct}%` }} />
-        </div>
-        <span className="tournament-card__progress-label">{t.participants} / {t.maxParticipants} команд</span>
+
+      <div className="home-tournament__footer">
+        <Link
+          to={`/tournaments/custom/details/${t.id}`}
+          className="btn btn-ghost btn-sm"
+        >
+          Подробнее →
+        </Link>
       </div>
-      <Link to="/tournaments" className="btn btn-ghost btn-sm tournament-card__btn">Подробнее</Link>
+
     </div>
   );
 }
@@ -172,8 +191,10 @@ function Home() {
           </div>
           <div className="home__services-grid reveal">
             {SERVICES_STUB.map((s) => (
-              <Link to="/service" key={s.id} className="home__service-card card">
-                <div className="home__service-card-icon">{s.icon}</div>
+              <Link to={s.path} key={s.id} className="home__service-card card">
+                <div className="home__service-card-icon">
+                  <img src={s.icon} alt={s.title} />
+                </div>
                 <div className="home__service-card-body">
                   <h5 className="home__service-card-title">{s.title}</h5>
                   <p className="home__service-card-desc">{s.desc}</p>
@@ -255,7 +276,9 @@ function Home() {
             <Link to="/tournaments" className="section-link">Все турниры →</Link>
           </div>
           <div className="home__tournaments-grid reveal">
-            {TOURNAMENTS_STUB.map((t) => <TournamentCard key={t.id} t={t} />)}
+            {homeTournaments.map((t) => (
+              <HomeTournamentCard key={t.id} t={t} />
+            ))}
           </div>
         </div>
       </section>

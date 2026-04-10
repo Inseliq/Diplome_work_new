@@ -1,5 +1,5 @@
-/* 
-   ASSEMBLE — все стили проекта
+/*
+ASSEMBLE — все стили проекта
 */
 
 /* Layout */
@@ -17,3 +17,7 @@
 @import url(./css/News.css);
 @import url(./css/Events.css);
 @import url(./css/Social.css);
+@import url(./css/Marks.css);
+@import url(./css/Masters.css);
+@import url(./css/TR.Customs.css);
+@import url(./css/Catalogs.css);

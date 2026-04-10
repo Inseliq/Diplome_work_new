@@ -10,11 +10,13 @@ export function useReveal() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Небольшая задержка — дать React отрендерить новую страницу
-    const timer = setTimeout(() => {
-      const targets = document.querySelectorAll('.reveal:not(.reveal--visible)');
+    let obs;
 
-      const obs = new IntersectionObserver(
+    const initObserver = () => {
+      const targets = document.querySelectorAll('.reveal:not(.reveal--visible)');
+      if (!targets.length) return;
+
+      obs = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
             if (e.isIntersecting) {
@@ -23,14 +25,38 @@ export function useReveal() {
             }
           });
         },
-        { threshold: 0.1, rootMargin: '0px 0px -48px 0px' }
+        {
+          threshold: 0.05,
+          rootMargin: '0px 0px -20px 0px',
+        }
       );
 
-      targets.forEach((t) => obs.observe(t));
+      targets.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          el.classList.add('reveal--visible');
+        } else {
+          obs.observe(el);
+        }
+      });
+    };
 
-      return () => obs.disconnect();
-    }, 50);
+    // 🔥 следим за изменениями DOM
+    const mutationObserver = new MutationObserver(() => {
+      initObserver();
+    });
 
-    return () => clearTimeout(timer);
-  }, [pathname]); // перезапускаем при каждом переходе
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    // первый запуск
+    setTimeout(initObserver, 100);
+
+    return () => {
+      if (obs) obs.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, [pathname]);
 }

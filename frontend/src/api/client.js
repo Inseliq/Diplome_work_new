@@ -1,48 +1,69 @@
+import axios from 'axios';
 import { config } from './config/env';
 import { logger } from '../app/utils/logger';
 
 /**
- * Базовый HTTP-клиент.
+ * Базовый axios-инстанс.
  * Все запросы идут на VITE_API_URL.
- * При ошибке бросает { status, message }.
  */
-async function request(path, options = {}) {
-  const url = `${config.apiUrl}${path}`;
+const instance = axios.create({
+  baseURL: config.apiUrl,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-  try {
-    const res = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-      ...options,
-    });
-
-    logger.api(options.method || 'GET', url, res.status);
-
-    if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      throw { status: res.status, message: text || res.statusText };
-    }
-
-    // 204 No Content
-    if (res.status === 204) return null;
-
-    return await res.json();
-  } catch (err) {
-    // Сетевая ошибка (нет соединения, CORS и т.д.)
-    if (!err.status) {
-      logger.warn(`Network error: ${url}`, err);
-      throw { status: 0, message: 'Network error' };
-    }
-    logger.error(`API error ${err.status}: ${url}`, err);
-    throw err;
+/* ── Request interceptor — логируем исходящий запрос ── */
+instance.interceptors.request.use(
+  (cfg) => {
+    logger.api(cfg.method, cfg.baseURL + cfg.url, '→');
+    return cfg;
+  },
+  (error) => {
+    logger.error('Request error', error);
+    return Promise.reject(error);
   }
-}
+);
+
+/* ── Response interceptor — логируем и нормализуем ошибки ── */
+instance.interceptors.response.use(
+  (response) => {
+    logger.api(response.config.method, response.config.url, response.status);
+    return response.data;   // возвращаем сразу data, без .data в эндпоинтах
+  },
+  (error) => {
+    if (error.response) {
+      // Сервер ответил с ошибкой (4xx / 5xx)
+      logger.error(
+        `API ${error.response.status}: ${error.config?.url}`,
+        error.response.data
+      );
+      return Promise.reject({
+        status: error.response.status,
+        message: error.response.data?.message || error.response.statusText,
+        data: error.response.data,
+      });
+    }
+
+    if (error.request) {
+      // Запрос ушёл, но ответа не было (нет сети, таймаут)
+      logger.warn('Network error / timeout', error.config?.url);
+      return Promise.reject({
+        status: 0,
+        message: 'Network error',
+      });
+    }
+
+    // Что-то сломалось ещё до отправки
+    logger.error('Unexpected error', error);
+    return Promise.reject({ status: -1, message: error.message });
+  }
+);
 
 export const apiClient = {
-  get: (path) => request(path, { method: 'GET' }),
-  post: (path, body) => request(path, { method: 'POST', body: JSON.stringify(body) }),
-  put: (path, body) => request(path, { method: 'PUT', body: JSON.stringify(body) }),
-  delete: (path) => request(path, { method: 'DELETE' }),
+  get: (path) => instance.get(path),
+  post: (path, body) => instance.post(path, body),
+  put: (path, body) => instance.put(path, body),
+  delete: (path) => instance.delete(path),
 };

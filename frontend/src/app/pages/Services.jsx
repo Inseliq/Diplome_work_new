@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const SERVICES = [
   {
     to: '/achievements/marks',
-    icon: '🎯',
+    icon: '/images/services/marks.service.svg',
     title: 'Отметки на стволах',
     desc: 'Отслеживай прогресс отметок на орудиях своих танков в реальном времени.',
     color: 'var(--second-accent)',
@@ -12,7 +12,7 @@ const SERVICES = [
   },
   {
     to: '/achievements/masters',
-    icon: '🏅',
+    icon: '/images/services/masters.service.svg',
     title: 'Знак классности',
     desc: 'Статистика мастерства и прогресс до звания «Мастер» по каждой машине.',
     color: 'var(--third-accent)',
@@ -20,7 +20,7 @@ const SERVICES = [
   },
   {
     to: '/tournaments',
-    icon: '🏆',
+    icon: '/images/services/tournaments.service.svg',
     title: 'Турниры',
     desc: 'Клановые и личные турниры — расписание, результаты, регистрация.',
     color: 'var(--main-accent-effect)',
@@ -28,7 +28,7 @@ const SERVICES = [
   },
   {
     to: '/achievements',
-    icon: '🎖️',
+    icon: '/images/services/achievements.service.svg',
     title: 'Достижения',
     desc: 'Полная коллекция достижений игры с прогрессом и редкостью.',
     color: 'var(--third-accent)',
@@ -36,7 +36,7 @@ const SERVICES = [
   },
   {
     to: '/clan',
-    icon: '⚔️',
+    icon: '/images/services/clans.service.svg',
     title: 'Клан',
     desc: 'Управление кланом, глобальная карта, резервы и достижения клана.',
     color: 'var(--main-accent-effect)',
@@ -44,7 +44,7 @@ const SERVICES = [
   },
   {
     to: '/mods',
-    icon: '🔧',
+    icon: '/images/services/mods.service.svg',
     title: 'Моды',
     desc: 'Каталог модификаций с описанием, скриншотами и прямыми ссылками.',
     color: '#22c55e',
@@ -52,15 +52,15 @@ const SERVICES = [
   },
   {
     to: '/directory',
-    icon: '📚',
-    title: 'Каталог танков',
+    icon: '/images/services/directory.service.svg',
+    title: 'Настройка танков',
     desc: 'Характеристики, сравнение и гайды по всем машинам игры.',
     color: 'var(--second-accent)',
     glow: 'rgba(255,80,0,0.15)',
   },
   {
     to: '/onslaught',
-    icon: '💥',
+    icon: '/images/services/onslaught.service.svg',
     title: 'Натиск',
     desc: 'Статистика и рейтинги режима «Натиск» — ранг, очки, топ игроков.',
     color: '#ef4444',
@@ -68,7 +68,7 @@ const SERVICES = [
   },
   {
     to: '/documents',
-    icon: '📄',
+    icon: '/images/services/documents.service.svg',
     title: 'Документация',
     desc: 'Руководства, гайды и официальная документация по сервисам платформы.',
     color: '#38bdf8',
@@ -76,7 +76,7 @@ const SERVICES = [
   },
   {
     to: '/news',
-    icon: '📰',
+    icon: '/images/services/news.service.svg',
     title: 'Новости',
     desc: 'Последние обновления, патчноуты и новости игровой вселенной.',
     color: 'var(--main-accent-effect)',
@@ -84,7 +84,7 @@ const SERVICES = [
   },
   {
     to: '/events',
-    icon: '🗓️',
+    icon: '/images/services/events.service.svg',
     title: 'События',
     desc: 'Игровые события, специальные режимы и ограниченные предложения.',
     color: 'var(--third-accent)',
@@ -92,7 +92,7 @@ const SERVICES = [
   },
   {
     to: '/social-media',
-    icon: '🌐',
+    icon: '/images/services/media.service.svg',
     title: 'Социальные сети',
     desc: 'YouTube, Telegram, VK и официальная страница клана EVG.',
     color: '#22c55e',
@@ -124,7 +124,7 @@ function Services() {
               <div className="service-card__glow-bg" />
 
               <div className="service-card__icon-wrap">
-                <span className="service-card__icon">{s.icon}</span>
+                <img src={s.icon} className='service-card__icon' alt={s.title} />
               </div>
 
               <div className="service-card__body">

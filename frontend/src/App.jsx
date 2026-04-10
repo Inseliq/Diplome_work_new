@@ -16,6 +16,13 @@ import NewsDetail from './app/pages/NewsDetail';
 import Events from './app/pages/Events';
 import EventDetail from './app/pages/EventDetail';
 import Social from './app/pages/Social';
+import Marks from './app/pages/Marks';
+import Masters from './app/pages/Masters';
+import Customs from './app/pages/Customs';
+import CustomDetail from './app/pages/CustomDetail';
+import CustomRegister from './app/pages/CustomRegister';
+import CatalogsTanks from './app/pages/CatalogsTanks';
+import TankDirectory from './app/pages/TankDirectory';
 
 function App() {
   return (
@@ -30,6 +37,13 @@ function App() {
         <Route path="events" element={<Events />} />
         <Route path="events/:id" element={<EventDetail />} />
         <Route path="social-media" element={<Social />} />
+        <Route path="achievements/marks" element={<Marks />} />
+        <Route path="achievements/masters" element={<Masters />} />
+        <Route path="tournaments/custom" element={<Customs />} />
+        <Route path="tournaments/custom/details/:id" element={<CustomDetail />} />
+        <Route path="tournaments/custom/register/:id" element={<CustomRegister />} />
+        <Route path="directory" element={<CatalogsTanks />} />
+        <Route path="directory/:id" element={<TankDirectory />} />
       </Route>
     </Routes>
   );

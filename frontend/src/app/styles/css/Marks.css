@@ -1,0 +1,388 @@
+/* ============================================================
+   MARKS — страница отметок на стволах
+   ============================================================ */
+
+.wrapper.marks {
+  padding-top: calc(var(--header-height) + var(--sp-12));
+  padding-bottom: var(--section-gap);
+
+  /* ── Header ── */
+  .marks__header {
+    text-align: center;
+    margin-bottom: var(--sp-10);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-4);
+
+    .marks__header-label {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--second-accent);
+      background: rgba(255,80,0,0.08);
+      border: 1px solid rgba(255,80,0,0.25);
+      padding: 5px 16px;
+      border-radius: var(--radius-full);
+    }
+
+    .marks__title {
+      font-size: clamp(var(--text-3xl), 6vw, var(--text-5xl));
+      background: linear-gradient(135deg, var(--text-effect) 30%, var(--second-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .marks__subtitle {
+      font-size: var(--text-lg);
+      color: var(--text-muted);
+    }
+  }
+
+  /* ── Counter ── */
+  .marks__counter {
+    font-size: var(--text-sm);
+    color: var(--text-dim);
+    margin-bottom: var(--sp-4);
+    strong { color: var(--text-muted); }
+  }
+
+  /* ── Filters panel ── */
+  .marks__filters {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: var(--sp-5) var(--sp-6);
+    margin-bottom: var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+  }
+
+  .marks__filter-groups {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+  }
+
+  .marks__filter-row {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--sp-6);
+    flex-wrap: wrap;
+  }
+
+  .marks__filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .marks__filter-label {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .marks__filter-pills {
+    display: flex;
+    gap: var(--sp-2);
+    flex-wrap: wrap;
+
+    /* Нации — вертикальный layout: картинка сверху, текст снизу */
+    &.marks__filter-pills--nations {
+      gap: var(--sp-3);
+    }
+  }
+
+  /* ── Пиллы — базовый стиль ── */
+  .marks__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: 6px 14px;
+    font-family: var(--font-main);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+
+    &:hover {
+      background: var(--glass-bg-hover);
+      color: var(--text-effect);
+      border-color: var(--glass-border-hover);
+    }
+
+    &.marks__pill--active {
+      background: rgba(88,43,186,0.15);
+      border-color: var(--border-accent);
+      color: var(--main-accent-effect);
+    }
+
+    /* Нация-пилл — вертикальный */
+    &.marks__pill--nation {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-1);
+      padding: var(--sp-3) var(--sp-3);
+      border-radius: var(--radius-md);
+      min-width: 60px;
+
+      &.marks__pill--active {
+        border-color: var(--border-accent);
+        background: rgba(88,43,186,0.12);
+      }
+
+      .marks__pill-img {
+        width: 32px;
+        height: 24px;
+        object-fit: contain;
+        /* Пока SVG нет — покажем placeholder-цвет */
+        background: var(--glass-bg-strong);
+        border-radius: var(--radius-xs);
+        min-height: 20px;
+      }
+
+      .marks__pill-text {
+        font-size: 10px;
+        line-height: 1.2;
+        text-align: center;
+        max-width: 60px;
+        white-space: normal;
+        word-break: break-word;
+      }
+    }
+
+    /* Тип */
+    &.marks__pill--type {
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    /* Уровень */
+    &.marks__pill--tier {
+      font-family: var(--font-heading);
+      font-size: var(--text-sm);
+      font-weight: 400;
+      padding: 5px 12px;
+
+      &.marks__pill--active {
+        background: rgba(250,184,27,0.12);
+        border-color: rgba(250,184,27,0.4);
+        color: var(--third-accent);
+      }
+    }
+  }
+
+  .marks__reset {
+    align-self: flex-end;
+    gap: var(--sp-2);
+    margin-bottom: 2px; /* выровнять с pill */
+  }
+
+  /* ── Table wrapper ── */
+  .marks__table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--glass-border);
+
+    &::-webkit-scrollbar       { height: 6px; }
+    &::-webkit-scrollbar-track { background: var(--dark-gray); }
+    &::-webkit-scrollbar-thumb { background: var(--light-gray); border-radius: var(--radius-full); }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TABLE
+───────────────────────────────────────────────────────────── */
+
+.marks-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+
+  thead tr {
+    background: var(--glass-bg-strong);
+    border-bottom: 2px solid var(--glass-border);
+  }
+
+  .marks-table__th {
+    padding: var(--sp-3) var(--sp-4);
+    text-align: left;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+    user-select: none;
+
+    &.marks-table__th--sortable {
+      cursor: pointer;
+      transition: color var(--transition);
+      &:hover { color: var(--text-effect); }
+    }
+
+    &.marks-table__th--sorted { color: var(--main-accent-effect); }
+
+    .marks-table__th-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-1);
+    }
+
+    .marks-table__sort-icon {
+      font-size: 11px;
+      opacity: 0.4;
+      line-height: 1;
+      &.marks-table__sort-icon--active { opacity: 1; }
+    }
+  }
+
+  /* Rows */
+  .marks-table__row {
+    border-bottom: 1px solid var(--glass-border);
+    transition: background var(--transition);
+
+    &:last-child { border-bottom: none; }
+    &:hover      { background: var(--glass-bg); }
+    &:nth-child(even) { background: rgba(255,255,255,0.012); }
+    &:nth-child(even):hover { background: var(--glass-bg); }
+  }
+
+  .marks-table__td {
+    padding: var(--sp-3) var(--sp-4);
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  /* Нация — только SVG картинка */
+  .marks-table__td--nation {
+    width: 64px;
+    text-align: center;
+
+    .marks-table__nation-img {
+      width: 32px;
+      height: 24px;
+      object-fit: contain;
+      display: inline-block;
+      /* Placeholder пока SVG не готов */
+      background: var(--glass-bg-strong);
+      border-radius: var(--radius-xs);
+      border: 1px solid var(--glass-border);
+    }
+  }
+
+  .marks-table__td--type {
+    width: 64px;
+    text-align: center;
+
+    .marks-table__type-img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+
+      background: var(--glass-bg-strong);
+      border-radius: var(--radius-xs);
+      border: 1px solid var(--glass-border);
+    }
+  }
+
+  /* Тип */
+  .marks-table__type-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    padding: 3px 9px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  /* Уровень */
+  .marks-table__tier {
+    font-family: var(--font-heading);
+    font-size: var(--text-base);
+    color: var(--text-muted);
+  }
+
+  /* Название */
+  .marks-table__td--name {
+    font-weight: 500;
+    color: var(--text-effect);
+    min-width: 180px;
+  }
+
+  /* MoE значения */
+  .marks-table__td--moe {
+    text-align: right;
+    font-family: var(--font-main);
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 75px;
+  }
+
+  .marks-table__td--m65  { color: #888888; }
+  .marks-table__td--m85  { color: var(--third-accent); }
+  .marks-table__td--m95  { color: var(--main-accent-effect); }
+  .marks-table__td--m100 { color: #ffd700; }
+  .marks-table__td--null { color: var(--text-dim); }
+
+  .marks-table__null  { color: var(--text-dim); font-weight: 400; }
+
+  .marks-table__empty {
+    text-align: center;
+    padding: var(--sp-16);
+    color: var(--text-dim);
+    font-size: var(--text-lg);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .wrapper.marks .marks__filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .wrapper.marks {
+    padding-top: calc(var(--header-height) + var(--sp-8));
+
+    .marks__header { margin-bottom: var(--sp-6); }
+    .marks__filters { padding: var(--sp-4); }
+
+    /* Нации — уменьшаем пиллы */
+    .marks__pill--nation {
+      min-width: 50px;
+      padding: var(--sp-2);
+
+      .marks__pill-img  { width: 26px; height: 20px; }
+      .marks__pill-text { font-size: 9px; max-width: 50px; }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper.marks {
+    .marks__filter-pills--nations { gap: var(--sp-2); }
+    .marks__pill--nation { min-width: 44px; }
+    .marks__header .marks__subtitle { font-size: var(--text-base); }
+  }
+}
