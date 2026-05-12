@@ -204,10 +204,6 @@
           position: relative;
           z-index: 1;
           filter: drop-shadow(0 0 12px rgba(131, 93, 228, 0.6));
-
-          &.home__hero-collab-img--gold {
-            filter: drop-shadow(0 0 12px rgba(250, 184, 27, 0.6)) hue-rotate(210deg) saturate(1.3);
-          }
         }
       }
 

@@ -1,0 +1,302 @@
+
+/* ============================================================
+   DOCUMENTS  /documents
+   ============================================================ */
+
+/* ── Плавный переход фона ── */
+.docs-wrapper {
+  display: flex;
+  min-height: 100vh;
+  padding-top: var(--header-height);
+  background: #ffffff;
+  /* Плавный переход от тёмного сайта к белому документу */
+  transition: background 0.4s ease;
+  color: #111111;
+}
+
+/* ── Aside ── */
+.docs-aside {
+  width: 260px;
+  flex-shrink: 0;
+  background: #f7f7f8;
+  border-right: 1px solid #e2e2e6;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--header-height));
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #d0d0d8; border-radius: 4px; }
+
+  .docs-aside__header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid #e2e2e6;
+
+    .docs-aside__label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: #999;
+    }
+  }
+
+  .docs-aside__nav {
+    flex: 1;
+    padding: 12px 12px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+
+  .docs-aside__footer {
+    padding: 16px 20px;
+    border-top: 1px solid #e2e2e6;
+
+    .docs-aside__footer-note {
+      font-size: 12px; color: #aaa;
+    }
+  }
+}
+
+.docs-aside__item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none; background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+  width: 100%;
+
+  &:hover { background: #ebebef; }
+
+  &.docs-aside__item--active {
+    background: #111;
+    color: #fff;
+
+    .docs-aside__item-icon { color: #fff; }
+    .docs-aside__item-label { color: #fff; font-weight: 600; }
+  }
+
+  .docs-aside__item-icon {
+    color: #888; flex-shrink: 0;
+  }
+
+  .docs-aside__item-label {
+    flex: 1; font-size: 14px; font-weight: 500; color: #333;
+    line-height: 1.3;
+  }
+
+  .docs-aside__item-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #fff; flex-shrink: 0;
+  }
+}
+
+/* ── Мобильный тоггл ── */
+.docs-mobile-toggle {
+  display: none;
+  position: fixed;
+  bottom: 24px; left: 50%; transform: translateX(-50%);
+  z-index: 500;
+  background: #111; color: #fff;
+  border: none; border-radius: 100px;
+  padding: 10px 20px 10px 14px;
+  font-size: 13px; font-weight: 600;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &.docs-mobile-toggle--open { background: #333; }
+}
+
+.docs-mobile-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 498;
+  background: rgba(0,0,0,0.25);
+}
+
+/* ── Основной контент ── */
+.docs-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: calc(100vh - var(--header-height));
+
+  .docs-content__inner {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+  }
+
+  .docs-content__footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e2e6;
+    font-size: 12px; color: #bbb; text-align: center;
+  }
+}
+
+/* ── Статья — типографика ── */
+.docs-article {
+  .doc-h2 {
+    font-size: 28px; font-weight: 700; color: #111;
+    margin: 0 0 24px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #111;
+    font-family: var(--font-heading, sans-serif);
+  }
+
+  .doc-h3 {
+    font-size: 18px; font-weight: 700; color: #111;
+    margin: 32px 0 12px;
+  }
+
+  .doc-h4 {
+    font-size: 14px; font-weight: 700; color: #333;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin: 24px 0 8px;
+  }
+
+  .doc-p {
+    font-size: 15px; color: #333; line-height: 1.75;
+    margin: 0 0 14px;
+
+    strong { color: #111; font-weight: 700; }
+    em     { color: #555; font-style: italic; }
+
+    &:last-child { margin-bottom: 0; }
+  }
+
+  .doc-hr {
+    border: none; border-top: 1px solid #e2e2e6;
+    margin: 32px 0;
+  }
+
+  /* Ссылки */
+  .doc-link {
+    color: #111; font-weight: 600;
+    text-decoration: underline; text-underline-offset: 3px;
+    transition: color 0.15s;
+    &:hover { color: #555; }
+  }
+
+  /* Списки */
+  .doc-list {
+    margin: 0 0 16px 0;
+    padding-left: 0;
+    display: flex; flex-direction: column; gap: 8px;
+
+    &.doc-list--ul { list-style: none; }
+    &.doc-list--ol { list-style: none; counter-reset: doc-ol; }
+  }
+
+  .doc-list--ul .doc-li {
+    position: relative; padding-left: 20px; font-size: 15px; color: #333; line-height: 1.65;
+
+    &::before {
+      content: ''; position: absolute; left: 0; top: 9px;
+      width: 6px; height: 6px; border-radius: 50%; background: #111;
+    }
+  }
+
+  .doc-list--ol .doc-li {
+    position: relative; padding-left: 28px; font-size: 15px; color: #333;
+    line-height: 1.65; counter-increment: doc-ol;
+
+    &::before {
+      content: counter(doc-ol) '.'; position: absolute; left: 0;
+      font-size: 13px; font-weight: 700; color: #111; min-width: 20px;
+    }
+  }
+
+  .doc-li strong { color: #111; font-weight: 700; }
+  .doc-li em     { font-style: italic; color: #555; }
+
+  /* Изображение */
+  .doc-img {
+    max-width: 100%; border-radius: 8px;
+    border: 1px solid #e2e2e6; margin: 16px 0; display: block;
+  }
+
+  /* ── FAQ ── */
+  .doc-faq {
+    margin: 20px 0;
+    border: 1px solid #e2e2e6;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .doc-faq__item {
+    border-bottom: 1px solid #e2e2e6;
+
+    &:last-child { border-bottom: none; }
+
+    &.doc-faq__item--open .doc-faq__arrow {
+      transform: rotate(180deg);
+    }
+
+    &.doc-faq__item--open .doc-faq__a-wrap {
+      max-height: 400px;
+      padding: 0 20px 16px;
+      opacity: 1;
+    }
+  }
+
+  .doc-faq__q {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 14px 20px;
+    background: transparent; border: none; cursor: pointer;
+    text-align: left; font-size: 14px; font-weight: 600; color: #111;
+    transition: background 0.15s;
+
+    &:hover { background: #f7f7f8; }
+
+    .doc-faq__arrow {
+      flex-shrink: 0; color: #888;
+      transition: transform 0.25s ease;
+    }
+  }
+
+  .doc-faq__a-wrap {
+    max-height: 0; overflow: hidden; opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.25s ease;
+    padding: 0 20px;
+  }
+
+  .doc-faq__a {
+    font-size: 14px; color: #555; line-height: 1.7;
+    margin: 0; padding: 0;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .docs-aside {
+    position: fixed;
+    left: 0; top: var(--header-height); bottom: 0;
+    z-index: 499;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    height: auto;
+
+    &.docs-aside--open { transform: translateX(0); }
+  }
+
+  .docs-mobile-toggle  { display: inline-flex; }
+  .docs-mobile-overlay { display: block; }
+
+  .docs-content .docs-content__inner { padding: 28px 20px 80px; }
+
+  .docs-article .doc-h2 { font-size: 22px; }
+  .docs-article .doc-h3 { font-size: 16px; }
+}
+
+@media (max-width: 480px) {
+  .docs-content .docs-content__inner { padding: 20px 16px 80px; }
+  .docs-article .doc-p  { font-size: 14px; }
+  .docs-article .doc-li { font-size: 14px; }
+}

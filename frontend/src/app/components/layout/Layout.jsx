@@ -6,6 +6,7 @@ import ScrollTopButton from '../ui/ScrollTopButton';
 import { usePageTitle } from '../../utils/usePageTitle';
 import { useScrollToTopOnNavigate } from '../../utils/useScrollToTopOnNavigate';
 import { useReveal } from '../../utils/useReveal';
+import NotificationGate from '../ui/NotificationGate';
 
 function Layout() {
   usePageTitle('/');
@@ -20,6 +21,7 @@ function Layout() {
       </main>
       <Footer />
       <ScrollTopButton />
+      <NotificationGate />
     </>
   );
 }

@@ -1,0 +1,42 @@
+/**
+ * Заглушка уведомлений.
+ * Когда бэкенд будет готов — заменяется запросом на /api/notification/latest
+ *
+ * Структура:
+ *   id          — уникальный идентификатор (смена id = показать снова)
+ *   message     — короткий заголовок
+ *   description — тело в markdown (см. parseNotifyMarkdown)
+ *   src-btn     — кнопка действия в формате 'name:url'
+ *                 'name' — текст кнопки, 'url' — путь
+ *                 null/undefined — кнопка не показывается
+ *
+ *  * Поддерживаемый синтаксис:
+ *   ##text        → <h2>
+ *   ###text       → <h3>
+ *   ####text      → <h4>
+ *   #####text     → <h5>
+ *   **text**      → <b>
+ *   *text*        → <i>
+ *   [text]        → <strong>  (выделение без ссылки)
+ *   [name](url)   → <Link to={url}>name</Link>
+ *   ![alt](src)   → <img alt src />
+ *   - item        → <ul><li>...</li></ul>
+ *   1. item       → <ol><li>...</li></ol>
+ *   ---           → <hr />
+ *   пустая строка → разрыв между параграфами
+ */
+export const NOTIFICATION = {
+  id: 3,
+  message: 'Кубок Весны 2025 — регистрация открыта!',
+  description: `## Кубок Весны 2025
+Регистрация на турнир **открыта** до **30 марта**.
+
+### Тест ссылки
+[Тестовая ссылка](/services)
+
+### Тест изображения
+![Test_image](/images/ievgi_195x195.png)
+
+Подробнее — на странице турнира.`,
+  'src-btn': 'Подробнее:/tournaments/custom/details/2',
+};

@@ -1,10 +1,9 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logoFull from '/images/logo-full.svg';
+import lestaLogo from '/images/lesta_agency.svg';
 import logoFullVertical from '/images/logo-full.vertical.svg';
-
-const lestaLogo = '/assets/lesta.svg';
-const mtLogo = '/assets/mt.svg';
+import mtLogo from '/images/world_of_tanks.svg';
 
 const SERVICES_LINKS = [
   { label: 'Управление кланом', to: '/services/clan-management' },

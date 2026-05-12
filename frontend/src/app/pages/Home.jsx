@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import logoFullVertical from '/images/logo-full.vertical.svg';
-import clanEvg from '/images/logo-full.vertical.svg';
+import logoFullVertical from '/images/logo-icon.svg';
+import clanEvg from '/images/ievgi_195x195.png';
 import BannerSlider from '../components/ui/BannerSlider';
 import { useNews } from '../hooks/useNews';
 import { useEvents } from '../hooks/useEvents';

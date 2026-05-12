@@ -8,6 +8,7 @@ ASSEMBLE — все стили проекта
 /* Shared components */
 @import url(./ui/service-card.css);
 @import url(./ui/loading.css);
+@import url(./ui/notification.css);
 
 /* Pages */
 @import url(./css/Home.css);
@@ -16,8 +17,12 @@ ASSEMBLE — все стили проекта
 @import url(./css/Tournaments.css);
 @import url(./css/News.css);
 @import url(./css/Events.css);
+@import url(./css/Mods.css);
+@import url(./css/Documents.css);
 @import url(./css/Social.css);
 @import url(./css/Marks.css);
 @import url(./css/Masters.css);
 @import url(./css/TR.Customs.css);
 @import url(./css/Catalogs.css);
+@import url(./css/Admin.css);
+@import url(./css/ServicePages.css);
