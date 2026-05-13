@@ -8,8 +8,9 @@ export const authService = {
     });
   },
 
-  async register(email, password, confirmPassword) {
+  async register(nickname, email, password, confirmPassword) {
     return await authApi.register({
+      nickname,
       email,
       password,
       confirmPassword,

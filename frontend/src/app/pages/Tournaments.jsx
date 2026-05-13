@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { EVENTS_DATA } from '../data/eventsData';
+import { useEvents } from '../hooks/useEvents';
 
 const TOURNAMENT_CARDS = [
   {
@@ -27,7 +27,9 @@ const TOURNAMENT_CARDS = [
 
 function Tournaments() {
   // Считаем статистику событий-турниров прямо из данных
-  const tourEvents = EVENTS_DATA.filter((e) => e.category === 'Турнир');
+  const { events } = useEvents();
+  
+  const tourEvents = events.filter((e) => e.category === 'Турнир');
   const statsActive = tourEvents.filter((e) => e.status === 'active').length;
   const statsSoon = tourEvents.filter((e) => e.status === 'soon').length;
   const statsEnded = tourEvents.filter((e) => e.status === 'ended').length;

@@ -29,7 +29,6 @@ const AUTH_PUBLIC_URLS = [
   '/api/auth/refresh',
 ];
 
-/* ── Request interceptor — логируем исходящий запрос ── */
 instance.interceptors.request.use(
   (cfg) => {
     const method = cfg.method?.toUpperCase() || 'GET';
@@ -45,7 +44,6 @@ instance.interceptors.request.use(
   }
 );
 
-/* ── Response interceptor — логируем, обновляем токен и нормализуем ошибки ── */
 instance.interceptors.response.use(
   (response) => {
     logger.api(
@@ -68,11 +66,6 @@ instance.interceptors.response.use(
       url.includes(authUrl)
     );
 
-    /**
-     * Если accessToken истёк:
-     * 1. Получаем новую пару токенов через refreshToken.
-     * 2. Повторяем исходный запрос.
-     */
     if (
       isUnauthorized &&
       originalRequest &&

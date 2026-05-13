@@ -23,10 +23,10 @@ import CustomDetail from './app/pages/CustomDetail';
 import CustomRegister from './app/pages/CustomRegister';
 import CatalogsTanks from './app/pages/CatalogsTanks';
 import TankDirectory from './app/pages/TankDirectory';
-import AdminHome from './app/pages/admin/AdminHome';
-import { AdminNewsList, AdminNewsEdit } from './app/pages/admin/AdminNews';
-import { AdminTournamentsList, AdminTournamentsEdit } from './app/pages/admin/AdminTournaments';
-import { AdminServices, AdminCatalog } from './app/pages/admin/AdminServicesCatalog';
+// import AdminHome from './app/pages/admin/AdminHome';
+// import { AdminNewsList, AdminNewsEdit } from './app/pages/admin/AdminNews';
+// import { AdminTournamentsList, AdminTournamentsEdit } from './app/pages/admin/AdminTournaments';
+// import { AdminServices, AdminCatalog } from './app/pages/admin/AdminServicesCatalog';
 import ErrorPage from './app/pages/service/ErrorPage';
 import InDevelopment from './app/pages/service/InDevelopment';
 import Maintenance from './app/pages/service/Maintenance';
@@ -48,11 +48,12 @@ function App() {
         <Route path="clan" element={<Clan />} />
         <Route path="tournaments" element={<Tournaments />} />
         <Route path="news" element={<News />} />
-        <Route path="mods" element={
+        {/* <Route path="mods" element={
           <ProtectedRoute>
             <Mods />
           </ProtectedRoute>
-        } />
+        } /> */}
+        <Route path="mods" element={<Mods />} />
         <Route path="documents" element={<Documents />} />
         <Route path="news/:id" element={<NewsDetail />} />
         <Route path="events" element={<Events />} />
@@ -62,18 +63,25 @@ function App() {
         <Route path="achievements/masters" element={<Masters />} />
         <Route path="tournaments/custom" element={<Customs />} />
         <Route path="tournaments/custom/details/:id" element={<CustomDetail />} />
-        <Route path="tournaments/custom/register/:id" element={<CustomRegister />} />
+        <Route
+          path="tournaments/custom/register/:id"
+          element={
+            <ProtectedRoute>
+              <CustomRegister />
+            </ProtectedRoute>
+          }
+        />
         <Route path="directory" element={<CatalogsTanks />} />
         <Route path="directory/:id" element={<TankDirectory />} />
 
         {/* ── ADMIN ── */}
-        <Route path="secure/helmet/admin" element={<AdminHome />} />
+        {/* <Route path="secure/helmet/admin" element={<AdminHome />} />
         <Route path="secure/helmet/admin/news" element={<AdminNewsList />} />
         <Route path="secure/helmet/admin/news/:id" element={<AdminNewsEdit />} />
         <Route path="secure/helmet/admin/tournaments" element={<AdminTournamentsList />} />
         <Route path="secure/helmet/admin/tournaments/:id" element={<AdminTournamentsEdit />} />
         <Route path="secure/helmet/admin/services" element={<AdminServices />} />
-        <Route path="secure/helmet/admin/catalog" element={<AdminCatalog />} />
+        <Route path="secure/helmet/admin/catalog" element={<AdminCatalog />} /> */}
 
         {/* ── SERVICE ── */}
         <Route path="/error" element={<ErrorPage code="404" />} />

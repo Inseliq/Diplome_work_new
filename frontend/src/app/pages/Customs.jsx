@@ -1,21 +1,39 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+
 import {
-  CUSTOMS_DATA, TOURNAMENT_TYPES, TOURNAMENT_STATUS,
-  PRIZE_TYPES, TIER_ROMAN, FORMATS, TIERS,
+  TOURNAMENT_TYPES,
+  TOURNAMENT_STATUS,
+  PRIZE_TYPES,
+  TIER_ROMAN,
+  FORMATS,
+  TIERS,
 } from '../data/customsData';
 
-// Симуляция авторизации — замени на реальный контекст
-const IS_EVG_MEMBER = false;
+import { useCustomTournaments } from '../hooks/useTournaments';
+import { useAuth } from '../context/AuthContext';
 
-function PrizeLabel({ prize, small }) {
+function PrizeLabel({ prize }) {
   if (!prize) return null;
+
   const pt = PRIZE_TYPES[prize.type];
-  if (prize.type === 'any') return (
-    <span className="custom-prize" style={{ color: pt.color }}>
-      {prize.text || 'Любой'}
-    </span>
-  );
+
+  if (!pt) {
+    return (
+      <span className="custom-prize">
+        {prize.text || prize.amount || 'Приз'}
+      </span>
+    );
+  }
+
+  if (prize.type === 'any') {
+    return (
+      <span className="custom-prize" style={{ color: pt.color }}>
+        {prize.text || 'Любой'}
+      </span>
+    );
+  }
+
   return (
     <span className="custom-prize" style={{ color: pt.color }}>
       {prize.amount.toLocaleString('ru-RU')} {pt.label}
@@ -25,6 +43,7 @@ function PrizeLabel({ prize, small }) {
 
 function ClassBadge({ classes }) {
   if (!classes?.length) return null;
+
   return (
     <span className="custom-card__class">
       {classes.join(' + ')}
@@ -32,31 +51,59 @@ function ClassBadge({ classes }) {
   );
 }
 
-function TournamentCard({ t }) {
-  const type = TOURNAMENT_TYPES[t.type];
-  const status = TOURNAMENT_STATUS[t.status];
-  const pt1 = PRIZE_TYPES[t.prizes?.place1?.type];
+function TournamentCard({ t, isAuthenticated }) {
+  const type = TOURNAMENT_TYPES[t.type] || TOURNAMENT_TYPES.common;
+  const status = TOURNAMENT_STATUS[t.status] || TOURNAMENT_STATUS.upcoming;
 
   const showStream = t.isStream && t.status === 'active' && t.streamUrl;
   const showResults = t.status === 'finished' || (t.status === 'active' && !t.isStream);
-  const showRegister = (t.status === 'registration') && (IS_EVG_MEMBER || t.openForAll);
-  const showUpcoming = t.status === 'upcoming';
+  const showRegister = t.status === 'registration' && t.openForAll;
+
+  const registerUrl = `/tournaments/custom/register/${t.id}`;
+
+  const registerPath = isAuthenticated
+    ? registerUrl
+    : `/login?returnUrl=${encodeURIComponent(registerUrl)}`;
 
   return (
-    <div className="custom-card" style={{ '--type-color': type.color, '--type-glow': type.glow, '--type-border': type.border }}>
-      {/* Цветная полоска типа */}
+    <div
+      className="custom-card"
+      style={{
+        '--type-color': type.color,
+        '--type-glow': type.glow,
+        '--type-border': type.border,
+      }}
+    >
       <div className="custom-card__stripe" />
 
-      {/* Header */}
       <div className="custom-card__head">
         <div className="custom-card__badges">
-          <span className="custom-card__type-badge" style={{ color: type.color, borderColor: type.border, background: type.glow }}>
+          <span
+            className="custom-card__type-badge"
+            style={{
+              color: type.color,
+              borderColor: type.border,
+              background: type.glow,
+            }}
+          >
             {type.label}
           </span>
-          <span className="custom-card__status" style={{ color: status.color, background: status.bg, borderColor: status.border }}>
-            <span className="custom-card__status-dot" style={{ background: status.color }} />
+
+          <span
+            className="custom-card__status"
+            style={{
+              color: status.color,
+              background: status.bg,
+              borderColor: status.border,
+            }}
+          >
+            <span
+              className="custom-card__status-dot"
+              style={{ background: status.color }}
+            />
             {status.label}
           </span>
+
           {t.isStream && (
             <span className="custom-card__live-badge">
               <span className="custom-card__live-dot" />
@@ -64,26 +111,31 @@ function TournamentCard({ t }) {
             </span>
           )}
         </div>
+
         <ClassBadge classes={t.classes} />
       </div>
 
-      {/* Title */}
       <h3 className="custom-card__title">{t.name}</h3>
       <p className="custom-card__desc">{t.description}</p>
 
-      {/* Meta grid */}
       <div className="custom-card__meta">
         <div className="custom-card__meta-item">
           <span className="custom-card__meta-label">Формат</span>
           <span className="custom-card__meta-val custom-card__format">
             {t.format}
-            {t.reserveSize > 0 && <span className="custom-card__reserve"> +{t.reserveSize}</span>}
+            {t.reserveSize > 0 && (
+              <span className="custom-card__reserve"> +{t.reserveSize}</span>
+            )}
           </span>
         </div>
+
         <div className="custom-card__meta-item">
           <span className="custom-card__meta-label">Уровень</span>
-          <span className="custom-card__meta-val">{TIER_ROMAN[t.tier] ?? t.tier}</span>
+          <span className="custom-card__meta-val">
+            {TIER_ROMAN[t.tier] ?? t.tier}
+          </span>
         </div>
+
         <div className="custom-card__meta-item">
           <span className="custom-card__meta-label">Команды</span>
           <span className="custom-card__meta-val">
@@ -91,42 +143,81 @@ function TournamentCard({ t }) {
             {t.maxParticipants ? <> / {t.maxParticipants}</> : ' / ∞'}
           </span>
         </div>
+
         <div className="custom-card__meta-item">
           <span className="custom-card__meta-label">Призы</span>
           <span className="custom-card__meta-val">
-            {t.prizeText
-              ? <span style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)' }}>{t.prizeText}</span>
-              : <PrizeLabel prize={t.prizes?.place1} />
-            }
+            {t.prizeText ? (
+              <span
+                style={{
+                  color: 'var(--text-muted)',
+                  fontSize: 'var(--text-xs)',
+                }}
+              >
+                {t.prizeText}
+              </span>
+            ) : (
+              <PrizeLabel prize={t.prizes?.place1} />
+            )}
           </span>
         </div>
       </div>
 
-      {/* Dates */}
       <div className="custom-card__dates">
         <div className="custom-card__date-item">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
             <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
-          <span>{t.dateStart} — {t.dateEnd}</span>
+
+          <span>
+            {t.dateStart} — {t.dateEnd}
+          </span>
         </div>
+
         {(t.status === 'registration' || t.status === 'upcoming') && (
           <div className="custom-card__date-item custom-card__date-item--reg">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
+
             <span>Рег. до {t.regEnd}</span>
           </div>
         )}
+
         {t.openForAll && (
-          <span className="custom-card__open-badge">Открытый</span>
+          <span className="custom-card__open-badge">
+            Открытый
+          </span>
         )}
+
         {t.sponsor && (
           <span className="custom-card__sponsor">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="11"
+              height="11"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
             </svg>
             {t.sponsor}
@@ -134,17 +225,36 @@ function TournamentCard({ t }) {
         )}
       </div>
 
-      {/* Actions */}
       <div className="custom-card__actions">
         {showStream && (
-          <a href={t.streamUrl} target="_blank" rel="noopener noreferrer" className="btn btn-accent btn-sm">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+          <a
+            href={t.streamUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-accent btn-sm"
+          >
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
             Смотреть
           </a>
         )}
+
         {showRegister && (
-          <Link to={`/tournaments/custom/register/${t.id}`} className="btn btn-primary btn-sm">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <Link to={registerPath} className="btn btn-primary btn-sm">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <line x1="19" y1="8" x2="19" y2="14" />
@@ -153,16 +263,31 @@ function TournamentCard({ t }) {
             Участвовать
           </Link>
         )}
+
         {showResults && (
-          <Link to={`/tournaments/custom/details/${t.id}`} className="btn btn-ghost btn-sm">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <Link
+            to={`/tournaments/custom/details/${t.id}`}
+            className="btn btn-ghost btn-sm"
+          >
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
             </svg>
             Результаты
           </Link>
         )}
-        <Link to={`/tournaments/custom/details/${t.id}`} className="btn btn-ghost btn-sm">
+
+        <Link
+          to={`/tournaments/custom/details/${t.id}`}
+          className="btn btn-ghost btn-sm"
+        >
           Подробнее →
         </Link>
       </div>
@@ -171,31 +296,53 @@ function TournamentCard({ t }) {
 }
 
 function Customs() {
+  const { tournaments, loading, isFallback } = useCustomTournaments();
+  const { isAuthenticated } = useAuth();
+
   const [filterFormat, setFilterFormat] = useState([]);
   const [filterType, setFilterType] = useState([]);
   const [filterTier, setFilterTier] = useState([]);
 
-  const toggle = (arr, setArr, val) =>
-    setArr(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
+  const toggle = (arr, setArr, val) => {
+    setArr(arr.includes(val)
+      ? arr.filter((x) => x !== val)
+      : [...arr, val]);
+  };
 
   const filtered = useMemo(() => {
-    let list = [...CUSTOMS_DATA];
-    // Сортировка: active → registration → upcoming → finished
-    const order = { active: 0, registration: 1, upcoming: 2, finished: 3 };
+    let list = [...tournaments];
+
+    const order = {
+      active: 0,
+      registration: 1,
+      upcoming: 2,
+      finished: 3,
+    };
+
     list.sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
 
-    if (filterFormat.length) list = list.filter((t) => filterFormat.includes(t.format));
-    if (filterType.length) list = list.filter((t) => filterType.includes(t.type));
-    if (filterTier.length) list = list.filter((t) => filterTier.includes(t.tier));
-    return list;
-  }, [filterFormat, filterType, filterTier]);
+    if (filterFormat.length) {
+      list = list.filter((t) => filterFormat.includes(t.format));
+    }
 
-  const hasFilters = !!(filterFormat.length || filterType.length || filterTier.length);
+    if (filterType.length) {
+      list = list.filter((t) => filterType.includes(t.type));
+    }
+
+    if (filterTier.length) {
+      list = list.filter((t) => filterTier.includes(t.tier));
+    }
+
+    return list;
+  }, [tournaments, filterFormat, filterType, filterTier]);
+
+  const hasFilters = Boolean(
+    filterFormat.length || filterType.length || filterTier.length
+  );
 
   return (
     <div className="wrapper customs">
       <div className="container">
-
         <div className="customs__header reveal">
           <div className="customs__header-label">Турниры</div>
           <h1 className="customs__title">Кастомные турниры</h1>
@@ -204,46 +351,64 @@ function Customs() {
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="customs__filters reveal">
+        {isFallback && (
+          <div className="customs__empty reveal">
+            API недоступен, загружены резервные данные.
+          </div>
+        )}
 
-          {/* Формат */}
+        <div className="customs__filters reveal">
           <div className="customs__filter-group">
             <div className="customs__filter-label">Формат</div>
             <div className="customs__filter-pills">
               {FORMATS.map((f) => (
-                <button key={f}
+                <button
+                  key={f}
+                  type="button"
                   className={`customs__pill${filterFormat.includes(f) ? ' customs__pill--active' : ''}`}
-                  onClick={() => toggle(filterFormat, setFilterFormat, f)}>
+                  onClick={() => toggle(filterFormat, setFilterFormat, f)}
+                >
                   {f}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Тип */}
           <div className="customs__filter-group">
             <div className="customs__filter-label">Тип</div>
             <div className="customs__filter-pills">
               {Object.entries(TOURNAMENT_TYPES).map(([key, val]) => (
-                <button key={key}
+                <button
+                  key={key}
+                  type="button"
                   className={`customs__pill${filterType.includes(key) ? ' customs__pill--active' : ''}`}
                   onClick={() => toggle(filterType, setFilterType, key)}
-                  style={filterType.includes(key) ? { borderColor: val.color, color: val.color, background: val.glow } : {}}>
+                  style={
+                    filterType.includes(key)
+                      ? {
+                        borderColor: val.color,
+                        color: val.color,
+                        background: val.glow,
+                      }
+                      : {}
+                  }
+                >
                   {val.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Уровень */}
           <div className="customs__filter-group">
             <div className="customs__filter-label">Уровень</div>
             <div className="customs__filter-pills">
               {TIERS.map((tier) => (
-                <button key={tier}
+                <button
+                  key={tier}
+                  type="button"
                   className={`customs__pill customs__pill--tier${filterTier.includes(tier) ? ' customs__pill--active' : ''}`}
-                  onClick={() => toggle(filterTier, setFilterTier, tier)}>
+                  onClick={() => toggle(filterTier, setFilterTier, tier)}
+                >
                   {TIER_ROMAN[tier]}
                 </button>
               ))}
@@ -251,30 +416,57 @@ function Customs() {
           </div>
 
           {hasFilters && (
-            <button className="btn btn-ghost btn-sm customs__filter-reset"
-              onClick={() => { setFilterFormat([]); setFilterType([]); setFilterTier([]); }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 .49-3.5" />
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm customs__filter-reset"
+              onClick={() => {
+                setFilterFormat([]);
+                setFilterType([]);
+                setFilterTier([]);
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 .49-3.5" />
               </svg>
               Сбросить
             </button>
           )}
         </div>
 
-        {/* Counter */}
         <div className="customs__counter reveal">
-          <span>Показано <strong>{filtered.length}</strong> из <strong>{CUSTOMS_DATA.length}</strong> турниров</span>
+          <span>
+            Показано <strong>{filtered.length}</strong> из{' '}
+            <strong>{tournaments.length}</strong> турниров
+          </span>
         </div>
 
-        {/* Cards grid */}
-        {filtered.length === 0 ? (
-          <div className="customs__empty reveal">Нет турниров по выбранным фильтрам</div>
+        {loading ? (
+          <div className="customs__empty reveal">
+            Загружаем турниры...
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="customs__empty reveal">
+            Нет турниров по выбранным фильтрам
+          </div>
         ) : (
           <div className="customs__grid reveal">
-            {filtered.map((t) => <TournamentCard key={t.id} t={t} />)}
+            {filtered.map((t) => (
+              <TournamentCard
+                key={t.id}
+                t={t}
+                isAuthenticated={isAuthenticated}
+              />
+            ))}
           </div>
         )}
-
       </div>
     </div>
   );

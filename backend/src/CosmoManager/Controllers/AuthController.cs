@@ -34,8 +34,8 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     [AllowAnonymous]
     public async Task<IActionResult> Register(
-        [FromBody] RegisterRequest request,
-        CancellationToken cancellationToken)
+    [FromBody] RegisterRequest request,
+    CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
@@ -50,11 +50,12 @@ public class AuthController : ControllerBase
             });
         }
 
+        var nickname = request.Nickname.Trim();
         var email = request.Email.Trim();
 
-        var existingUser = await _userManager.FindByEmailAsync(email);
+        var existingUserByEmail = await _userManager.FindByEmailAsync(email);
 
-        if (existingUser != null)
+        if (existingUserByEmail != null)
         {
             return BadRequest(new
             {
@@ -62,9 +63,20 @@ public class AuthController : ControllerBase
             });
         }
 
+        var existingUserByNickname = await _userManager.FindByNameAsync(nickname);
+
+        if (existingUserByNickname != null)
+        {
+            return BadRequest(new
+            {
+                message = "Пользователь с таким никнеймом уже существует"
+            });
+        }
+
         var user = new AppUser
         {
-            UserName = email,
+            UserName = nickname,
+            Nickname = nickname,
             Email = email
         };
 
@@ -93,6 +105,7 @@ public class AuthController : ControllerBase
             user = new
             {
                 id = user.Id,
+                nickname = user.Nickname,
                 email = user.Email
             }
         });
@@ -145,6 +158,7 @@ public class AuthController : ControllerBase
             user = new
             {
                 id = user.Id,
+                nickname = user.Nickname,
                 email = user.Email
             }
         });
@@ -221,6 +235,7 @@ public class AuthController : ControllerBase
             user = new
             {
                 id = user.Id,
+                nickname = user.Nickname,
                 email = user.Email
             }
         });
@@ -276,6 +291,7 @@ public class AuthController : ControllerBase
         return Ok(new
         {
             id = user.Id,
+            nickname = user.Nickname,
             email = user.Email
         });
     }
@@ -297,11 +313,15 @@ public class AuthController : ControllerBase
 
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id),
-            new(ClaimTypes.NameIdentifier, user.Id),
-            new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            new(ClaimTypes.Email, user.Email ?? string.Empty)
-        };
+    new(JwtRegisteredClaimNames.Sub, user.Id),
+    new(ClaimTypes.NameIdentifier, user.Id),
+
+    new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+    new(ClaimTypes.Email, user.Email ?? string.Empty),
+
+    new(ClaimTypes.Name, user.Nickname),
+    new("nickname", user.Nickname)
+};
 
         var roles = await _userManager.GetRolesAsync(user);
 

@@ -6,7 +6,8 @@ import BannerSlider from '../components/ui/BannerSlider';
 import { useNews } from '../hooks/useNews';
 import { useEvents } from '../hooks/useEvents';
 import { STATUS_CONFIG, CATEGORY_COLORS as EVENT_CAT_COLORS } from '../data/eventsData';
-import { CUSTOMS_DATA, TOURNAMENT_TYPES, TIER_ROMAN } from '../data/customsData';
+import { TOURNAMENT_TYPES, TIER_ROMAN } from '../data/customsData';
+import { useCustomTournaments } from '../hooks/useTournaments';
 
 const BANNER_SLIDES_1 = [
   { id: 1, type: 'event', title: 'Глобальная карта: Сезон «Стальная воля»', desc: 'Сражайтесь за территории на глобальной карте и получайте уникальные награды. Сезон продлится до конца месяца.', btnLabel: 'Подробнее', btnHref: '#', bgGradient: 'linear-gradient(135deg, #1a0540 0%, #2d0870 40%, #582BBA 100%)' },
@@ -43,15 +44,10 @@ const SOCIAL_LINKS = [
   { id: 'wot', label: 'Клан WoT', icon: 'tank', href: '#', subs: '45 чел.', color: '#FAB81B', desc: 'Страница клана EVG' },
 ];
 
-const homeTournaments = [...CUSTOMS_DATA]
-  .sort((a, b) => {
-    const order = { active: 0, registration: 1, upcoming: 2, finished: 3 };
-    return (order[a.status] ?? 9) - (order[b.status] ?? 9);
-  })
-  .slice(0, 4);
+
 
 function HomeTournamentCard({ t }) {
-  const type = TOURNAMENT_TYPES[t.type];
+  const type = TOURNAMENT_TYPES[t.type] || TOURNAMENT_TYPES.common;
 
   return (
     <div className="home-tournament card">
@@ -111,6 +107,7 @@ function Home() {
   // ── Данные с API / фоллбек ──
   const { news } = useNews();
   const { events } = useEvents();
+  const { tournaments } = useCustomTournaments();
 
   // 5 свежих новостей для главной
   const latestNews = [...news]
@@ -122,6 +119,19 @@ function Home() {
     .filter((e) => e.status === 'active' || e.status === 'soon')
     .sort((a, b) => new Date(a.dateStartISO) - new Date(b.dateStartISO))
     .slice(0, 3);
+
+  const homeTournaments = [...tournaments]
+    .sort((a, b) => {
+      const order = {
+        active: 0,
+        registration: 1,
+        upcoming: 2,
+        finished: 3,
+      };
+
+      return (order[a.status] ?? 9) - (order[b.status] ?? 9);
+    })
+    .slice(0, 4);
 
   useEffect(() => { setHasVisited(!!localStorage.getItem('cm_visited')); }, []);
   useEffect(() => { const t = setTimeout(() => setHeroVisible(true), 300); return () => clearTimeout(t); }, []);
@@ -276,9 +286,15 @@ function Home() {
             <Link to="/tournaments" className="section-link">Все турниры →</Link>
           </div>
           <div className="home__tournaments-grid reveal">
-            {homeTournaments.map((t) => (
-              <HomeTournamentCard key={t.id} t={t} />
-            ))}
+            {homeTournaments.length > 0 ? (
+              homeTournaments.map((t) => (
+                <HomeTournamentCard key={t.id} t={t} />
+              ))
+            ) : (
+              <p style={{ color: 'var(--text-dim)', fontSize: 'var(--text-sm)' }}>
+                Загружаем турниры...
+              </p>
+            )}
           </div>
         </div>
       </section>

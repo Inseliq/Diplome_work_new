@@ -103,8 +103,3 @@ img {
 a, button {
   -webkit-tap-highlight-color: transparent;
 }
-
-/* SVG inherit color */
-svg {
-  fill: currentColor;
-}

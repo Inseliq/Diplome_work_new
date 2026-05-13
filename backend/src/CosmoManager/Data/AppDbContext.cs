@@ -7,12 +7,22 @@ namespace CosmoManager.Data;
 
 public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
 {
-    public AppDbContext(DbContextOptions options)
-        :base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
     {
     }
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+    public DbSet<InfoItem> InfoItems => Set<InfoItem>();
+
+    public DbSet<Tournament> Tournaments => Set<Tournament>();
+
+    public DbSet<TournamentMap> TournamentMaps => Set<TournamentMap>();
+
+    public DbSet<TournamentPrize> TournamentPrizes => Set<TournamentPrize>();
+
+    public DbSet<TournamentRegistration> TournamentRegistrations => Set<TournamentRegistration>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -33,5 +43,462 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
                 .HasForeignKey(x => x.AppUserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        builder.Entity<InfoItem>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Type)
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .IsRequired();
+
+            entity.Property(x => x.Title)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(x => x.Category)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(x => x.Status)
+                .HasMaxLength(30);
+
+            entity.Property(x => x.DateStart)
+                .HasColumnType("date")
+                .IsRequired();
+
+            entity.Property(x => x.DateEnd)
+                .HasColumnType("date");
+
+            entity.Property(x => x.ImageUrl)
+                .HasMaxLength(500);
+
+            entity.Property(x => x.Gradient)
+                .HasMaxLength(500);
+
+            entity.Property(x => x.Excerpt)
+                .HasMaxLength(1000);
+
+            entity.Property(x => x.Content);
+
+            entity.Property(x => x.IsPublished)
+                .HasDefaultValue(true);
+
+            entity.Property(x => x.CreatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.HasIndex(x => x.Type);
+            entity.HasIndex(x => x.DateStart);
+            entity.HasIndex(x => x.IsPublished);
+        });
+
+        builder.Entity<InfoItem>().HasData(
+            new InfoItem
+            {
+                Id = 1,
+                Type = InfoItemType.News,
+                Title = "CosmoManager 1.0: история создания проекта",
+                Category = "Платформа",
+                Status = null,
+                DateStart = new DateTime(2025, 3, 1),
+                DateEnd = null,
+                ImageUrl = null,
+                Gradient = "linear-gradient(135deg, #1a0540 0%, #582BBA 60%, #835de4 100%)",
+                Excerpt = "Рассказываем о том, как появился CosmoManager — от первой идеи до полноценной платформы для кланов Мир Танков.",
+                Content = @"# CosmoManager 1.0 — история создания
+
+Всё началось с идеи создать удобную платформу для управления кланом, событиями, турнирами и статистикой.
+
+---
+
+## Основная идея
+
+CosmoManager объединяет новости, события, турниры, аналитику и инструменты для кланов в одном веб-приложении.
+
+## Возможности
+
+- управление клановой информацией;
+- просмотр новостей и событий;
+- работа с турнирами;
+- аналитика и справочные разделы.",
+                IsPublished = true,
+                CreatedAtUtc = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new InfoItem
+            {
+                Id = 2,
+                Type = InfoItemType.News,
+                Title = "Обновление платформы 1.1 — что нового",
+                Category = "Обновление",
+                Status = null,
+                DateStart = new DateTime(2025, 3, 5),
+                DateEnd = null,
+                ImageUrl = null,
+                Gradient = "linear-gradient(135deg, #0f1e40 0%, #1a3a6b 50%, #2d5bbf 100%)",
+                Excerpt = "Улучшена скорость загрузки, добавлены фильтры и исправлены найденные ошибки.",
+                Content = @"## Обновление 1.1
+
+В этом обновлении улучшена стабильность работы платформы, оптимизирована загрузка страниц и подготовлена основа для новых модулей.
+
+---
+
+## Основные изменения
+
+- улучшена работа страниц новостей и событий;
+- добавлена подготовка к административному управлению контентом;
+- оптимизирована структура API.",
+                IsPublished = true,
+                CreatedAtUtc = new DateTime(2025, 3, 5, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new InfoItem
+            {
+                Id = 3,
+                Type = InfoItemType.News,
+                Title = "Гайд по провинциям глобальной карты",
+                Category = "Гайд",
+                Status = null,
+                DateStart = new DateTime(2025, 3, 7),
+                DateEnd = null,
+                ImageUrl = null,
+                Gradient = "linear-gradient(135deg, #200a00 0%, #8a2200 50%, #FF5000 100%)",
+                Excerpt = "Подробный разбор: какие провинции брать первыми, как удержать доходные точки и когда отступать.",
+                Content = @"## Провинции глобальной карты
+
+При выборе провинций важно учитывать активность клана, время боёв, доходность территории и состав команды.
+
+---
+
+## Рекомендации
+
+- начинать с менее спорных направлений;
+- удерживать провинции с высокой доходностью;
+- заранее планировать составы на бои.",
+                IsPublished = true,
+                CreatedAtUtc = new DateTime(2025, 3, 7, 0, 0, 0, DateTimeKind.Utc)
+            },
+
+            new InfoItem
+            {
+                Id = 101,
+                Type = InfoItemType.Event,
+                Title = "Сезон Глобальной карты «Стальная воля»",
+                Category = "Клан",
+                Status = "active",
+                DateStart = new DateTime(2025, 3, 1),
+                DateEnd = new DateTime(2025, 3, 31),
+                ImageUrl = null,
+                Gradient = "linear-gradient(135deg, #1a0540 0%, #582BBA 60%, #835de4 100%)",
+                Excerpt = "Кланы сражаются за провинции. Победители получат золото, декали и уникальный стиль «Стальная воля».",
+                Content = @"# Сезон «Стальная воля»
+
+Глобальная кампания, в которой кланы соревнуются за контроль над провинциями мировой карты.
+
+---
+
+## Условия участия
+
+- клан должен иметь активный состав;
+- необходимо зарегистрироваться до начала сезона;
+- бои проходят по расписанию глобальной карты.",
+                IsPublished = true,
+                CreatedAtUtc = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new InfoItem
+            {
+                Id = 102,
+                Type = InfoItemType.Event,
+                Title = "Турнир «Железный кулак» #12",
+                Category = "Турнир",
+                Status = "active",
+                DateStart = new DateTime(2025, 3, 15),
+                DateEnd = new DateTime(2025, 3, 17),
+                ImageUrl = null,
+                Gradient = "linear-gradient(135deg, #200a00 0%, #8a2200 50%, #FF5000 100%)",
+                Excerpt = "Еженедельный клановый турнир в формате 7/42. Призовой фонд 10 000 золота.",
+                Content = @"# Железный кулак #12
+
+Еженедельный турнир для кланов в формате 7/42.
+
+---
+
+## Формат
+
+- групповая стадия;
+- плей-офф;
+- финальные бои;
+- награды для лучших команд.",
+                IsPublished = true,
+                CreatedAtUtc = new DateTime(2025, 3, 15, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new InfoItem
+            {
+                Id = 103,
+                Type = InfoItemType.Event,
+                Title = "Кубок Весны 2025",
+                Category = "Турнир",
+                Status = "soon",
+                DateStart = new DateTime(2025, 4, 1),
+                DateEnd = new DateTime(2025, 4, 5),
+                ImageUrl = null,
+                Gradient = "linear-gradient(135deg, #0a200a 0%, #145214 50%, #22c55e 100%)",
+                Excerpt = "Крупный весенний турнир с призовым фондом 200 000 ₽. Регистрация открывается 25 марта.",
+                Content = @"# Кубок Весны 2025
+
+Самый крупный турнир первого полугодия. Участвуют кланы со всего СНГ.
+
+---
+
+## Основная информация
+
+- формат: 15 на 15;
+- количество участников ограничено;
+- регистрация открывается заранее;
+- победители получают денежные и внутриигровые награды.",
+                IsPublished = true,
+                CreatedAtUtc = new DateTime(2025, 4, 1, 0, 0, 0, DateTimeKind.Utc)
+            }
+        );
+
+        builder.Entity<Tournament>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Name)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(x => x.Description)
+                .HasMaxLength(1000)
+                .IsRequired();
+
+            entity.Property(x => x.Type)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.Format)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            entity.Property(x => x.Classes)
+                .HasMaxLength(100);
+
+            entity.Property(x => x.Status)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.StreamUrl)
+                .HasMaxLength(500);
+
+            entity.Property(x => x.Sponsor)
+                .HasMaxLength(100);
+
+            entity.Property(x => x.DateStart)
+                .HasColumnType("date");
+
+            entity.Property(x => x.DateEnd)
+                .HasColumnType("date");
+
+            entity.Property(x => x.RegStart)
+                .HasColumnType("date");
+
+            entity.Property(x => x.RegEnd)
+                .HasColumnType("date");
+
+            entity.Property(x => x.CreatedAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.HasOne(x => x.Event)
+                .WithMany()
+                .HasForeignKey(x => x.EventId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(x => x.Status);
+            entity.HasIndex(x => x.Type);
+            entity.HasIndex(x => x.IsPublished);
+        });
+
+        builder.Entity<TournamentMap>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.Image)
+                .HasMaxLength(500)
+                .IsRequired();
+
+            entity.HasOne(x => x.Tournament)
+                .WithMany(x => x.Maps)
+                .HasForeignKey(x => x.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<TournamentPrize>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Place)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.Type)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.Text)
+                .HasMaxLength(300);
+
+            entity.HasOne(x => x.Tournament)
+                .WithMany(x => x.Prizes)
+                .HasForeignKey(x => x.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<TournamentRegistration>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.AppUserId)
+                .IsRequired();
+
+            entity.Property(x => x.TeamName)
+                .HasMaxLength(100);
+
+            entity.Property(x => x.Contact)
+                .HasMaxLength(100);
+
+            entity.Property(x => x.Comment)
+                .HasMaxLength(1000);
+
+            entity.Property(x => x.RegisteredAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.HasOne(x => x.Tournament)
+                .WithMany(x => x.Registrations)
+                .HasForeignKey(x => x.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.AppUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(x => new { x.TournamentId, x.AppUserId })
+                .IsUnique();
+        });
+
+        builder.Entity<Tournament>().HasData(
+    new Tournament
+    {
+        Id = 1,
+        Name = "Железный кулак — Весенний сезон",
+        Description = "Еженедельный клановый турнир в формате 7x7. Только для участников клана IEVGI и приглашённых команд.",
+        Type = "epic",
+        Tier = 10,
+        Format = "7x7",
+        TeamSize = 7,
+        ReserveSize = 1,
+        MaxParticipants = 16,
+        InitialParticipants = 12,
+        Classes = "BO3",
+        Status = "active",
+        IsStream = true,
+        StreamUrl = "https://twitch.tv/evg_stream",
+        DateStart = new DateTime(2025, 3, 17),
+        DateEnd = new DateTime(2025, 3, 19),
+        RegStart = new DateTime(2025, 3, 10),
+        RegEnd = new DateTime(2025, 3, 16),
+        OpenForAll = false,
+        Sponsor = "EVG",
+        EventId = 102,
+        PrizeText = null,
+        IsPublished = true,
+        CreatedAtUtc = new DateTime(2025, 3, 10, 0, 0, 0, DateTimeKind.Utc)
+    },
+    new Tournament
+    {
+        Id = 2,
+        Name = "Кубок Весны 2025",
+        Description = "Открытый турнир для всех желающих. Формат 15x15, только X уровень. Спонсор — Lesta Games.",
+        Type = "legendary",
+        Tier = 10,
+        Format = "15x15",
+        TeamSize = 15,
+        ReserveSize = 2,
+        MaxParticipants = 32,
+        InitialParticipants = 18,
+        Classes = "BO3,PE",
+        Status = "registration",
+        IsStream = true,
+        StreamUrl = "https://youtube.com/@cosmomanager",
+        DateStart = new DateTime(2025, 4, 1),
+        DateEnd = new DateTime(2025, 4, 5),
+        RegStart = new DateTime(2025, 3, 20),
+        RegEnd = new DateTime(2025, 3, 30),
+        OpenForAll = true,
+        Sponsor = "Lesta Games",
+        EventId = 103,
+        PrizeText = null,
+        IsPublished = true,
+        CreatedAtUtc = new DateTime(2025, 3, 20, 0, 0, 0, DateTimeKind.Utc)
+    },
+    new Tournament
+    {
+        Id = 3,
+        Name = "Тренировочный 3x3",
+        Description = "Небольшой тренировочный турнир для клана EVG. Формат 3x3, любой уровень VI–VIII.",
+        Type = "common",
+        Tier = 8,
+        Format = "3x3",
+        TeamSize = 3,
+        ReserveSize = 1,
+        MaxParticipants = null,
+        InitialParticipants = 6,
+        Classes = "ST",
+        Status = "upcoming",
+        IsStream = false,
+        StreamUrl = null,
+        DateStart = new DateTime(2025, 4, 25),
+        DateEnd = new DateTime(2025, 4, 25),
+        RegStart = new DateTime(2025, 4, 18),
+        RegEnd = new DateTime(2025, 4, 24),
+        OpenForAll = false,
+        Sponsor = null,
+        EventId = null,
+        PrizeText = null,
+        IsPublished = true,
+        CreatedAtUtc = new DateTime(2025, 4, 18, 0, 0, 0, DateTimeKind.Utc)
+    }
+);
+
+        builder.Entity<TournamentMap>().HasData(
+    new TournamentMap { Id = 1, TournamentId = 1, Name = "Ласвилль", Image = "/images/maps/lasvile.webp" },
+    new TournamentMap { Id = 2, TournamentId = 1, Name = "Степи", Image = "/images/maps/steppes.webp" },
+    new TournamentMap { Id = 3, TournamentId = 1, Name = "Прохоровка", Image = "/images/maps/prokhorovka.webp" },
+
+    new TournamentMap { Id = 4, TournamentId = 2, Name = "Прохоровка", Image = "/images/maps/prokhorovka.webp" },
+    new TournamentMap { Id = 5, TournamentId = 2, Name = "Химмельсдорф", Image = "/images/maps/himmelsdorf.webp" },
+
+    new TournamentMap { Id = 6, TournamentId = 3, Name = "Степи", Image = "/images/maps/steppes.webp" }
+);
+
+        builder.Entity<TournamentPrize>().HasData(
+    new TournamentPrize { Id = 1, TournamentId = 1, Place = "place1", Amount = 5000, Type = "gold", Text = null },
+    new TournamentPrize { Id = 2, TournamentId = 1, Place = "place2", Amount = 3000, Type = "gold", Text = null },
+    new TournamentPrize { Id = 3, TournamentId = 1, Place = "place3", Amount = 1500, Type = "gold", Text = null },
+    new TournamentPrize { Id = 4, TournamentId = 1, Place = "others", Amount = 500, Type = "gold", Text = null },
+
+    new TournamentPrize { Id = 5, TournamentId = 2, Place = "place1", Amount = 200000, Type = "rub", Text = null },
+    new TournamentPrize { Id = 6, TournamentId = 2, Place = "place2", Amount = 100000, Type = "rub", Text = null },
+    new TournamentPrize { Id = 7, TournamentId = 2, Place = "place3", Amount = 50000, Type = "rub", Text = null },
+    new TournamentPrize { Id = 8, TournamentId = 2, Place = "others", Amount = 10000, Type = "rub", Text = null },
+
+    new TournamentPrize { Id = 9, TournamentId = 3, Place = "place1", Amount = 1000, Type = "gold", Text = null },
+    new TournamentPrize { Id = 10, TournamentId = 3, Place = "place2", Amount = 500, Type = "gold", Text = null }
+);
     }
 }
