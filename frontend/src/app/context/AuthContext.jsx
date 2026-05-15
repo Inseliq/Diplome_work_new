@@ -53,6 +53,14 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  function hasRole(role) {
+    return user?.roles?.includes(role) ?? false;
+  }
+
+  function hasAnyRole(roles) {
+    return roles.some((role) => user?.roles?.includes(role));
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -62,7 +70,9 @@ export function AuthProvider({ children }) {
         login,
         register,
         logout,
-        refreshUser: loadUser
+        refreshUser: loadUser,
+        hasRole,
+        hasAnyRole
       }}
     >
       {children}

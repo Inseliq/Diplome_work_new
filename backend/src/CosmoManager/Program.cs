@@ -84,6 +84,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+await app.SeedRolesAsync();
+
 app.Run();
 
 public partial class Program { }

@@ -5,6 +5,7 @@ using System.Text;
 using CosmoManager.Data;
 using CosmoManager.Models;
 using CosmoManager.Requests;
+using CosmoManager.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -34,8 +35,8 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     [AllowAnonymous]
     public async Task<IActionResult> Register(
-    [FromBody] RegisterRequest request,
-    CancellationToken cancellationToken)
+        [FromBody] RegisterRequest request,
+        CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
@@ -98,17 +99,13 @@ public class AuthController : ControllerBase
 
         SetAuthCookies(accessToken, refreshToken);
 
-        return Ok(new
-        {
-            message = "Регистрация прошла успешно",
-            accessToken,
-            user = new
-            {
-                id = user.Id,
-                nickname = user.Nickname,
-                email = user.Email
-            }
-        });
+        var userResponse = await BuildUserResponseAsync(user);
+
+        return Ok(new AuthResponse(
+            Message: "Регистрация прошла успешно",
+            AccessToken: accessToken,
+            User: userResponse
+        ));
     }
 
     [HttpPost("login")]
@@ -151,17 +148,13 @@ public class AuthController : ControllerBase
 
         SetAuthCookies(accessToken, refreshToken);
 
-        return Ok(new
-        {
-            message = "Вход выполнен успешно",
-            accessToken,
-            user = new
-            {
-                id = user.Id,
-                nickname = user.Nickname,
-                email = user.Email
-            }
-        });
+        var userResponse = await BuildUserResponseAsync(user);
+
+        return Ok(new AuthResponse(
+            Message: "Вход выполнен успешно",
+            AccessToken: accessToken,
+            User: userResponse
+        ));
     }
 
     [HttpPost("refresh")]
@@ -228,17 +221,13 @@ public class AuthController : ControllerBase
 
         SetAuthCookies(newAccessToken, newRefreshToken);
 
-        return Ok(new
-        {
-            message = "Токены обновлены",
-            accessToken = newAccessToken,
-            user = new
-            {
-                id = user.Id,
-                nickname = user.Nickname,
-                email = user.Email
-            }
-        });
+        var userResponse = await BuildUserResponseAsync(user);
+
+        return Ok(new AuthResponse(
+            Message: "Токены обновлены",
+            AccessToken: newAccessToken,
+            User: userResponse
+        ));
     }
 
     [HttpPost("logout")]
@@ -288,12 +277,135 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
+        var userResponse = await BuildUserResponseAsync(user);
+
+        return Ok(userResponse);
+    }
+
+    [HttpPost("assign-role")]
+    [Authorize(Roles = AppRoles.Administrator)]
+    public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if (!AppRoles.All.Contains(request.Role))
+        {
+            return BadRequest(new
+            {
+                message = "Такой роли не существует"
+            });
+        }
+
+        var user = await _userManager.FindByIdAsync(request.UserId);
+
+        if (user == null)
+        {
+            return NotFound(new
+            {
+                message = "Пользователь не найден"
+            });
+        }
+
+        var alreadyInRole = await _userManager.IsInRoleAsync(user, request.Role);
+
+        if (alreadyInRole)
+        {
+            return BadRequest(new
+            {
+                message = "Пользователь уже имеет эту роль"
+            });
+        }
+
+        var result = await _userManager.AddToRoleAsync(user, request.Role);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(new
+            {
+                message = "Не удалось выдать роль",
+                errors = result.Errors.Select(error => error.Description).ToArray()
+            });
+        }
+
+        var userResponse = await BuildUserResponseAsync(user);
+
         return Ok(new
         {
-            id = user.Id,
-            nickname = user.Nickname,
-            email = user.Email
+            message = $"Роль {request.Role} успешно выдана",
+            user = userResponse
         });
+    }
+
+    [HttpPost("remove-role")]
+    [Authorize(Roles = AppRoles.Administrator)]
+    public async Task<IActionResult> RemoveRole([FromBody] AssignRoleRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if (!AppRoles.All.Contains(request.Role))
+        {
+            return BadRequest(new
+            {
+                message = "Такой роли не существует"
+            });
+        }
+
+        var user = await _userManager.FindByIdAsync(request.UserId);
+
+        if (user == null)
+        {
+            return NotFound(new
+            {
+                message = "Пользователь не найден"
+            });
+        }
+
+        var isInRole = await _userManager.IsInRoleAsync(user, request.Role);
+
+        if (!isInRole)
+        {
+            return BadRequest(new
+            {
+                message = "У пользователя нет этой роли"
+            });
+        }
+
+        var result = await _userManager.RemoveFromRoleAsync(user, request.Role);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(new
+            {
+                message = "Не удалось удалить роль",
+                errors = result.Errors.Select(error => error.Description).ToArray()
+            });
+        }
+
+        var userResponse = await BuildUserResponseAsync(user);
+
+        return Ok(new
+        {
+            message = $"Роль {request.Role} успешно удалена",
+            user = userResponse
+        });
+    }
+
+    private async Task<AuthUserResponse> BuildUserResponseAsync(AppUser user)
+    {
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return new AuthUserResponse(
+            Id: user.Id,
+            Nickname: user.Nickname,
+            Email: user.Email ?? string.Empty,
+            Roles: roles.ToArray()
+        );
     }
 
     private async Task<string> GenerateAccessTokenAsync(AppUser user)
@@ -313,15 +425,17 @@ public class AuthController : ControllerBase
 
         var claims = new List<Claim>
         {
-    new(JwtRegisteredClaimNames.Sub, user.Id),
-    new(ClaimTypes.NameIdentifier, user.Id),
+            new(JwtRegisteredClaimNames.Sub, user.Id),
+            new(ClaimTypes.NameIdentifier, user.Id),
 
-    new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-    new(ClaimTypes.Email, user.Email ?? string.Empty),
+            new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+            new(ClaimTypes.Email, user.Email ?? string.Empty),
 
-    new(ClaimTypes.Name, user.Nickname),
-    new("nickname", user.Nickname)
-};
+            new(ClaimTypes.Name, user.Nickname),
+            new("nickname", user.Nickname),
+
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
 
         var roles = await _userManager.GetRolesAsync(user);
 
@@ -388,6 +502,7 @@ public class AuthController : ControllerBase
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
+            Path = "/",
             Expires = DateTimeOffset.UtcNow.AddMinutes(GetAccessTokenMinutes())
         });
 
@@ -396,6 +511,7 @@ public class AuthController : ControllerBase
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
+            Path = "/",
             Expires = DateTimeOffset.UtcNow.AddDays(GetRefreshTokenDays())
         });
     }
@@ -406,14 +522,16 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.None
+            SameSite = SameSiteMode.None,
+            Path = "/"
         });
 
         Response.Cookies.Delete("refreshToken", new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.None
+            SameSite = SameSiteMode.None,
+            Path = "/"
         });
     }
 

@@ -1,15 +1,20 @@
-import { authApi } from '../../api/endpoints/auth.api';
+import {
+  login as loginRequest,
+  register as registerRequest,
+  logout as logoutRequest,
+  getCurrentUser as getCurrentUserRequest
+} from '../../api/endpoints';
 
 export const authService = {
   async login(email, password) {
-    return await authApi.login({
+    return await loginRequest({
       email,
       password,
     });
   },
 
   async register(nickname, email, password, confirmPassword) {
-    return await authApi.register({
+    return await registerRequest({
       nickname,
       email,
       password,
@@ -18,10 +23,10 @@ export const authService = {
   },
 
   async logout() {
-    return await authApi.logout();
+    return await logoutRequest();
   },
 
   async getCurrentUser() {
-    return await authApi.me();
+    return await getCurrentUserRequest();
   },
 };

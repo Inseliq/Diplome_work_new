@@ -73,11 +73,12 @@ public class TournamentsController : ControllerBase
     [HttpPost("custom/{id:int}/register")]
     [Authorize]
     public async Task<IActionResult> RegisterToTournament(
-        int id,
-        [FromBody] TournamentRegisterRequest request,
-        CancellationToken cancellationToken)
+    int id,
+    [FromBody] TournamentRegisterRequest request,
+    CancellationToken cancellationToken)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                     ?? User.FindFirstValue("sub");
 
         if (string.IsNullOrWhiteSpace(userId))
         {

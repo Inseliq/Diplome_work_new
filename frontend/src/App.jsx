@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { ROLES } from './app/data/roles';
 
 import './app/styles/reset.css';
 import './app/styles/variables.css';
@@ -36,6 +37,17 @@ import ProtectedRoute from './app/components/ProtectedRoute';
 
 import Login from './app/pages/Login';
 import Register from './app/pages/Register';
+
+// Пример использования:
+{/* <Route
+  path="/admin"
+  element={
+    <ProtectedRoute roles={[ROLES.Administrator]}>
+      <AdminPanel />
+    </ProtectedRoute>
+  }
+/> */}
+
 function App() {
   return (
     <Routes>
