@@ -2,48 +2,63 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 /**
- * Подключается один раз в Layout.
- * При каждом переходе заново ищет все .reveal на странице
- * и навешивает IntersectionObserver.
+ * Глобальный reveal.
+ * Работает:
+ * - при переходе между страницами;
+ * - при появлении async-контента;
+ * - при ручном событии window.dispatchEvent(new Event('app:reveal')).
  */
 export function useReveal() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    let obs;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
 
-    const initObserver = () => {
+          entry.target.classList.add('reveal--visible');
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.05,
+        rootMargin: '0px 0px -20px 0px',
+      }
+    );
+
+    const initReveal = () => {
       const targets = document.querySelectorAll('.reveal:not(.reveal--visible)');
-      if (!targets.length) return;
-
-      obs = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) {
-              e.target.classList.add('reveal--visible');
-              obs.unobserve(e.target);
-            }
-          });
-        },
-        {
-          threshold: 0.05,
-          rootMargin: '0px 0px -20px 0px',
-        }
-      );
 
       targets.forEach((el) => {
         const rect = el.getBoundingClientRect();
-        if (rect.top < window.innerHeight) {
-          el.classList.add('reveal--visible');
+
+        const isVisibleNow =
+          rect.top < window.innerHeight &&
+          rect.bottom > 0;
+
+        if (isVisibleNow) {
+          // важно: сначала браузер должен применить .reveal,
+          // потом добавляем reveal--visible
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              el.classList.add('reveal--visible');
+            });
+          });
         } else {
-          obs.observe(el);
+          observer.observe(el);
         }
       });
     };
 
-    // 🔥 следим за изменениями DOM
+    const scheduleReveal = () => {
+      requestAnimationFrame(() => {
+        initReveal();
+      });
+    };
+
     const mutationObserver = new MutationObserver(() => {
-      initObserver();
+      scheduleReveal();
     });
 
     mutationObserver.observe(document.body, {
@@ -51,12 +66,15 @@ export function useReveal() {
       subtree: true,
     });
 
-    // первый запуск
-    setTimeout(initObserver, 100);
+    window.addEventListener('app:reveal', scheduleReveal);
+
+    const timeoutId = setTimeout(scheduleReveal, 100);
 
     return () => {
-      if (obs) obs.disconnect();
+      clearTimeout(timeoutId);
+      observer.disconnect();
       mutationObserver.disconnect();
+      window.removeEventListener('app:reveal', scheduleReveal);
     };
   }, [pathname]);
 }

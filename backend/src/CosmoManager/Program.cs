@@ -4,6 +4,8 @@ using CosmoManager.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using CosmoManager.Services.Marks;
+using CosmoManager.Services.Masters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +51,20 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddCorsPolicy(builder.Configuration);
 builder.Services.AddJwt(builder.Configuration);
 builder.Services.AddSwagger();
+
+builder.Services.AddHttpClient<MarksUpdater>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
+builder.Services.AddHostedService<MarksUpdateHostedService>();
+
+builder.Services.AddHttpClient<MastersUpdater>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
+builder.Services.AddHostedService<MastersUpdateHostedService>();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {

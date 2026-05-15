@@ -90,6 +90,27 @@ namespace CosmoManager.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("CosmoManager.Models.DataSyncState", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime?>("LastErrorAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LastSuccessAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("DataSyncStates");
+                });
+
             modelBuilder.Entity("CosmoManager.Models.InfoItem", b =>
                 {
                     b.Property<int>("Id")
@@ -699,6 +720,123 @@ namespace CosmoManager.Migrations
                     b.ToTable("TournamentRegistrations");
                 });
 
+            modelBuilder.Entity("CosmoManager.Models.Vehicle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("InternalName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsCollector")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPremium")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSpecial")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTechTree")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Nation")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Tier")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Nation");
+
+                    b.HasIndex("Tier");
+
+                    b.HasIndex("Type");
+
+                    b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.VehicleMark", b =>
+                {
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Moe100")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Moe65")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Moe85")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Moe95")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("VehicleId");
+
+                    b.ToTable("VehicleMarks");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.VehicleMastery", b =>
+                {
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Deg1")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Deg2")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Deg3")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Master")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("VehicleId");
+
+                    b.ToTable("VehicleMasteries");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -893,6 +1031,28 @@ namespace CosmoManager.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CosmoManager.Models.VehicleMark", b =>
+                {
+                    b.HasOne("CosmoManager.Models.Vehicle", "Vehicle")
+                        .WithOne("Mark")
+                        .HasForeignKey("CosmoManager.Models.VehicleMark", "VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.VehicleMastery", b =>
+                {
+                    b.HasOne("CosmoManager.Models.Vehicle", "Vehicle")
+                        .WithOne("Mastery")
+                        .HasForeignKey("CosmoManager.Models.VehicleMastery", "VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vehicle");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -951,6 +1111,13 @@ namespace CosmoManager.Migrations
                     b.Navigation("Prizes");
 
                     b.Navigation("Registrations");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.Vehicle", b =>
+                {
+                    b.Navigation("Mark");
+
+                    b.Navigation("Mastery");
                 });
 #pragma warning restore 612, 618
         }

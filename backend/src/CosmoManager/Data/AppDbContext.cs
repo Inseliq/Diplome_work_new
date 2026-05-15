@@ -24,6 +24,14 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
 
     public DbSet<TournamentRegistration> TournamentRegistrations => Set<TournamentRegistration>();
 
+    public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+
+    public DbSet<VehicleMark> VehicleMarks => Set<VehicleMark>();
+
+    public DbSet<DataSyncState> DataSyncStates => Set<DataSyncState>();
+
+    public DbSet<VehicleMastery> VehicleMasteries => Set<VehicleMastery>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -500,5 +508,87 @@ CosmoManager объединяет новости, события, турниры
     new TournamentPrize { Id = 9, TournamentId = 3, Place = "place1", Amount = 1000, Type = "gold", Text = null },
     new TournamentPrize { Id = 10, TournamentId = 3, Place = "place2", Amount = 500, Type = "gold", Text = null }
 );
+
+        builder.Entity<Vehicle>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.InternalName)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.Nation)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.Type)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.Name)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(x => x.ShortName)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.Role)
+                .HasMaxLength(100);
+
+            entity.Property(x => x.UpdatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.HasIndex(x => x.Nation);
+            entity.HasIndex(x => x.Type);
+            entity.HasIndex(x => x.Tier);
+        });
+
+        builder.Entity<VehicleMark>(entity =>
+        {
+            entity.HasKey(x => x.VehicleId);
+
+            entity.Property(x => x.UpdatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.HasOne(x => x.Vehicle)
+                .WithOne(x => x.Mark)
+                .HasForeignKey<VehicleMark>(x => x.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DataSyncState>(entity =>
+        {
+            entity.HasKey(x => x.Key);
+
+            entity.Property(x => x.Key)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.LastSuccessAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.Property(x => x.LastErrorAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.Property(x => x.LastError)
+                .HasMaxLength(2000);
+        });
+
+        builder.Entity<VehicleMastery>(entity =>
+        {
+            entity.HasKey(x => x.VehicleId);
+
+            entity.Property(x => x.UpdatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.HasOne(x => x.Vehicle)
+                .WithOne(x => x.Mastery)
+                .HasForeignKey<VehicleMastery>(x => x.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }

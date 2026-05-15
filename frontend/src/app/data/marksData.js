@@ -38,5 +38,13 @@ export const TYPE_SVG = {
 
 export const TIER_LABELS = ['V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
 
+export const VEHICLE_KIND_LABELS = {
+  premium: 'Премиум',
+  default: 'Обычные',
+  special: 'Специальные',
+  collector: 'Коллекционные',
+};
+
+export const VEHICLE_KIND_KEYS = Object.keys(VEHICLE_KIND_LABELS);
 export const NATION_KEYS = Object.keys(NATION_LABELS);
 export const TYPE_KEYS = Object.keys(TYPE_LABELS);

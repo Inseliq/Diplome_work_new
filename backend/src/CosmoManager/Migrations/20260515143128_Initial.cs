@@ -55,6 +55,20 @@ namespace CosmoManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DataSyncStates",
+                columns: table => new
+                {
+                    Key = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    LastSuccessAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastErrorAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastError = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DataSyncStates", x => x.Key);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "InfoItems",
                 columns: table => new
                 {
@@ -76,6 +90,30 @@ namespace CosmoManager.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_InfoItems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Vehicles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    InternalName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Nation = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Type = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Tier = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    ShortName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    IsTechTree = table.Column<bool>(type: "boolean", nullable: false),
+                    IsPremium = table.Column<bool>(type: "boolean", nullable: false),
+                    IsSpecial = table.Column<bool>(type: "boolean", nullable: false),
+                    IsCollector = table.Column<bool>(type: "boolean", nullable: false),
+                    Role = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vehicles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -250,6 +288,50 @@ namespace CosmoManager.Migrations
                         principalTable: "InfoItems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VehicleMarks",
+                columns: table => new
+                {
+                    VehicleId = table.Column<int>(type: "integer", nullable: false),
+                    Moe65 = table.Column<int>(type: "integer", nullable: true),
+                    Moe85 = table.Column<int>(type: "integer", nullable: true),
+                    Moe95 = table.Column<int>(type: "integer", nullable: true),
+                    Moe100 = table.Column<int>(type: "integer", nullable: true),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VehicleMarks", x => x.VehicleId);
+                    table.ForeignKey(
+                        name: "FK_VehicleMarks_Vehicles_VehicleId",
+                        column: x => x.VehicleId,
+                        principalTable: "Vehicles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VehicleMasteries",
+                columns: table => new
+                {
+                    VehicleId = table.Column<int>(type: "integer", nullable: false),
+                    Deg3 = table.Column<int>(type: "integer", nullable: true),
+                    Deg2 = table.Column<int>(type: "integer", nullable: true),
+                    Deg1 = table.Column<int>(type: "integer", nullable: true),
+                    Master = table.Column<int>(type: "integer", nullable: true),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VehicleMasteries", x => x.VehicleId);
+                    table.ForeignKey(
+                        name: "FK_VehicleMasteries_Vehicles_VehicleId",
+                        column: x => x.VehicleId,
+                        principalTable: "Vehicles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -497,6 +579,21 @@ namespace CosmoManager.Migrations
                 name: "IX_Tournaments_Type",
                 table: "Tournaments",
                 column: "Type");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_Nation",
+                table: "Vehicles",
+                column: "Nation");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_Tier",
+                table: "Vehicles",
+                column: "Tier");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_Type",
+                table: "Vehicles",
+                column: "Type");
         }
 
         /// <inheritdoc />
@@ -518,6 +615,9 @@ namespace CosmoManager.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "DataSyncStates");
+
+            migrationBuilder.DropTable(
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
@@ -530,6 +630,12 @@ namespace CosmoManager.Migrations
                 name: "TournamentRegistrations");
 
             migrationBuilder.DropTable(
+                name: "VehicleMarks");
+
+            migrationBuilder.DropTable(
+                name: "VehicleMasteries");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -537,6 +643,9 @@ namespace CosmoManager.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tournaments");
+
+            migrationBuilder.DropTable(
+                name: "Vehicles");
 
             migrationBuilder.DropTable(
                 name: "InfoItems");
