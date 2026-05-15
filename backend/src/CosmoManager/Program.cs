@@ -1,11 +1,12 @@
 using CosmoManager.Data;
 using CosmoManager.Extensions;
 using CosmoManager.Models;
+using CosmoManager.Services.GameData;
+using CosmoManager.Services.Marks;
+using CosmoManager.Services.Masters;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using CosmoManager.Services.Marks;
-using CosmoManager.Services.Masters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,19 +53,26 @@ builder.Services.AddCorsPolicy(builder.Configuration);
 builder.Services.AddJwt(builder.Configuration);
 builder.Services.AddSwagger();
 
-builder.Services.AddHttpClient<MarksUpdater>(client =>
+//------
+
+builder.Services.AddHttpClient<VehicleUpdater>(client =>
 {
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
-builder.Services.AddHostedService<MarksUpdateHostedService>();
+builder.Services.AddHttpClient<MarksUpdater>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 builder.Services.AddHttpClient<MastersUpdater>(client =>
 {
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
-builder.Services.AddHostedService<MastersUpdateHostedService>();
+builder.Services.AddHostedService<GameDataUpdateHostedService>();
+
+//------
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {

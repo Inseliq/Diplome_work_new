@@ -16,3 +16,9 @@ export {
   refresh,
   getCurrentUser
 } from './auth.endpoint';
+
+export {
+  getDirectoryVehicles,
+  getDirectoryVehicleById,
+  getDirectoryDictionaries
+} from './directory.endpoint';

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace CosmoManager.Tests;
 
@@ -36,6 +37,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
+
+            // В тестах отключаем все фоновые сервисы,
+            // чтобы они не ходили в Poliroid и не обновляли данные.
+            services.RemoveAll<IHostedService>();
 
             services.AddDbContext<AppDbContext>(options =>
             {

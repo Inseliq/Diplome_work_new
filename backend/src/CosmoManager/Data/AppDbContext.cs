@@ -32,6 +32,16 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
 
     public DbSet<VehicleMastery> VehicleMasteries => Set<VehicleMastery>();
 
+    public DbSet<DirectoryVehicle> DirectoryVehicles => Set<DirectoryVehicle>();
+
+    public DbSet<DirectoryBuild> DirectoryBuilds => Set<DirectoryBuild>();
+
+    public DbSet<DirectoryFieldModification> DirectoryFieldModifications => Set<DirectoryFieldModification>();
+
+    public DbSet<DirectoryEquipmentItem> DirectoryEquipmentItems => Set<DirectoryEquipmentItem>();
+
+    public DbSet<DirectoryFieldModificationItem> DirectoryFieldModificationItems => Set<DirectoryFieldModificationItem>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -590,5 +600,394 @@ CosmoManager объединяет новости, события, турниры
                 .HasForeignKey<VehicleMastery>(x => x.VehicleId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        builder.Entity<DirectoryVehicle>(entity =>
+        {
+            entity.HasKey(x => x.VehicleId);
+
+            entity.Property(x => x.ImageUrl)
+                .HasMaxLength(500);
+
+            entity.Property(x => x.IsPublished)
+                .HasDefaultValue(true);
+
+            entity.Property(x => x.UpdatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.HasOne(x => x.Vehicle)
+                .WithOne()
+                .HasForeignKey<DirectoryVehicle>(x => x.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DirectoryBuild>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.ModeKey)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.StateKey)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.Equipment1Key)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.Equipment2Key)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.Equipment3Key)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.HasOne(x => x.DirectoryVehicle)
+                .WithMany(x => x.Builds)
+                .HasForeignKey(x => x.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(x => new { x.VehicleId, x.ModeKey, x.StateKey })
+                .IsUnique();
+        });
+
+        builder.Entity<DirectoryFieldModification>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.SectionKey)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.LeftItemKey)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.RightItemKey)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.HasOne(x => x.DirectoryVehicle)
+                .WithMany(x => x.FieldModifications)
+                .HasForeignKey(x => x.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(x => new { x.VehicleId, x.SectionKey })
+                .IsUnique();
+        });
+
+        builder.Entity<DirectoryEquipmentItem>(entity =>
+        {
+            entity.HasKey(x => x.Key);
+
+            entity.Property(x => x.Key)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.Label)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.Tier)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.ImageUrl)
+                .HasMaxLength(500)
+                .IsRequired();
+
+            entity.Property(x => x.IsActive)
+                .HasDefaultValue(true);
+        });
+
+        builder.Entity<DirectoryFieldModificationItem>(entity =>
+        {
+            entity.HasKey(x => x.Key);
+
+            entity.Property(x => x.Key)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.Label)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            entity.Property(x => x.ImageUrl)
+                .HasMaxLength(500)
+                .IsRequired();
+
+            entity.Property(x => x.IsActive)
+                .HasDefaultValue(true);
+        });
+
+        // ─────────────────────────────────────────────
+        // Demo seed: тестовая сборка каталога для ИС-7
+        // ─────────────────────────────────────────────
+
+        var seedDate = new DateTime(2026, 5, 15, 0, 0, 0, DateTimeKind.Utc);
+
+        const int is7VehicleId = 7169;
+
+        // Техника ИС-7.
+        // Нужна, чтобы DirectoryVehicle мог сослаться на существующий Vehicle.
+        // Если Vehicles уже заполняются из Poliroid, updater потом просто обновит эту запись.
+        builder.Entity<Vehicle>().HasData(new Vehicle
+        {
+            Id = is7VehicleId,
+            InternalName = "r45_is-7",
+            Nation = "ussr",
+            Type = "heavyTank",
+            Tier = 10,
+            Name = "ИС-7",
+            ShortName = "ИС-7",
+            IsTechTree = true,
+            IsPremium = false,
+            IsSpecial = false,
+            IsCollector = false,
+            Role = "role_HT_break",
+            UpdatedAtUtc = seedDate
+        });
+
+        // Запись страницы каталога для ИС-7.
+        // Именно эта картинка будет использоваться в TankDirectory.
+        builder.Entity<DirectoryVehicle>().HasData(new DirectoryVehicle
+        {
+            VehicleId = is7VehicleId,
+            ImageUrl = "/images/tanks/r45_is-7.webp",
+            IsPublished = true,
+            UpdatedAtUtc = seedDate
+        });
+
+        // Тестовый справочник оборудования.
+        builder.Entity<DirectoryEquipmentItem>().HasData(
+            new DirectoryEquipmentItem
+            {
+                Key = "hardening",
+                Label = "Улучшенная закалка",
+                Tier = "std",
+                ImageUrl = "/images/equipment/hardening.png",
+                IsActive = true,
+                SortOrder = 1
+            },
+            new DirectoryEquipmentItem
+            {
+                Key = "rammer",
+                Label = "Орудийный досылатель",
+                Tier = "std",
+                ImageUrl = "/images/equipment/rammer.png",
+                IsActive = true,
+                SortOrder = 2
+            },
+            new DirectoryEquipmentItem
+            {
+                Key = "stabilizer",
+                Label = "Стабилизатор вертикальной наводки",
+                Tier = "std",
+                ImageUrl = "/images/equipment/stabilizer.png",
+                IsActive = true,
+                SortOrder = 3
+            },
+            new DirectoryEquipmentItem
+            {
+                Key = "turbo",
+                Label = "Турбонагнетатель",
+                Tier = "std",
+                ImageUrl = "/images/equipment/turbo.png",
+                IsActive = true,
+                SortOrder = 4
+            },
+            new DirectoryEquipmentItem
+            {
+                Key = "vents",
+                Label = "Улучшенная вентиляция",
+                Tier = "std",
+                ImageUrl = "/images/equipment/vents.png",
+                IsActive = true,
+                SortOrder = 5
+            }
+        );
+
+        // Тестовый справочник полевой модернизации.
+        builder.Entity<DirectoryFieldModificationItem>().HasData(
+            new DirectoryFieldModificationItem
+            {
+                Key = "item__1",
+                Label = "Вездеходная ходовая",
+                ImageUrl = "/images/polevaya/item__1.png",
+                IsActive = true,
+                SortOrder = 1
+            },
+            new DirectoryFieldModificationItem
+            {
+                Key = "item__2",
+                Label = "Облегчённая ходовая",
+                ImageUrl = "/images/polevaya/item__2.png",
+                IsActive = true,
+                SortOrder = 2
+            },
+            new DirectoryFieldModificationItem
+            {
+                Key = "item__3",
+                Label = "Настройка подвески",
+                ImageUrl = "/images/polevaya/item__3.png",
+                IsActive = true,
+                SortOrder = 3
+            },
+            new DirectoryFieldModificationItem
+            {
+                Key = "item__4",
+                Label = "Настройка прицела",
+                ImageUrl = "/images/polevaya/item__4.png",
+                IsActive = true,
+                SortOrder = 4
+            },
+            new DirectoryFieldModificationItem
+            {
+                Key = "item__5",
+                Label = "Настройка двигателя",
+                ImageUrl = "/images/polevaya/item__5.png",
+                IsActive = true,
+                SortOrder = 5
+            },
+            new DirectoryFieldModificationItem
+            {
+                Key = "item__6",
+                Label = "Настройка боекомплекта",
+                ImageUrl = "/images/polevaya/item__6.png",
+                IsActive = true,
+                SortOrder = 6
+            },
+            new DirectoryFieldModificationItem
+            {
+                Key = "item__7",
+                Label = "Настройка живучести",
+                ImageUrl = "/images/polevaya/item__7.png",
+                IsActive = true,
+                SortOrder = 7
+            },
+            new DirectoryFieldModificationItem
+            {
+                Key = "item__8",
+                Label = "Настройка огневой мощи",
+                ImageUrl = "/images/polevaya/item__8.png",
+                IsActive = true,
+                SortOrder = 8
+            },
+            new DirectoryFieldModificationItem
+            {
+                Key = "item__9",
+                Label = "Настройка мобильности",
+                ImageUrl = "/images/polevaya/item__9.png",
+                IsActive = true,
+                SortOrder = 9
+            },
+            new DirectoryFieldModificationItem
+            {
+                Key = "item__10",
+                Label = "Настройка обзора",
+                ImageUrl = "/images/polevaya/item__10.png",
+                IsActive = true,
+                SortOrder = 10
+            }
+        );
+
+        // Тестовые сборки оборудования для ИС-7.
+        builder.Entity<DirectoryBuild>().HasData(
+            new DirectoryBuild
+            {
+                Id = 716901,
+                VehicleId = is7VehicleId,
+                ModeKey = "random",
+                StateKey = "default",
+                Equipment1Key = "hardening",
+                Equipment2Key = "rammer",
+                Equipment3Key = "stabilizer",
+                SortOrder = 1
+            },
+            new DirectoryBuild
+            {
+                Id = 716902,
+                VehicleId = is7VehicleId,
+                ModeKey = "random",
+                StateKey = "state1",
+                Equipment1Key = "hardening",
+                Equipment2Key = "rammer",
+                Equipment3Key = "turbo",
+                SortOrder = 2
+            },
+            new DirectoryBuild
+            {
+                Id = 716903,
+                VehicleId = is7VehicleId,
+                ModeKey = "fortified",
+                StateKey = "default",
+                Equipment1Key = "hardening",
+                Equipment2Key = "rammer",
+                Equipment3Key = "vents",
+                SortOrder = 3
+            }
+        );
+
+        // Тестовая полевая модернизация для ИС-7.
+        builder.Entity<DirectoryFieldModification>().HasData(
+            new DirectoryFieldModification
+            {
+                Id = 716911,
+                VehicleId = is7VehicleId,
+                SectionKey = "section1",
+                LeftItemKey = "item__1",
+                LeftSelected = false,
+                RightItemKey = "item__2",
+                RightSelected = true,
+                SortOrder = 1
+            },
+            new DirectoryFieldModification
+            {
+                Id = 716912,
+                VehicleId = is7VehicleId,
+                SectionKey = "section2",
+                LeftItemKey = "item__3",
+                LeftSelected = true,
+                RightItemKey = "item__4",
+                RightSelected = false,
+                SortOrder = 2
+            },
+            new DirectoryFieldModification
+            {
+                Id = 716913,
+                VehicleId = is7VehicleId,
+                SectionKey = "section3",
+                LeftItemKey = "item__5",
+                LeftSelected = false,
+                RightItemKey = "item__6",
+                RightSelected = true,
+                SortOrder = 3
+            },
+            new DirectoryFieldModification
+            {
+                Id = 716914,
+                VehicleId = is7VehicleId,
+                SectionKey = "section4",
+                LeftItemKey = "item__7",
+                LeftSelected = true,
+                RightItemKey = "item__8",
+                RightSelected = false,
+                SortOrder = 4
+            },
+            new DirectoryFieldModification
+            {
+                Id = 716915,
+                VehicleId = is7VehicleId,
+                SectionKey = "section5",
+                LeftItemKey = "item__9",
+                LeftSelected = false,
+                RightItemKey = "item__10",
+                RightSelected = true,
+                SortOrder = 5
+            }
+        );
     }
 }

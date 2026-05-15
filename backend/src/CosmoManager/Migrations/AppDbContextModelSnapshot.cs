@@ -111,6 +111,411 @@ namespace CosmoManager.Migrations
                     b.ToTable("DataSyncStates");
                 });
 
+            modelBuilder.Entity("CosmoManager.Models.DirectoryBuild", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Equipment1Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Equipment2Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Equipment3Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ModeKey")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("StateKey")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleId", "ModeKey", "StateKey")
+                        .IsUnique();
+
+                    b.ToTable("DirectoryBuilds");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 716901,
+                            Equipment1Key = "hardening",
+                            Equipment2Key = "rammer",
+                            Equipment3Key = "stabilizer",
+                            ModeKey = "random",
+                            SortOrder = 1,
+                            StateKey = "default",
+                            VehicleId = 7169
+                        },
+                        new
+                        {
+                            Id = 716902,
+                            Equipment1Key = "hardening",
+                            Equipment2Key = "rammer",
+                            Equipment3Key = "turbo",
+                            ModeKey = "random",
+                            SortOrder = 2,
+                            StateKey = "state1",
+                            VehicleId = 7169
+                        },
+                        new
+                        {
+                            Id = 716903,
+                            Equipment1Key = "hardening",
+                            Equipment2Key = "rammer",
+                            Equipment3Key = "vents",
+                            ModeKey = "fortified",
+                            SortOrder = 3,
+                            StateKey = "default",
+                            VehicleId = 7169
+                        });
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.DirectoryEquipmentItem", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Tier")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("DirectoryEquipmentItems");
+
+                    b.HasData(
+                        new
+                        {
+                            Key = "hardening",
+                            ImageUrl = "/images/equipment/hardening.png",
+                            IsActive = true,
+                            Label = "Улучшенная закалка",
+                            SortOrder = 1,
+                            Tier = "std"
+                        },
+                        new
+                        {
+                            Key = "rammer",
+                            ImageUrl = "/images/equipment/rammer.png",
+                            IsActive = true,
+                            Label = "Орудийный досылатель",
+                            SortOrder = 2,
+                            Tier = "std"
+                        },
+                        new
+                        {
+                            Key = "stabilizer",
+                            ImageUrl = "/images/equipment/stabilizer.png",
+                            IsActive = true,
+                            Label = "Стабилизатор вертикальной наводки",
+                            SortOrder = 3,
+                            Tier = "std"
+                        },
+                        new
+                        {
+                            Key = "turbo",
+                            ImageUrl = "/images/equipment/turbo.png",
+                            IsActive = true,
+                            Label = "Турбонагнетатель",
+                            SortOrder = 4,
+                            Tier = "std"
+                        },
+                        new
+                        {
+                            Key = "vents",
+                            ImageUrl = "/images/equipment/vents.png",
+                            IsActive = true,
+                            Label = "Улучшенная вентиляция",
+                            SortOrder = 5,
+                            Tier = "std"
+                        });
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.DirectoryFieldModification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("LeftItemKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("LeftSelected")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RightItemKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("RightSelected")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SectionKey")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleId", "SectionKey")
+                        .IsUnique();
+
+                    b.ToTable("DirectoryFieldModifications");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 716911,
+                            LeftItemKey = "item__1",
+                            LeftSelected = false,
+                            RightItemKey = "item__2",
+                            RightSelected = true,
+                            SectionKey = "section1",
+                            SortOrder = 1,
+                            VehicleId = 7169
+                        },
+                        new
+                        {
+                            Id = 716912,
+                            LeftItemKey = "item__3",
+                            LeftSelected = true,
+                            RightItemKey = "item__4",
+                            RightSelected = false,
+                            SectionKey = "section2",
+                            SortOrder = 2,
+                            VehicleId = 7169
+                        },
+                        new
+                        {
+                            Id = 716913,
+                            LeftItemKey = "item__5",
+                            LeftSelected = false,
+                            RightItemKey = "item__6",
+                            RightSelected = true,
+                            SectionKey = "section3",
+                            SortOrder = 3,
+                            VehicleId = 7169
+                        },
+                        new
+                        {
+                            Id = 716914,
+                            LeftItemKey = "item__7",
+                            LeftSelected = true,
+                            RightItemKey = "item__8",
+                            RightSelected = false,
+                            SectionKey = "section4",
+                            SortOrder = 4,
+                            VehicleId = 7169
+                        },
+                        new
+                        {
+                            Id = 716915,
+                            LeftItemKey = "item__9",
+                            LeftSelected = false,
+                            RightItemKey = "item__10",
+                            RightSelected = true,
+                            SectionKey = "section5",
+                            SortOrder = 5,
+                            VehicleId = 7169
+                        });
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.DirectoryFieldModificationItem", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("DirectoryFieldModificationItems");
+
+                    b.HasData(
+                        new
+                        {
+                            Key = "item__1",
+                            ImageUrl = "/images/polevaya/item__1.png",
+                            IsActive = true,
+                            Label = "Вездеходная ходовая",
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Key = "item__2",
+                            ImageUrl = "/images/polevaya/item__2.png",
+                            IsActive = true,
+                            Label = "Облегчённая ходовая",
+                            SortOrder = 2
+                        },
+                        new
+                        {
+                            Key = "item__3",
+                            ImageUrl = "/images/polevaya/item__3.png",
+                            IsActive = true,
+                            Label = "Настройка подвески",
+                            SortOrder = 3
+                        },
+                        new
+                        {
+                            Key = "item__4",
+                            ImageUrl = "/images/polevaya/item__4.png",
+                            IsActive = true,
+                            Label = "Настройка прицела",
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Key = "item__5",
+                            ImageUrl = "/images/polevaya/item__5.png",
+                            IsActive = true,
+                            Label = "Настройка двигателя",
+                            SortOrder = 5
+                        },
+                        new
+                        {
+                            Key = "item__6",
+                            ImageUrl = "/images/polevaya/item__6.png",
+                            IsActive = true,
+                            Label = "Настройка боекомплекта",
+                            SortOrder = 6
+                        },
+                        new
+                        {
+                            Key = "item__7",
+                            ImageUrl = "/images/polevaya/item__7.png",
+                            IsActive = true,
+                            Label = "Настройка живучести",
+                            SortOrder = 7
+                        },
+                        new
+                        {
+                            Key = "item__8",
+                            ImageUrl = "/images/polevaya/item__8.png",
+                            IsActive = true,
+                            Label = "Настройка огневой мощи",
+                            SortOrder = 8
+                        },
+                        new
+                        {
+                            Key = "item__9",
+                            ImageUrl = "/images/polevaya/item__9.png",
+                            IsActive = true,
+                            Label = "Настройка мобильности",
+                            SortOrder = 9
+                        },
+                        new
+                        {
+                            Key = "item__10",
+                            ImageUrl = "/images/polevaya/item__10.png",
+                            IsActive = true,
+                            Label = "Настройка обзора",
+                            SortOrder = 10
+                        });
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.DirectoryVehicle", b =>
+                {
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsPublished")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("VehicleId");
+
+                    b.ToTable("DirectoryVehicles");
+
+                    b.HasData(
+                        new
+                        {
+                            VehicleId = 7169,
+                            ImageUrl = "/images/tanks/r45_is-7.webp",
+                            IsPublished = true,
+                            UpdatedAtUtc = new DateTime(2026, 5, 15, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
             modelBuilder.Entity("CosmoManager.Models.InfoItem", b =>
                 {
                     b.Property<int>("Id")
@@ -785,6 +1190,24 @@ namespace CosmoManager.Migrations
                     b.HasIndex("Type");
 
                     b.ToTable("Vehicles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 7169,
+                            InternalName = "r45_is-7",
+                            IsCollector = false,
+                            IsPremium = false,
+                            IsSpecial = false,
+                            IsTechTree = true,
+                            Name = "ИС-7",
+                            Nation = "ussr",
+                            Role = "role_HT_break",
+                            ShortName = "ИС-7",
+                            Tier = 10,
+                            Type = "heavyTank",
+                            UpdatedAtUtc = new DateTime(2026, 5, 15, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("CosmoManager.Models.VehicleMark", b =>
@@ -969,6 +1392,39 @@ namespace CosmoManager.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CosmoManager.Models.DirectoryBuild", b =>
+                {
+                    b.HasOne("CosmoManager.Models.DirectoryVehicle", "DirectoryVehicle")
+                        .WithMany("Builds")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DirectoryVehicle");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.DirectoryFieldModification", b =>
+                {
+                    b.HasOne("CosmoManager.Models.DirectoryVehicle", "DirectoryVehicle")
+                        .WithMany("FieldModifications")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DirectoryVehicle");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.DirectoryVehicle", b =>
+                {
+                    b.HasOne("CosmoManager.Models.Vehicle", "Vehicle")
+                        .WithOne()
+                        .HasForeignKey("CosmoManager.Models.DirectoryVehicle", "VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vehicle");
+                });
+
             modelBuilder.Entity("CosmoManager.Models.RefreshToken", b =>
                 {
                     b.HasOne("CosmoManager.Models.AppUser", "User")
@@ -1102,6 +1558,13 @@ namespace CosmoManager.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.DirectoryVehicle", b =>
+                {
+                    b.Navigation("Builds");
+
+                    b.Navigation("FieldModifications");
                 });
 
             modelBuilder.Entity("CosmoManager.Models.Tournament", b =>

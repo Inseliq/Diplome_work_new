@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useMasters } from '../hooks/useMasters';
 import {
@@ -47,6 +47,7 @@ function getVehicleKind(tank) {
 
 function fmt(val) {
   if (val == null) return <span className="masters-table__null">—</span>;
+
   return val.toLocaleString('ru-RU');
 }
 
@@ -146,6 +147,24 @@ function compareNations(a, b) {
   return compareTankNames(a, b);
 }
 
+function normalizeSearchText(value) {
+  return String(value ?? '').toLowerCase().trim();
+}
+
+function matchesTankSearch(tank, query) {
+  if (!query) return true;
+
+  return [
+    tank.name,
+    tank.short_name,
+    tank.shortName,
+    tank.internal_name,
+    tank.internalName,
+    tank.tank_id,
+    tank.id,
+  ].some((value) => normalizeSearchText(value).includes(query));
+}
+
 function compareValues(a, b, sortCol) {
   if (sortCol === 'name') {
     return compareTankNames(a, b);
@@ -203,9 +222,13 @@ function Masters() {
   const [types, setTypes] = useState([]);
   const [tiers, setTiers] = useState([]);
   const [vehicleKinds, setVehicleKinds] = useState(VEHICLE_KIND_KEYS);
+  const [search, setSearch] = useState('');
+  const [searchVal, setSearchVal] = useState('');
   const [sortCol, setSortCol] = useState('master');
   const [sortDir, setSortDir] = useState('desc');
   const [isTableRevealed, setIsTableRevealed] = useState(false);
+
+  const searchTimer = useRef(null);
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('mastersFilters') || '{}');
@@ -214,6 +237,11 @@ function Masters() {
     if (saved.types) setTypes(saved.types);
     if (saved.tiers) setTiers(saved.tiers);
     if (saved.vehicleKinds?.length) setVehicleKinds(saved.vehicleKinds);
+
+    if (saved.search) {
+      setSearch(saved.search);
+      setSearchVal(normalizeSearchText(saved.search));
+    }
   }, []);
 
   useEffect(() => {
@@ -222,68 +250,15 @@ function Masters() {
       types,
       tiers,
       vehicleKinds,
+      search,
     }));
-  }, [nations, types, tiers, vehicleKinds]);
+  }, [nations, types, tiers, vehicleKinds, search]);
 
-  const toggle = (arr, setArr, val) => {
-    setArr(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
-  };
-
-  const toggleVehicleKind = (kind) => {
-    setVehicleKinds((prev) => {
-      if (prev.includes(kind)) {
-        const next = prev.filter((x) => x !== kind);
-
-        return next.length ? next : prev;
-      }
-
-      return [...prev, kind];
-    });
-  };
-
-  const handleSort = (col) => {
-    if (sortCol === col) {
-      setSortDir((d) => d === 'asc' ? 'desc' : 'asc');
-      return;
-    }
-
-    setSortCol(col);
-
-    if (col === 'tier' || ['deg3', 'deg2', 'deg1', 'master'].includes(col)) {
-      setSortDir('desc');
-      return;
-    }
-
-    setSortDir('asc');
-  };
-
-  const rows = useMemo(() => {
-    let list = [...tanks];
-
-    if (nations.length) {
-      list = list.filter((t) => nations.includes(t.nation));
-    }
-
-    if (types.length) {
-      list = list.filter((t) => types.includes(t.type));
-    }
-
-    if (tiers.length) {
-      list = list.filter((t) => tiers.includes(t.tier));
-    }
-
-    if (vehicleKinds.length !== VEHICLE_KIND_KEYS.length) {
-      list = list.filter((t) => vehicleKinds.includes(getVehicleKind(t)));
-    }
-
-    list.sort((a, b) => {
-      const diff = compareValues(a, b, sortCol);
-
-      return sortDir === 'asc' ? diff : -diff;
-    });
-
-    return list;
-  }, [tanks, nations, types, tiers, vehicleKinds, sortCol, sortDir]);
+  useEffect(() => {
+    return () => {
+      clearTimeout(searchTimer.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (loading || error) {
@@ -308,11 +283,89 @@ function Masters() {
     };
   }, [loading, error]);
 
-  const hasFilters =
+  const handleSearch = (event) => {
+    const value = event.target.value;
+
+    setSearch(value);
+
+    clearTimeout(searchTimer.current);
+
+    searchTimer.current = setTimeout(() => {
+      setSearchVal(normalizeSearchText(value));
+    }, 300);
+  };
+
+  const toggle = (arr, setArr, val) => {
+    setArr(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
+  };
+
+  const toggleVehicleKind = (kind) => {
+    setVehicleKinds((prev) => {
+      if (prev.includes(kind)) {
+        const next = prev.filter((x) => x !== kind);
+
+        return next.length ? next : prev;
+      }
+
+      return [...prev, kind];
+    });
+  };
+
+  const handleSort = (col) => {
+    if (sortCol === col) {
+      setSortDir((direction) => direction === 'asc' ? 'desc' : 'asc');
+      return;
+    }
+
+    setSortCol(col);
+
+    if (col === 'tier' || ['deg3', 'deg2', 'deg1', 'master'].includes(col)) {
+      setSortDir('desc');
+      return;
+    }
+
+    setSortDir('asc');
+  };
+
+  const rows = useMemo(() => {
+    let list = [...tanks];
+
+    if (nations.length) {
+      list = list.filter((tank) => nations.includes(tank.nation));
+    }
+
+    if (types.length) {
+      list = list.filter((tank) => types.includes(tank.type));
+    }
+
+    if (tiers.length) {
+      list = list.filter((tank) => tiers.includes(tank.tier));
+    }
+
+    if (vehicleKinds.length !== VEHICLE_KIND_KEYS.length) {
+      list = list.filter((tank) => vehicleKinds.includes(getVehicleKind(tank)));
+    }
+
+    if (searchVal) {
+      list = list.filter((tank) => matchesTankSearch(tank, searchVal));
+    }
+
+    list.sort((a, b) => {
+      const diff = compareValues(a, b, sortCol);
+
+      return sortDir === 'asc' ? diff : -diff;
+    });
+
+    return list;
+  }, [tanks, nations, types, tiers, vehicleKinds, searchVal, sortCol, sortDir]);
+
+  const hasFilters = Boolean(
     nations.length ||
     types.length ||
     tiers.length ||
-    vehicleKinds.length !== VEHICLE_KIND_KEYS.length;
+    vehicleKinds.length !== VEHICLE_KIND_KEYS.length ||
+    search
+  );
 
   const formattedUpdatedAt = updatedAt
     ? new Date(updatedAt).toLocaleString('ru-RU', {
@@ -372,19 +425,58 @@ function Masters() {
         {!error && (
           <>
             <div className="masters__filters reveal">
+              <div className="catalogs__search-wrap">
+                <svg
+                  className="catalogs__search-icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+
+                <input
+                  type="text"
+                  className="catalogs__search"
+                  placeholder="Поиск по названию техники..."
+                  value={search}
+                  onChange={handleSearch}
+                />
+
+                {search && (
+                  <button
+                    className="catalogs__search-clear"
+                    onClick={() => {
+                      setSearch('');
+                      setSearchVal('');
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
               <div className="masters__filter-groups">
                 <div className="masters__filter-group">
                   <div className="masters__filter-label">Нация</div>
+
                   <div className="masters__filter-pills masters__filter-pills--nations">
-                    {NATION_KEYS.map((n) => (
+                    {NATION_KEYS.map((nation) => (
                       <button
-                        key={n}
-                        className={`masters__pill masters__pill--nation${nations.includes(n) ? ' masters__pill--active' : ''}`}
-                        onClick={() => toggle(nations, setNations, n)}
-                        title={NATION_LABELS[n]}
+                        key={nation}
+                        className={`masters__pill masters__pill--nation${nations.includes(nation) ? ' masters__pill--active' : ''}`}
+                        onClick={() => toggle(nations, setNations, nation)}
+                        title={NATION_LABELS[nation]}
                       >
-                        <NationImg nation={n} className="masters__pill-img" />
-                        <span className="masters__pill-text">{NATION_LABELS[n]}</span>
+                        <NationImg nation={nation} className="masters__pill-img" />
+                        <span className="masters__pill-text">{NATION_LABELS[nation]}</span>
                       </button>
                     ))}
                   </div>
@@ -393,15 +485,16 @@ function Masters() {
                 <div className="masters__filter-row">
                   <div className="masters__filter-group">
                     <div className="masters__filter-label">Тип</div>
+
                     <div className="masters__filter-pills">
-                      {TYPE_KEYS.map((t) => (
+                      {TYPE_KEYS.map((type) => (
                         <button
-                          key={t}
-                          className={`masters__pill masters__pill--type${types.includes(t) ? ' masters__pill--active' : ''}`}
-                          onClick={() => toggle(types, setTypes, t)}
-                          title={t}
+                          key={type}
+                          className={`masters__pill masters__pill--type${types.includes(type) ? ' masters__pill--active' : ''}`}
+                          onClick={() => toggle(types, setTypes, type)}
+                          title={type}
                         >
-                          <TypeImg type={t} className="masters__pill-type-img" />
+                          <TypeImg type={type} className="masters__pill-type-img" />
                         </button>
                       ))}
                     </div>
@@ -409,6 +502,7 @@ function Masters() {
 
                   <div className="masters__filter-group">
                     <div className="masters__filter-label">Уровень</div>
+
                     <div className="masters__filter-pills">
                       {TIERS.map((tier) => (
                         <button
@@ -424,6 +518,7 @@ function Masters() {
 
                   <div className="masters__filter-group">
                     <div className="masters__filter-label">Категория</div>
+
                     <div className="masters__filter-pills">
                       {VEHICLE_KIND_KEYS.map((kind) => (
                         <button
@@ -445,6 +540,8 @@ function Masters() {
                         setTypes([]);
                         setTiers([]);
                         setVehicleKinds(VEHICLE_KIND_KEYS);
+                        setSearch('');
+                        setSearchVal('');
                       }}
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -481,7 +578,14 @@ function Masters() {
                             ) : (
                               col.label
                             )}
-                            {col.sortable && <SortIcon col={col.key} sortCol={sortCol} sortDir={sortDir} />}
+
+                            {col.sortable && (
+                              <SortIcon
+                                col={col.key}
+                                sortCol={sortCol}
+                                sortDir={sortDir}
+                              />
+                            )}
                           </span>
                         </th>
                       ))}
@@ -519,20 +623,38 @@ function Masters() {
                             style={nameColor ? { color: nameColor } : {}}
                           >
                             {tank.name}
-                            {tank.is_premium && <span className="masters-table__tag masters-table__tag--premium">P</span>}
-                            {tank.is_special && <span className="masters-table__tag masters-table__tag--special">S</span>}
-                            {tank.is_collector && <span className="masters-table__tag masters-table__tag--collector">C</span>}
+
+                            {tank.is_premium && (
+                              <span className="masters-table__tag masters-table__tag--premium">
+                                P
+                              </span>
+                            )}
+
+                            {tank.is_special && (
+                              <span className="masters-table__tag masters-table__tag--special">
+                                S
+                              </span>
+                            )}
+
+                            {tank.is_collector && (
+                              <span className="masters-table__tag masters-table__tag--collector">
+                                C
+                              </span>
+                            )}
                           </td>
 
                           <td className="masters-table__td masters-table__td--mastery masters-table__td--deg3">
                             {fmt(tank.deg3)}
                           </td>
+
                           <td className="masters-table__td masters-table__td--mastery masters-table__td--deg2">
                             {fmt(tank.deg2)}
                           </td>
+
                           <td className="masters-table__td masters-table__td--mastery masters-table__td--deg1">
                             {fmt(tank.deg1)}
                           </td>
+
                           <td className="masters-table__td masters-table__td--mastery masters-table__td--master">
                             {fmt(tank.master)}
                           </td>

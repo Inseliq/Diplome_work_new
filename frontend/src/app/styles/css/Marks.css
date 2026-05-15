@@ -21,8 +21,8 @@
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--second-accent);
-      background: rgba(255,80,0,0.08);
-      border: 1px solid rgba(255,80,0,0.25);
+      background: rgba(255, 80, 0, 0.08);
+      border: 1px solid rgba(255, 80, 0, 0.25);
       padding: 5px 16px;
       border-radius: var(--radius-full);
     }
@@ -46,7 +46,9 @@
     font-size: var(--text-sm);
     color: var(--text-dim);
     margin-bottom: var(--sp-4);
-    strong { color: var(--text-muted); }
+    strong {
+      color: var(--text-muted);
+    }
   }
 
   /* ── Filters panel ── */
@@ -59,6 +61,50 @@
     display: flex;
     flex-direction: column;
     gap: var(--sp-5);
+  }
+
+  .catalogs__search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 480px;
+
+    .catalogs__search-icon {
+      position: absolute;
+      left: 12px;
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .catalogs__search {
+      width: 100%;
+      padding: 10px 36px;
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-main);
+      font-size: var(--text-sm);
+      color: var(--text);
+      transition: border-color var(--transition);
+
+      &::placeholder {
+        color: var(--text-dim);
+      }
+      &:focus {
+        border-color: var(--border-accent);
+        outline: none;
+      }
+    }
+
+    .catalogs__search-clear {
+      position: absolute;
+      right: 10px;
+      color: var(--text-dim);
+      transition: color var(--transition);
+      &:hover {
+        color: var(--text-effect);
+      }
+    }
   }
 
   .marks__filter-groups {
@@ -123,7 +169,7 @@
     }
 
     &.marks__pill--active {
-      background: rgba(88,43,186,0.15);
+      background: rgba(88, 43, 186, 0.15);
       border-color: var(--border-accent);
       color: var(--main-accent-effect);
     }
@@ -139,7 +185,7 @@
 
       &.marks__pill--active {
         border-color: var(--border-accent);
-        background: rgba(88,43,186,0.12);
+        background: rgba(88, 43, 186, 0.12);
       }
 
       .marks__pill-img {
@@ -176,8 +222,8 @@
       padding: 5px 12px;
 
       &.marks__pill--active {
-        background: rgba(250,184,27,0.12);
-        border-color: rgba(250,184,27,0.4);
+        background: rgba(250, 184, 27, 0.12);
+        border-color: rgba(250, 184, 27, 0.4);
         color: var(--third-accent);
       }
     }
@@ -195,9 +241,16 @@
     border-radius: var(--radius-xl);
     border: 1px solid var(--glass-border);
 
-    &::-webkit-scrollbar       { height: 6px; }
-    &::-webkit-scrollbar-track { background: var(--dark-gray); }
-    &::-webkit-scrollbar-thumb { background: var(--light-gray); border-radius: var(--radius-full); }
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: var(--dark-gray);
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--light-gray);
+      border-radius: var(--radius-full);
+    }
   }
 }
 
@@ -230,10 +283,14 @@
     &.marks-table__th--sortable {
       cursor: pointer;
       transition: color var(--transition);
-      &:hover { color: var(--text-effect); }
+      &:hover {
+        color: var(--text-effect);
+      }
     }
 
-    &.marks-table__th--sorted { color: var(--main-accent-effect); }
+    &.marks-table__th--sorted {
+      color: var(--main-accent-effect);
+    }
 
     .marks-table__th-inner {
       display: inline-flex;
@@ -245,7 +302,9 @@
       font-size: 11px;
       opacity: 0.4;
       line-height: 1;
-      &.marks-table__sort-icon--active { opacity: 1; }
+      &.marks-table__sort-icon--active {
+        opacity: 1;
+      }
     }
   }
 
@@ -254,10 +313,18 @@
     border-bottom: 1px solid var(--glass-border);
     transition: background var(--transition);
 
-    &:last-child { border-bottom: none; }
-    &:hover      { background: var(--glass-bg); }
-    &:nth-child(even) { background: rgba(255,255,255,0.012); }
-    &:nth-child(even):hover { background: var(--glass-bg); }
+    &:last-child {
+      border-bottom: none;
+    }
+    &:hover {
+      background: var(--glass-bg);
+    }
+    &:nth-child(even) {
+      background: rgba(255, 255, 255, 0.012);
+    }
+    &:nth-child(even):hover {
+      background: var(--glass-bg);
+    }
   }
 
   .marks-table__td {
@@ -334,13 +401,26 @@
     min-width: 75px;
   }
 
-  .marks-table__td--m65  { color: #888888; }
-  .marks-table__td--m85  { color: var(--third-accent); }
-  .marks-table__td--m95  { color: var(--main-accent-effect); }
-  .marks-table__td--m100 { color: #ffd700; }
-  .marks-table__td--null { color: var(--text-dim); }
+  .marks-table__td--m65 {
+    color: #888888;
+  }
+  .marks-table__td--m85 {
+    color: var(--third-accent);
+  }
+  .marks-table__td--m95 {
+    color: var(--main-accent-effect);
+  }
+  .marks-table__td--m100 {
+    color: #ffd700;
+  }
+  .marks-table__td--null {
+    color: var(--text-dim);
+  }
 
-  .marks-table__null  { color: var(--text-dim); font-weight: 400; }
+  .marks-table__null {
+    color: var(--text-dim);
+    font-weight: 400;
+  }
 
   .marks-table__empty {
     text-align: center;
@@ -365,24 +445,43 @@
   .wrapper.marks {
     padding-top: calc(var(--header-height) + var(--sp-8));
 
-    .marks__header { margin-bottom: var(--sp-6); }
-    .marks__filters { padding: var(--sp-4); }
+    .marks__header {
+      margin-bottom: var(--sp-6);
+    }
+
+    .catalogs__search-wrap { max-width: 100%; }
+
+    .marks__filters {
+      padding: var(--sp-4);
+    }
 
     /* Нации — уменьшаем пиллы */
     .marks__pill--nation {
       min-width: 50px;
       padding: var(--sp-2);
 
-      .marks__pill-img  { width: 26px; height: 20px; }
-      .marks__pill-text { font-size: 9px; max-width: 50px; }
+      .marks__pill-img {
+        width: 26px;
+        height: 20px;
+      }
+      .marks__pill-text {
+        font-size: 9px;
+        max-width: 50px;
+      }
     }
   }
 }
 
 @media (max-width: 480px) {
   .wrapper.marks {
-    .marks__filter-pills--nations { gap: var(--sp-2); }
-    .marks__pill--nation { min-width: 44px; }
-    .marks__header .marks__subtitle { font-size: var(--text-base); }
+    .marks__filter-pills--nations {
+      gap: var(--sp-2);
+    }
+    .marks__pill--nation {
+      min-width: 44px;
+    }
+    .marks__header .marks__subtitle {
+      font-size: var(--text-base);
+    }
   }
 }

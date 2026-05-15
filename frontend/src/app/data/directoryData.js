@@ -1,7 +1,3 @@
-// ─── КАРТА МОДУЛЕЙ ПОЛЕВОЙ МОДЕРНИЗАЦИИ ─────────────────────────
-// ключ 'item__N' → изображение модуля
-// Замени пути на реальные когда будут готовы картинки
-
 export const POLEVAYA_ITEMS = {
   // Секция II — Ходовая
   item__1: { label: 'Вездеходная ходовая', img: '/images/polevaya/item__1.png' },
@@ -26,10 +22,6 @@ export const POLEVAYA_ITEMS = {
   item__15: { label: 'Разброс после выстрела', img: '/images/polevaya/item__15.png' },
 };
 
-/**
- * Подписи секций по аналогии с игрой (номер уровня исследования)
- * section1 = II, section2 = IV, section3 = V, section4 = VII, section5 = VIII
- */
 export const SECTION_LABELS = {
   section1: 'II',
   section2: 'IV',
@@ -141,92 +133,3 @@ export const STATE_LABELS = {
   state2: { label: 'Статистика (Бонус)', color: '#FAB81B', icon: '▲' },
   default: { label: 'Обычная сборка', color: '#888888', icon: '◆' },
 };
-
-// ─── ДАННЫЕ ТАНКОВ ───────────────────────────────────────────────
-
-export const DIRECTORY_DATA = [
-  {
-    id: 1,   // Т-34, ussr, mediumTank, tier 5
-    image: 'https://cdn.poliroid.me/icons/tanks_svg/ru/r04_t-34.svg',
-    polevaya: null,
-    battles: {
-      random: {
-        default: ['rammer', 'stabilizer', 'vents'],
-      },
-    },
-  },
-  {
-    id: 513, // ИС, ussr, heavyTank, tier 7
-    image: 'https://cdn.poliroid.me/icons/tanks_svg/ru/r01_is.svg',
-    polevaya: {
-      section1: [['item__1', 0], ['item__2', 1]],
-      section2: [['item__3', 1], ['item__4', 0]],
-      section3: [['item__5', 0], ['item__6', 1]],
-    },
-    battles: {
-      random: {
-        state1: ['rammer__t3', 'stabilizer__t3', 'vents__t3'],
-        state2: ['rammer__bonns', 'stabilizer__bonns', 'vents__bonns'],
-        default: ['rammer', 'stabilizer', 'vents'],
-      },
-    },
-  },
-  {
-    id: 529, // Tiger I, germany, heavyTank, tier 7
-    image: 'https://cdn.poliroid.me/icons/tanks_svg/ru/g04_pzvi_tiger_i.svg',
-    polevaya: {
-      section1: [['item__1', 1], ['item__2', 0]],
-      section2: [['item__3', 0], ['item__4', 1]],
-      section3: [['item__11', 1], ['item__12', 0]],
-    },
-    battles: {
-      random: {
-        state1: ['rammer__t3', 'stabilizer__t3', 'aim_drive__t3'],
-        state2: ['rammer__bonns', 'stabilizer__bonns', 'aim_drive__bonns'],
-        default: ['rammer', 'stabilizer', 'aim_drive'],
-      },
-    },
-  },
-  {
-    id: 2097, // WZ-111 1-4, china, heavyTank, tier 9
-    image: 'https://cdn.poliroid.me/icons/tanks_svg/ru/ch12_111_1_2_3.svg',
-    polevaya: {
-      section1: [['item__1', 0], ['item__2', 1]],
-      section2: [['item__3', 1], ['item__4', 0]],
-      section3: [['item__11', 1], ['item__15', 0]],
-      section4: [['item__7', 0], ['item__8', 1]],
-    },
-    battles: {
-      random: {
-        state1: ['rammer__t3', 'stabilizer__t3', 'vents__t3'],
-        state2: ['rammer__bonns', 'stabilizer__bonns', 'vents__bonns'],
-        default: ['rammer', 'stabilizer', 'vents'],
-      },
-      fortified: {
-        state1: ['rammer__t3', 'stabilizer__t3', 'vents__t3'],
-        state2: ['rammer__bonns', 'stabilizer__bonns', 'vents__bonns'],
-      },
-    },
-  },
-  {
-    id: 1297, // Panther, germany, mediumTank, tier 7
-    image: 'https://cdn.poliroid.me/icons/tanks_svg/ru/g03_pzv_panther.svg',
-    polevaya: {
-      section1: [['item__1', 1], ['item__2', 0]],
-      section2: [['item__3', 0], ['item__4', 1]],
-      section3: [['item__11', 0], ['item__12', 1]],
-    },
-    battles: {
-      random: {
-        state1: ['rammer__t3', 'stabilizer__t3', 'enhoptics__t3'],
-        state2: ['rammer__bonns', 'stabilizer__bonns', 'enhoptics__bonns'],
-        default: ['rammer', 'stabilizer', 'optics'],
-      },
-      fortified: {
-        state1: ['rammer__t3', 'stabilizer__t3', 'vents__t3'],
-      },
-    },
-  },
-];
-
-export const DIRECTORY_MAP = new Map(DIRECTORY_DATA.map((d) => [d.id, d]));

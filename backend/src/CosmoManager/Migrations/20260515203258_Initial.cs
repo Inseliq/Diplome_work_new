@@ -69,6 +69,37 @@ namespace CosmoManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DirectoryEquipmentItems",
+                columns: table => new
+                {
+                    Key = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Label = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Tier = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    ImageUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    SortOrder = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DirectoryEquipmentItems", x => x.Key);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DirectoryFieldModificationItems",
+                columns: table => new
+                {
+                    Key = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Label = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    ImageUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    SortOrder = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DirectoryFieldModificationItems", x => x.Key);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "InfoItems",
                 columns: table => new
                 {
@@ -291,6 +322,26 @@ namespace CosmoManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DirectoryVehicles",
+                columns: table => new
+                {
+                    VehicleId = table.Column<int>(type: "integer", nullable: false),
+                    ImageUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    IsPublished = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DirectoryVehicles", x => x.VehicleId);
+                    table.ForeignKey(
+                        name: "FK_DirectoryVehicles_Vehicles_VehicleId",
+                        column: x => x.VehicleId,
+                        principalTable: "Vehicles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VehicleMarks",
                 columns: table => new
                 {
@@ -408,6 +459,85 @@ namespace CosmoManager.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "DirectoryBuilds",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    VehicleId = table.Column<int>(type: "integer", nullable: false),
+                    ModeKey = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    StateKey = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Equipment1Key = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Equipment2Key = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Equipment3Key = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    SortOrder = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DirectoryBuilds", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DirectoryBuilds_DirectoryVehicles_VehicleId",
+                        column: x => x.VehicleId,
+                        principalTable: "DirectoryVehicles",
+                        principalColumn: "VehicleId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DirectoryFieldModifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    VehicleId = table.Column<int>(type: "integer", nullable: false),
+                    SectionKey = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    LeftItemKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    LeftSelected = table.Column<bool>(type: "boolean", nullable: false),
+                    RightItemKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    RightSelected = table.Column<bool>(type: "boolean", nullable: false),
+                    SortOrder = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DirectoryFieldModifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DirectoryFieldModifications_DirectoryVehicles_VehicleId",
+                        column: x => x.VehicleId,
+                        principalTable: "DirectoryVehicles",
+                        principalColumn: "VehicleId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "DirectoryEquipmentItems",
+                columns: new[] { "Key", "ImageUrl", "IsActive", "Label", "SortOrder", "Tier" },
+                values: new object[,]
+                {
+                    { "hardening", "/images/equipment/hardening.png", true, "Улучшенная закалка", 1, "std" },
+                    { "rammer", "/images/equipment/rammer.png", true, "Орудийный досылатель", 2, "std" },
+                    { "stabilizer", "/images/equipment/stabilizer.png", true, "Стабилизатор вертикальной наводки", 3, "std" },
+                    { "turbo", "/images/equipment/turbo.png", true, "Турбонагнетатель", 4, "std" },
+                    { "vents", "/images/equipment/vents.png", true, "Улучшенная вентиляция", 5, "std" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "DirectoryFieldModificationItems",
+                columns: new[] { "Key", "ImageUrl", "IsActive", "Label", "SortOrder" },
+                values: new object[,]
+                {
+                    { "item__1", "/images/polevaya/item__1.png", true, "Вездеходная ходовая", 1 },
+                    { "item__10", "/images/polevaya/item__10.png", true, "Настройка обзора", 10 },
+                    { "item__2", "/images/polevaya/item__2.png", true, "Облегчённая ходовая", 2 },
+                    { "item__3", "/images/polevaya/item__3.png", true, "Настройка подвески", 3 },
+                    { "item__4", "/images/polevaya/item__4.png", true, "Настройка прицела", 4 },
+                    { "item__5", "/images/polevaya/item__5.png", true, "Настройка двигателя", 5 },
+                    { "item__6", "/images/polevaya/item__6.png", true, "Настройка боекомплекта", 6 },
+                    { "item__7", "/images/polevaya/item__7.png", true, "Настройка живучести", 7 },
+                    { "item__8", "/images/polevaya/item__8.png", true, "Настройка огневой мощи", 8 },
+                    { "item__9", "/images/polevaya/item__9.png", true, "Настройка мобильности", 9 }
+                });
+
             migrationBuilder.InsertData(
                 table: "InfoItems",
                 columns: new[] { "Id", "Category", "Content", "CreatedAtUtc", "DateEnd", "DateStart", "Excerpt", "Gradient", "ImageUrl", "IsPublished", "Status", "Title", "Type" },
@@ -425,6 +555,16 @@ namespace CosmoManager.Migrations
                 table: "Tournaments",
                 columns: new[] { "Id", "Classes", "CreatedAtUtc", "DateEnd", "DateStart", "Description", "EventId", "Format", "InitialParticipants", "IsPublished", "IsStream", "MaxParticipants", "Name", "OpenForAll", "PrizeText", "RegEnd", "RegStart", "ReserveSize", "Sponsor", "Status", "StreamUrl", "TeamSize", "Tier", "Type" },
                 values: new object[] { 3, "ST", new DateTime(2025, 4, 18, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2025, 4, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 4, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "Небольшой тренировочный турнир для клана EVG. Формат 3x3, любой уровень VI–VIII.", null, "3x3", 6, true, false, null, "Тренировочный 3x3", false, null, new DateTime(2025, 4, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 4, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, null, "upcoming", null, 3, 8, "common" });
+
+            migrationBuilder.InsertData(
+                table: "Vehicles",
+                columns: new[] { "Id", "InternalName", "IsCollector", "IsPremium", "IsSpecial", "IsTechTree", "Name", "Nation", "Role", "ShortName", "Tier", "Type", "UpdatedAtUtc" },
+                values: new object[] { 7169, "r45_is-7", false, false, false, true, "ИС-7", "ussr", "role_HT_break", "ИС-7", 10, "heavyTank", new DateTime(2026, 5, 15, 0, 0, 0, 0, DateTimeKind.Utc) });
+
+            migrationBuilder.InsertData(
+                table: "DirectoryVehicles",
+                columns: new[] { "VehicleId", "ImageUrl", "IsPublished", "UpdatedAtUtc" },
+                values: new object[] { 7169, "/images/tanks/r45_is-7.webp", true, new DateTime(2026, 5, 15, 0, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.InsertData(
                 table: "TournamentMaps",
@@ -447,6 +587,28 @@ namespace CosmoManager.Migrations
                 {
                     { 1, "BO3", new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2025, 3, 19, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 3, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), "Еженедельный клановый турнир в формате 7x7. Только для участников клана IEVGI и приглашённых команд.", 102, "7x7", 12, true, true, 16, "Железный кулак — Весенний сезон", false, null, new DateTime(2025, 3, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "EVG", "active", "https://twitch.tv/evg_stream", 7, 10, "epic" },
                     { 2, "BO3,PE", new DateTime(2025, 3, 20, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2025, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Открытый турнир для всех желающих. Формат 15x15, только X уровень. Спонсор — Lesta Games.", 103, "15x15", 18, true, true, 32, "Кубок Весны 2025", true, null, new DateTime(2025, 3, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2, "Lesta Games", "registration", "https://youtube.com/@cosmomanager", 15, 10, "legendary" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "DirectoryBuilds",
+                columns: new[] { "Id", "Equipment1Key", "Equipment2Key", "Equipment3Key", "ModeKey", "SortOrder", "StateKey", "VehicleId" },
+                values: new object[,]
+                {
+                    { 716901, "hardening", "rammer", "stabilizer", "random", 1, "default", 7169 },
+                    { 716902, "hardening", "rammer", "turbo", "random", 2, "state1", 7169 },
+                    { 716903, "hardening", "rammer", "vents", "fortified", 3, "default", 7169 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "DirectoryFieldModifications",
+                columns: new[] { "Id", "LeftItemKey", "LeftSelected", "RightItemKey", "RightSelected", "SectionKey", "SortOrder", "VehicleId" },
+                values: new object[,]
+                {
+                    { 716911, "item__1", false, "item__2", true, "section1", 1, 7169 },
+                    { 716912, "item__3", true, "item__4", false, "section2", 2, 7169 },
+                    { 716913, "item__5", false, "item__6", true, "section3", 3, 7169 },
+                    { 716914, "item__7", true, "item__8", false, "section4", 4, 7169 },
+                    { 716915, "item__9", false, "item__10", true, "section5", 5, 7169 }
                 });
 
             migrationBuilder.InsertData(
@@ -511,6 +673,18 @@ namespace CosmoManager.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DirectoryBuilds_VehicleId_ModeKey_StateKey",
+                table: "DirectoryBuilds",
+                columns: new[] { "VehicleId", "ModeKey", "StateKey" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DirectoryFieldModifications_VehicleId_SectionKey",
+                table: "DirectoryFieldModifications",
+                columns: new[] { "VehicleId", "SectionKey" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -618,6 +792,18 @@ namespace CosmoManager.Migrations
                 name: "DataSyncStates");
 
             migrationBuilder.DropTable(
+                name: "DirectoryBuilds");
+
+            migrationBuilder.DropTable(
+                name: "DirectoryEquipmentItems");
+
+            migrationBuilder.DropTable(
+                name: "DirectoryFieldModificationItems");
+
+            migrationBuilder.DropTable(
+                name: "DirectoryFieldModifications");
+
+            migrationBuilder.DropTable(
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
@@ -637,6 +823,9 @@ namespace CosmoManager.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "DirectoryVehicles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
