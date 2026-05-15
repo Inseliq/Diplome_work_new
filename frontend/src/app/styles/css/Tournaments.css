@@ -21,8 +21,8 @@
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--second-accent);
-      background: rgba(255,80,0,0.08);
-      border: 1px solid rgba(255,80,0,0.25);
+      background: rgba(255, 80, 0, 0.08);
+      border: 1px solid rgba(255, 80, 0, 0.25);
       padding: 5px 16px;
       border-radius: var(--radius-full);
     }
@@ -45,9 +45,14 @@
   /* ── Grid: 2 большие карточки рядом ── */
   .tournaments__grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: var(--sp-5);
     margin-bottom: var(--sp-5);
+
+    .service-card--wide {
+      padding: var(--sp-8);
+      min-height: 280px;
+    }
   }
 
   /* ── Широкая карточка событий ── */
@@ -105,9 +110,13 @@
   .wrapper.tournaments {
     padding-top: calc(var(--header-height) + var(--sp-8));
 
-    .tournaments__header { margin-bottom: var(--sp-8); }
+    .tournaments__header {
+      margin-bottom: var(--sp-8);
+    }
 
-    .tournaments__grid { grid-template-columns: 1fr; }
+    .tournaments__grid {
+      grid-template-columns: 1fr;
+    }
 
     .tournaments__events-inner {
       flex-direction: column;

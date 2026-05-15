@@ -26,7 +26,8 @@ import { Link } from 'react-router-dom';
 
 // ─── Inline-парсер: **b**, *i*, [strong], [link](url), ![alt](src) ──────────
 
-function parseInline(text) {
+function parseInline(text, options = {}) {
+  const { onNavigate } = options;
   const tokens = [];
   let i = 0;
   let buf = '';
@@ -62,9 +63,29 @@ function parseInline(text) {
       const [full, name, url] = m;
       // внутренние ссылки — через Link, внешние — через <a>
       if (url.startsWith('http')) {
-        tokens.push(<a key={i} href={url} target="_blank" rel="noopener noreferrer" className="nm-link">{name}</a>);
+        tokens.push(
+          <a
+            key={i}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nm-link"
+            onClick={onNavigate}
+          >
+            {name}
+          </a>
+        );
       } else {
-        tokens.push(<Link key={i} to={url} className="nm-link">{name}</Link>);
+        tokens.push(
+          <Link
+            key={i}
+            to={url}
+            className="nm-link"
+            onClick={onNavigate}
+          >
+            {name}
+          </Link>
+        );
       }
       i += full.length;
       continue;
@@ -114,7 +135,7 @@ function parseInline(text) {
 
 // ─── Блочный парсер ─────────────────────────────────────────────────────────
 
-export function parseNotifyMarkdown(source) {
+export function parseNotifyMarkdown(source, options = {}) {
   if (!source?.trim()) return null;
 
   const lines = source.split('\n');
@@ -161,7 +182,7 @@ export function parseNotifyMarkdown(source) {
       const Tag = `h${level}`;
       result.push(
         <Tag key={key++} className={`nm-h${level}`}>
-          {parseInline(text)}
+          {parseInline(text, options)}
         </Tag>
       );
       continue;
@@ -172,7 +193,7 @@ export function parseNotifyMarkdown(source) {
     if (ulMatch) {
       if (olItems) flushList();
       if (!ulItems) ulItems = [];
-      ulItems.push(<li key={key++} className="nm-li">{parseInline(ulMatch[1])}</li>);
+      ulItems.push(<li key={key++} className="nm-li">{parseInline(ulMatch[1], options)}</li>);
       continue;
     }
 
@@ -181,7 +202,7 @@ export function parseNotifyMarkdown(source) {
     if (olMatch) {
       if (ulItems) flushList();
       if (!olItems) olItems = [];
-      olItems.push(<li key={key++} className="nm-li">{parseInline(olMatch[1])}</li>);
+      olItems.push(<li key={key++} className="nm-li">{parseInline(olMatch[1], options)}</li>);
       continue;
     }
 
@@ -189,7 +210,7 @@ export function parseNotifyMarkdown(source) {
     flushList();
     result.push(
       <p key={key++} className="nm-p">
-        {parseInline(line)}
+        {parseInline(line, options)}
       </p>
     );
   }

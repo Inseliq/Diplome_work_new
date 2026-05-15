@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEvents } from '../hooks/useEvents';
 import { STATUS_CONFIG, CATEGORY_COLORS, CATEGORIES } from '../data/eventsData';
-import { LoadingSpinner, FallbackBanner } from '../components/ui/StatusComponents';
+import { LoadingSpinner } from '../components/ui/StatusComponents';
 
 const PAGE_SIZE = 9;
 
@@ -80,8 +80,38 @@ function Empty() {
   return <div className="events-list__empty">Нет событий в этой категории</div>;
 }
 
+function EventsEmptyBanner() {
+  return (
+    <div
+      className="marks__table-wrap reveal reveal--visible"
+      style={{ padding: '32px', textAlign: 'center' }}
+    >
+      <h2>К сожалению, событий пока нет.</h2>
+      <p>Пожалуйста, зайдите позже.</p>
+
+      <div
+        style={{
+          display: 'flex',
+          gap: '12px',
+          justifyContent: 'center',
+          marginTop: '20px',
+          flexWrap: 'wrap',
+        }}
+      >
+        <Link className="btn btn-primary" to="/">
+          На главную
+        </Link>
+
+        <Link className="btn btn-ghost" to="/">
+          Подождать
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 function Events() {
-  const { events, loading, isFallback } = useEvents();
+  const { events, loading, error } = useEvents();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'all');
@@ -133,8 +163,6 @@ function Events() {
   };
 
   const renderContent = () => {
-    if (loading) return <LoadingSpinner text="Загружаем события..." />;
-
     switch (statusFilter) {
       case 'active':
         return active.length
@@ -184,35 +212,52 @@ function Events() {
           <p className="events-list__subtitle">Турниры, клановые события и игровые ивенты</p>
         </div>
 
-        {isFallback && <FallbackBanner />}
+        {loading && (
+          <LoadingSpinner text="Загружаем события..." />
+        )}
 
-        <div className="events-list__filters reveal">
-          {STATUS_FILTERS.map((f) => (
-            <button key={f.key}
-              className={`events-list__filter${statusFilter === f.key ? ' events-list__filter--active' : ''}`}
-              onClick={() => handleStatus(f.key)}
-              style={statusFilter === f.key && f.color ? { borderColor: f.color, color: f.color } : {}}>
-              {f.label}
-              <span className="events-list__filter-count">{counts[f.key]}</span>
-            </button>
-          ))}
-        </div>
+        {!loading && (error || events.length === 0) && (
+          <EventsEmptyBanner />
+        )}
 
-        <div className="events-list__filters events-list__filters--category reveal">
-          {CATEGORIES.map((cat) => {
-            const color = CAT_COLORS[cat];
-            const isActive = categoryFilter === cat;
-            return (
-              <button key={cat}
-                className={`events-list__filter events-list__filter--cat${isActive ? ' events-list__filter--active' : ''}`}
-                onClick={() => handleCategory(cat)}
-                style={isActive && color ? { borderColor: color, color } : {}}>
-                {color && <span className="events-list__filter-dot" style={{ background: color }} />}
-                {cat}
-              </button>
-            );
-          })}
-        </div>
+        {!loading && !error && events.length > 0 && (
+          <>
+            <div className="events-list__filters reveal">
+              {STATUS_FILTERS.map((f) => (
+                <button
+                  key={f.key}
+                  className={`events-list__filter${statusFilter === f.key ? ' events-list__filter--active' : ''}`}
+                  onClick={() => handleStatus(f.key)}
+                  style={statusFilter === f.key && f.color ? { borderColor: f.color, color: f.color } : {}}
+                >
+                  {f.label}
+                  <span className="events-list__filter-count">{counts[f.key]}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="events-list__filters events-list__filters--category reveal">
+              {CATEGORIES.map((cat) => {
+                const color = CAT_COLORS[cat];
+                const isActive = categoryFilter === cat;
+
+                return (
+                  <button
+                    key={cat}
+                    className={`events-list__filter events-list__filter--cat${isActive ? ' events-list__filter--active' : ''}`}
+                    onClick={() => handleCategory(cat)}
+                    style={isActive && color ? { borderColor: color, color } : {}}
+                  >
+                    {color && <span className="events-list__filter-dot" style={{ background: color }} />}
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="reveal">{renderContent()}</div>
+          </>
+        )}
 
         <div className="reveal">{renderContent()}</div>
       </div>

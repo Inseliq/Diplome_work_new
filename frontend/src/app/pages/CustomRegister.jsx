@@ -119,7 +119,6 @@ function CustomRegister() {
   const {
     tournament: t,
     loading,
-    isFallback,
   } = useCustomTournamentDetail(id);
 
   const {
@@ -318,12 +317,6 @@ function CustomRegister() {
             Регистрация
           </span>
         </nav>
-
-        {isFallback && (
-          <div className="customs__empty reveal">
-            API недоступен, загружены резервные данные.
-          </div>
-        )}
 
         <div className="reg-layout reveal">
           <aside className="reg-info">

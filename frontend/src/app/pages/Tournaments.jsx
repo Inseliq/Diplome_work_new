@@ -4,18 +4,8 @@ import { useEvents } from '../hooks/useEvents';
 
 const TOURNAMENT_CARDS = [
   {
-    to: '/tournaments/official',
-    icon: '🏆',
-    title: 'Официальные турниры',
-    desc: 'Турниры от Lesta Games с официальными призами — расписание, регистрация и результаты.',
-    color: 'var(--third-accent)',
-    glow: 'rgba(250,184,27,0.18)',
-    tag: 'Официальные',
-    badges: ['Призы', 'Рейтинг', 'Сертификат'],
-  },
-  {
     to: '/tournaments/custom',
-    icon: '⚔️',
+    icon: '/images/services/tournaments.service.svg',
     title: 'Кастомные турниры',
     desc: 'Пользовательские турниры от кланов и сообщества — создай своё соревнование или вступи в существующее.',
     color: 'var(--main-accent-effect)',
@@ -28,7 +18,7 @@ const TOURNAMENT_CARDS = [
 function Tournaments() {
   // Считаем статистику событий-турниров прямо из данных
   const { events } = useEvents();
-  
+
   const tourEvents = events.filter((e) => e.category === 'Турнир');
   const statsActive = tourEvents.filter((e) => e.status === 'active').length;
   const statsSoon = tourEvents.filter((e) => e.status === 'soon').length;
@@ -52,14 +42,16 @@ function Tournaments() {
             <Link
               key={t.to}
               to={t.to}
-              className="service-card service-card--large"
+              className="service-card service-card--wide"
               style={{ '--card-color': t.color, '--card-glow': t.glow }}
             >
               <div className="service-card__glow-bg" />
 
               <div className="service-card__top-row">
                 <div className="service-card__icon-wrap service-card__icon-wrap--lg">
-                  <span className="service-card__icon">{t.icon}</span>
+                  <div className="service__service-card-icon">
+                    <img src={t.icon} alt={t.title} />
+                  </div>
                 </div>
                 <span className="service-card__tag" style={{ color: t.color }}>{t.tag}</span>
               </div>
@@ -101,7 +93,9 @@ function Tournaments() {
               <div className="tournaments__events-left">
                 <div className="service-card__top-row">
                   <div className="service-card__icon-wrap service-card__icon-wrap--lg">
-                    <span className="service-card__icon">🗓️</span>
+                    <div className="home__service-card-icon">
+                      <img src="/images/services/events.service.svg" alt="События" />
+                    </div>
                   </div>
                   <span className="service-card__tag" style={{ color: '#FF5000' }}>События</span>
                 </div>

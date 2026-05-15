@@ -1,83 +1,151 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getNews, getNewsById } from '../../api/endpoints';
-import { NEWS_LIST_FALLBACK, NEWS_DETAIL_FALLBACK } from '../data/fallbacks';
 import { logger } from '../utils/logger';
 
 /**
- * Хук для списка новостей (без поля content).
+ * Хук для списка новостей.
+ *
+ * Данные берутся только с backend.
+ * Если backend недоступен — возвращается пустой массив.
  */
 export function useNews() {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isFallback, setIsFallback] = useState(false);
+
+  const loadNews = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await getNews();
+
+      setNews(Array.isArray(data) ? data : []);
+    } catch (err) {
+      logger.warn('useNews: не удалось загрузить новости с API', err);
+
+      setNews([]);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
 
-    setLoading(true);
-    setError(null);
-    setIsFallback(false);
+    async function load() {
+      setLoading(true);
+      setError(null);
 
-    getNews()
-      .then((data) => {
+      try {
+        const data = await getNews();
+
         if (cancelled) return;
-        setNews(data);
-      })
-      .catch((err) => {
+
+        setNews(Array.isArray(data) ? data : []);
+      } catch (err) {
         if (cancelled) return;
-        logger.warn('useNews: API недоступен, загружаем заглушки', err);
-        setNews(NEWS_LIST_FALLBACK);
+
+        logger.warn('useNews: не удалось загрузить новости с API', err);
+
+        setNews([]);
         setError(err);
-        setIsFallback(true);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
 
-    return () => { cancelled = true; };
+    load();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  return { news, loading, error, isFallback };
+  return {
+    news,
+    loading,
+    error,
+    reload: loadNews,
+  };
 }
 
 /**
- * Хук для одной новости (с полем content).
+ * Хук для одной новости.
+ *
+ * Данные берутся только с backend.
+ * Если backend недоступен — news будет null.
  */
 export function useNewsDetail(id) {
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isFallback, setIsFallback] = useState(false);
 
-  useEffect(() => {
+  const loadNewsDetail = useCallback(async () => {
     if (!id) return;
-    let cancelled = false;
 
     setLoading(true);
     setError(null);
-    setIsFallback(false);
     setNews(null);
 
-    getNewsById(id)
-      .then((data) => {
-        if (cancelled) return;
-        setNews(data);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        logger.warn(`useNewsDetail(${id}): API недоступен, загружаем заглушку`, err);
-        const fallback = NEWS_DETAIL_FALLBACK[Number(id)] ?? null;
-        setNews(fallback);
-        setError(err);
-        setIsFallback(true);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+    try {
+      const data = await getNewsById(id);
 
-    return () => { cancelled = true; };
+      setNews(data ?? null);
+    } catch (err) {
+      logger.warn(`useNewsDetail(${id}): не удалось загрузить новость`, err);
+
+      setNews(null);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
 
-  return { news, loading, error, isFallback };
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      if (!id) return;
+
+      setLoading(true);
+      setError(null);
+      setNews(null);
+
+      try {
+        const data = await getNewsById(id);
+
+        if (cancelled) return;
+
+        setNews(data ?? null);
+      } catch (err) {
+        if (cancelled) return;
+
+        logger.warn(`useNewsDetail(${id}): не удалось загрузить новость`, err);
+
+        setNews(null);
+        setError(err);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  return {
+    news,
+    loading,
+    error,
+    reload: loadNewsDetail,
+  };
 }

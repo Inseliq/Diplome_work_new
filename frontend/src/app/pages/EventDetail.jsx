@@ -4,11 +4,11 @@ import { useEventDetail } from '../hooks/useEventDetail';
 import { useEvents } from '../hooks/useEvents';
 import { STATUS_CONFIG, CATEGORY_COLORS } from '../data/eventsData';
 import { parseMarkup } from '../utils/parseMarkup';
-import { LoadingSpinner, FallbackBanner } from '../components/ui/StatusComponents';
+import { LoadingSpinner } from '../components/ui/StatusComponents';
 
 function EventDetail() {
   const { id } = useParams();
-  const { event: item, loading, isFallback } = useEventDetail(id);
+  const { event: item, loading } = useEventDetail(id);
   const { events: allEvents } = useEvents();
 
   if (loading) {
@@ -42,8 +42,6 @@ function EventDetail() {
           <span className="event-detail__crumb-sep">/</span>
           <span className="event-detail__crumb event-detail__crumb--active">{item.title}</span>
         </nav>
-
-        {isFallback && <FallbackBanner />}
 
         <div className="event-detail__layout">
           <article className="event-detail__article reveal">

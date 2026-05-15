@@ -42,6 +42,8 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
 
     public DbSet<DirectoryFieldModificationItem> DirectoryFieldModificationItems => Set<DirectoryFieldModificationItem>();
 
+    public DbSet<PopupNotification> PopupNotifications => Set<PopupNotification>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -722,6 +724,63 @@ CosmoManager объединяет новости, события, турниры
             entity.Property(x => x.IsActive)
                 .HasDefaultValue(true);
         });
+
+        builder.Entity<PopupNotification>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Message)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(x => x.Description)
+                .IsRequired();
+
+            entity.Property(x => x.SourceButton)
+                .HasMaxLength(500);
+
+            entity.Property(x => x.IsPublished)
+                .HasDefaultValue(true);
+
+            entity.Property(x => x.CreatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.Property(x => x.StartsAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.Property(x => x.EndsAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.HasIndex(x => x.IsPublished);
+            entity.HasIndex(x => x.StartsAtUtc);
+            entity.HasIndex(x => x.EndsAtUtc);
+            entity.HasIndex(x => x.SortOrder);
+        });
+
+        builder.Entity<PopupNotification>().HasData(
+    new PopupNotification
+    {
+        Id = 1,
+        Message = "Кубок Весны 2025 — регистрация открыта!",
+        Description = @"## Кубок Весны 2025
+Регистрация на турнир **открыта** до **30 марта**.
+
+### Тест ссылки
+[Тестовая ссылка](/services)
+
+### Тест изображения
+![Test_image](/images/ievgi_195x195.png)
+
+Подробнее — на странице турнира.",
+        SourceButton = "Подробнее:/tournaments/custom/details/2",
+        IsPublished = true,
+        CreatedAtUtc = new DateTime(2026, 5, 15, 0, 0, 0, DateTimeKind.Utc),
+        StartsAtUtc = null,
+        EndsAtUtc = null,
+        SortOrder = 100
+    }
+);
 
         // ─────────────────────────────────────────────
         // Demo seed: тестовая сборка каталога для ИС-7

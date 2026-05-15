@@ -1,48 +1,80 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getEventById } from '../../api/endpoints';
-import { EVENTS_DETAIL_FALLBACK } from '../data/fallbacks';
 import { logger } from '../utils/logger';
 
 /**
- * Хук для одного события (с полем content).
+ * Хук для одного события.
  *
- * @param {number|string} id
- * @returns {{ event, loading, error, isFallback }}
+ * Данные берутся только с backend.
+ * Если backend недоступен — event будет null.
  */
 export function useEventDetail(id) {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isFallback, setIsFallback] = useState(false);
 
-  useEffect(() => {
+  const loadEvent = useCallback(async () => {
     if (!id) return;
-    let cancelled = false;
 
     setLoading(true);
     setError(null);
-    setIsFallback(false);
     setEvent(null);
 
-    getEventById(id)
-      .then((data) => {
-        if (cancelled) return;
-        setEvent(data);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        logger.warn(`useEventDetail(${id}): API недоступен, загружаем заглушку`, err);
-        const fallback = EVENTS_DETAIL_FALLBACK[Number(id)] ?? null;
-        setEvent(fallback);
-        setError(err);
-        setIsFallback(true);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+    try {
+      const data = await getEventById(id);
 
-    return () => { cancelled = true; };
+      setEvent(data ?? null);
+    } catch (err) {
+      logger.warn(`useEventDetail(${id}): не удалось загрузить событие`, err);
+
+      setEvent(null);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
 
-  return { event, loading, error, isFallback };
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      if (!id) return;
+
+      setLoading(true);
+      setError(null);
+      setEvent(null);
+
+      try {
+        const data = await getEventById(id);
+
+        if (cancelled) return;
+
+        setEvent(data ?? null);
+      } catch (err) {
+        if (cancelled) return;
+
+        logger.warn(`useEventDetail(${id}): не удалось загрузить событие`, err);
+
+        setEvent(null);
+        setError(err);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  return {
+    event,
+    loading,
+    error,
+    reload: loadEvent,
+  };
 }

@@ -1,24 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { parseNotifyMarkdown } from '../../utils/parseNotifyMarkdown';
 
-/**
- * NotificationPopup — визуальная карточка уведомления.
- *
- * Props:
- *   notification  — объект { id, message, description, 'src-btn' }
- *   onClose       — колбэк при закрытии
- *   visible       — boolean, управляет анимацией появления/скрытия
- */
 function NotificationPopup({ notification, onClose, visible }) {
   const { message, description } = notification;
 
-  // Парсим кнопку "name:url"
   const rawBtn = notification['src-btn'];
   let btnLabel = null;
   let btnTo = null;
+
   if (rawBtn) {
     const colonIdx = rawBtn.indexOf(':');
+
     if (colonIdx !== -1) {
       btnLabel = rawBtn.slice(0, colonIdx).trim();
       btnTo = rawBtn.slice(colonIdx + 1).trim();
@@ -27,7 +20,9 @@ function NotificationPopup({ notification, onClose, visible }) {
 
   const isExternal = btnTo?.startsWith('http');
 
-  const nodes = parseNotifyMarkdown(description);
+  const nodes = parseNotifyMarkdown(description, {
+    onNavigate: onClose,
+  });
 
   return (
     <div
@@ -36,15 +31,14 @@ function NotificationPopup({ notification, onClose, visible }) {
       aria-modal="true"
       aria-label={message}
     >
-      {/* Фоновое свечение */}
       <div className="notify-popup__glow" />
 
-      {/* Шапка */}
       <div className="notify-popup__header">
         <div className="notify-popup__header-left">
           <span className="notify-popup__dot" />
           <span className="notify-popup__label">Уведомление</span>
         </div>
+
         <button className="notify-popup__close" onClick={onClose} aria-label="Закрыть">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" strokeWidth="2">
@@ -54,32 +48,37 @@ function NotificationPopup({ notification, onClose, visible }) {
         </button>
       </div>
 
-      {/* Заголовок */}
       <h3 className="notify-popup__title">{message}</h3>
 
-      {/* Тело */}
       {nodes && (
         <div className="notify-popup__body notify-md">
           {nodes}
         </div>
       )}
 
-      {/* Кнопки */}
       <div className="notify-popup__actions">
         {btnLabel && btnTo && (
           isExternal ? (
-            <a href={btnTo} target="_blank" rel="noopener noreferrer"
+            <a
+              href={btnTo}
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn btn-primary btn-sm notify-popup__action-btn"
-              onClick={onClose}>
+              onClick={onClose}
+            >
               {btnLabel}
             </a>
           ) : (
-            <Link to={btnTo} className="btn btn-primary btn-sm notify-popup__action-btn"
-              onClick={onClose}>
+            <Link
+              to={btnTo}
+              className="btn btn-primary btn-sm notify-popup__action-btn"
+              onClick={onClose}
+            >
               {btnLabel}
             </Link>
           )
         )}
+
         <button className="btn btn-ghost btn-sm notify-popup__dismiss" onClick={onClose}>
           Понятно
         </button>

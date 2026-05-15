@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CosmoManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260515203258_Initial")]
+    [Migration("20260515220321_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -669,6 +669,69 @@ namespace CosmoManager.Migrations
                             Status = "soon",
                             Title = "Кубок Весны 2025",
                             Type = "Event"
+                        });
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.PopupNotification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EndsAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsPublished")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SourceButton")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("StartsAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EndsAtUtc");
+
+                    b.HasIndex("IsPublished");
+
+                    b.HasIndex("SortOrder");
+
+                    b.HasIndex("StartsAtUtc");
+
+                    b.ToTable("PopupNotifications");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAtUtc = new DateTime(2026, 5, 15, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "## Кубок Весны 2025\r\nРегистрация на турнир **открыта** до **30 марта**.\r\n\r\n### Тест ссылки\r\n[Тестовая ссылка](/services)\r\n\r\n### Тест изображения\r\n![Test_image](/images/ievgi_195x195.png)\r\n\r\nПодробнее — на странице турнира.",
+                            IsPublished = true,
+                            Message = "Кубок Весны 2025 — регистрация открыта!",
+                            SortOrder = 100,
+                            SourceButton = "Подробнее:/tournaments/custom/details/2"
                         });
                 });
 

@@ -71,7 +71,6 @@ function CustomDetail() {
   const {
     tournament: t,
     loading,
-    isFallback,
   } = useCustomTournamentDetail(id);
 
   const { isAuthenticated } = useAuth();
@@ -128,12 +127,6 @@ function CustomDetail() {
             {t.name}
           </span>
         </nav>
-
-        {isFallback && (
-          <div className="customs__empty reveal">
-            API недоступен, загружены резервные данные.
-          </div>
-        )}
 
         <div
           className="custom-detail__hero reveal"

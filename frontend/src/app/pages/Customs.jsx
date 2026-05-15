@@ -51,6 +51,7 @@ function ClassBadge({ classes }) {
   );
 }
 
+
 function TournamentCard({ t, isAuthenticated }) {
   const type = TOURNAMENT_TYPES[t.type] || TOURNAMENT_TYPES.common;
   const status = TOURNAMENT_STATUS[t.status] || TOURNAMENT_STATUS.upcoming;
@@ -295,8 +296,38 @@ function TournamentCard({ t, isAuthenticated }) {
   );
 }
 
+function CustomsEmptyBanner() {
+  return (
+    <div
+      className="marks__table-wrap reveal reveal--visible"
+      style={{ padding: '32px', textAlign: 'center' }}
+    >
+      <h2>К сожалению, турниров пока нет.</h2>
+      <p>Пожалуйста, зайдите позже.</p>
+
+      <div
+        style={{
+          display: 'flex',
+          gap: '12px',
+          justifyContent: 'center',
+          marginTop: '20px',
+          flexWrap: 'wrap',
+        }}
+      >
+        <Link className="btn btn-primary" to="/">
+          На главную
+        </Link>
+
+        <Link className="btn btn-ghost" to="/">
+          Подождать
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 function Customs() {
-  const { tournaments, loading, isFallback } = useCustomTournaments();
+  const { tournaments, loading, error } = useCustomTournaments();
   const { isAuthenticated } = useAuth();
 
   const [filterFormat, setFilterFormat] = useState([]);
@@ -351,121 +382,125 @@ function Customs() {
           </p>
         </div>
 
-        {isFallback && (
-          <div className="customs__empty reveal">
-            API недоступен, загружены резервные данные.
-          </div>
-        )}
-
-        <div className="customs__filters reveal">
-          <div className="customs__filter-group">
-            <div className="customs__filter-label">Формат</div>
-            <div className="customs__filter-pills">
-              {FORMATS.map((f) => (
-                <button
-                  key={f}
-                  type="button"
-                  className={`customs__pill${filterFormat.includes(f) ? ' customs__pill--active' : ''}`}
-                  onClick={() => toggle(filterFormat, setFilterFormat, f)}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="customs__filter-group">
-            <div className="customs__filter-label">Тип</div>
-            <div className="customs__filter-pills">
-              {Object.entries(TOURNAMENT_TYPES).map(([key, val]) => (
-                <button
-                  key={key}
-                  type="button"
-                  className={`customs__pill${filterType.includes(key) ? ' customs__pill--active' : ''}`}
-                  onClick={() => toggle(filterType, setFilterType, key)}
-                  style={
-                    filterType.includes(key)
-                      ? {
-                        borderColor: val.color,
-                        color: val.color,
-                        background: val.glow,
-                      }
-                      : {}
-                  }
-                >
-                  {val.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="customs__filter-group">
-            <div className="customs__filter-label">Уровень</div>
-            <div className="customs__filter-pills">
-              {TIERS.map((tier) => (
-                <button
-                  key={tier}
-                  type="button"
-                  className={`customs__pill customs__pill--tier${filterTier.includes(tier) ? ' customs__pill--active' : ''}`}
-                  onClick={() => toggle(filterTier, setFilterTier, tier)}
-                >
-                  {TIER_ROMAN[tier]}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {hasFilters && (
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm customs__filter-reset"
-              onClick={() => {
-                setFilterFormat([]);
-                setFilterType([]);
-                setFilterTier([]);
-              }}
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="1 4 1 10 7 10" />
-                <path d="M3.51 15a9 9 0 1 0 .49-3.5" />
-              </svg>
-              Сбросить
-            </button>
-          )}
-        </div>
-
-        <div className="customs__counter reveal">
-          <span>
-            Показано <strong>{filtered.length}</strong> из{' '}
-            <strong>{tournaments.length}</strong> турниров
-          </span>
-        </div>
-
-        {loading ? (
+        {loading && (
           <div className="customs__empty reveal">
             Загружаем турниры...
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="customs__empty reveal">
-            Нет турниров по выбранным фильтрам
-          </div>
-        ) : (
-          <div className="customs__grid reveal">
-            {filtered.map((t) => (
-              <TournamentCard
-                key={t.id}
-                t={t}
-                isAuthenticated={isAuthenticated}
-              />
-            ))}
-          </div>
+        )}
+
+        {!loading && (error || tournaments.length === 0) && (
+          <CustomsEmptyBanner />
+        )}
+
+        {!error && tournaments.length > 0 && (
+          <>
+            <div className="customs__filters reveal">
+              <div className="customs__filter-group">
+                <div className="customs__filter-label">Формат</div>
+                <div className="customs__filter-pills">
+                  {FORMATS.map((f) => (
+                    <button
+                      key={f}
+                      type="button"
+                      className={`customs__pill${filterFormat.includes(f) ? ' customs__pill--active' : ''}`}
+                      onClick={() => toggle(filterFormat, setFilterFormat, f)}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="customs__filter-group">
+                <div className="customs__filter-label">Тип</div>
+                <div className="customs__filter-pills">
+                  {Object.entries(TOURNAMENT_TYPES).map(([key, val]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`customs__pill${filterType.includes(key) ? ' customs__pill--active' : ''}`}
+                      onClick={() => toggle(filterType, setFilterType, key)}
+                      style={
+                        filterType.includes(key)
+                          ? {
+                            borderColor: val.color,
+                            color: val.color,
+                            background: val.glow,
+                          }
+                          : {}
+                      }
+                    >
+                      {val.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="customs__filter-group">
+                <div className="customs__filter-label">Уровень</div>
+                <div className="customs__filter-pills">
+                  {TIERS.map((tier) => (
+                    <button
+                      key={tier}
+                      type="button"
+                      className={`customs__pill customs__pill--tier${filterTier.includes(tier) ? ' customs__pill--active' : ''}`}
+                      onClick={() => toggle(filterTier, setFilterTier, tier)}
+                    >
+                      {TIER_ROMAN[tier]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {hasFilters && (
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm customs__filter-reset"
+                  onClick={() => {
+                    setFilterFormat([]);
+                    setFilterType([]);
+                    setFilterTier([]);
+                  }}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <polyline points="1 4 1 10 7 10" />
+                    <path d="M3.51 15a9 9 0 1 0 .49-3.5" />
+                  </svg>
+                  Сбросить
+                </button>
+              )}
+            </div>
+
+            <div className="customs__counter reveal">
+              <span>
+                Показано <strong>{filtered.length}</strong> из{' '}
+                <strong>{tournaments.length}</strong> турниров
+              </span>
+            </div>
+
+            {filtered.length === 0 ? (
+              <div className="customs__empty reveal">
+                Турниры не найдены. Измените фильтры.
+              </div>
+            ) : (
+              <div className="customs__grid reveal">
+                {filtered.map((t) => (
+                  <TournamentCard
+                    key={t.id}
+                    t={t}
+                    isAuthenticated={isAuthenticated}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

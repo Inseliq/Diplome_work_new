@@ -124,6 +124,26 @@ namespace CosmoManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PopupNotifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Message = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    SourceButton = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    IsPublished = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StartsAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    EndsAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    SortOrder = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PopupNotifications", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Vehicles",
                 columns: table => new
                 {
@@ -552,6 +572,11 @@ namespace CosmoManager.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "PopupNotifications",
+                columns: new[] { "Id", "CreatedAtUtc", "Description", "EndsAtUtc", "IsPublished", "Message", "SortOrder", "SourceButton", "StartsAtUtc" },
+                values: new object[] { 1, new DateTime(2026, 5, 15, 0, 0, 0, 0, DateTimeKind.Utc), "## Кубок Весны 2025\r\nРегистрация на турнир **открыта** до **30 марта**.\r\n\r\n### Тест ссылки\r\n[Тестовая ссылка](/services)\r\n\r\n### Тест изображения\r\n![Test_image](/images/ievgi_195x195.png)\r\n\r\nПодробнее — на странице турнира.", null, true, "Кубок Весны 2025 — регистрация открыта!", 100, "Подробнее:/tournaments/custom/details/2", null });
+
+            migrationBuilder.InsertData(
                 table: "Tournaments",
                 columns: new[] { "Id", "Classes", "CreatedAtUtc", "DateEnd", "DateStart", "Description", "EventId", "Format", "InitialParticipants", "IsPublished", "IsStream", "MaxParticipants", "Name", "OpenForAll", "PrizeText", "RegEnd", "RegStart", "ReserveSize", "Sponsor", "Status", "StreamUrl", "TeamSize", "Tier", "Type" },
                 values: new object[] { 3, "ST", new DateTime(2025, 4, 18, 0, 0, 0, 0, DateTimeKind.Utc), new DateTime(2025, 4, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 4, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "Небольшой тренировочный турнир для клана EVG. Формат 3x3, любой уровень VI–VIII.", null, "3x3", 6, true, false, null, "Тренировочный 3x3", false, null, new DateTime(2025, 4, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 4, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, null, "upcoming", null, 3, 8, "common" });
@@ -703,6 +728,26 @@ namespace CosmoManager.Migrations
                 column: "Type");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PopupNotifications_EndsAtUtc",
+                table: "PopupNotifications",
+                column: "EndsAtUtc");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PopupNotifications_IsPublished",
+                table: "PopupNotifications",
+                column: "IsPublished");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PopupNotifications_SortOrder",
+                table: "PopupNotifications",
+                column: "SortOrder");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PopupNotifications_StartsAtUtc",
+                table: "PopupNotifications",
+                column: "StartsAtUtc");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_AppUserId",
                 table: "RefreshTokens",
                 column: "AppUserId");
@@ -802,6 +847,9 @@ namespace CosmoManager.Migrations
 
             migrationBuilder.DropTable(
                 name: "DirectoryFieldModifications");
+
+            migrationBuilder.DropTable(
+                name: "PopupNotifications");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
