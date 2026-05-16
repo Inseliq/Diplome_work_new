@@ -1,4 +1,12 @@
 export const DOCUMENTS = {
+  about: {
+    title: 'О нас',
+    content: `## О нас
+
+### Версия 1.0 уже доступна
+    `
+  },
+
   privacy_policy: {
     title: 'Политика конфиденциальности',
     content: `## Политика конфиденциальности

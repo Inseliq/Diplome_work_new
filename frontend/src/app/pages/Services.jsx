@@ -27,7 +27,7 @@ const SERVICES = [
     glow: 'rgba(131,93,228,0.15)',
   },
   {
-    to: '/achievements',
+    to: '/development',
     icon: '/images/services/achievements.service.svg',
     title: 'Достижения',
     desc: 'Полная коллекция достижений игры с прогрессом и редкостью.',
@@ -59,7 +59,7 @@ const SERVICES = [
     glow: 'rgba(255,80,0,0.15)',
   },
   {
-    to: '/onslaught',
+    to: '/development',
     icon: '/images/services/onslaught.service.svg',
     title: 'Натиск',
     desc: 'Статистика и рейтинги режима «Натиск» — ранг, очки, топ игроков.',

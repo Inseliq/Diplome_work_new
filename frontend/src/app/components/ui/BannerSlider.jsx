@@ -1,6 +1,52 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 
-function BannerSlider({ slides }) {
+function getBackgroundStyle(slide) {
+  if (slide.imageUrl) {
+    return {
+      backgroundImage: `linear-gradient(135deg, rgba(10, 5, 20, 0.45), rgba(10, 5, 20, 0.2)), url(${slide.imageUrl})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+    };
+  }
+
+  return {
+    background: slide.bgGradient,
+  };
+}
+
+function isExternalLink(url) {
+  return url?.startsWith('http://') || url?.startsWith('https://');
+}
+
+function BannerButton({ href, children }) {
+  if (!href) return null;
+
+  if (isExternalLink(href)) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="btn btn-primary banner-slider__btn"
+      >
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link to={href} className="btn btn-primary banner-slider__btn">
+      {children}
+    </Link>
+  );
+}
+
+function BannerSlider({ slides = [] }) {
+  const safeSlides = Array.isArray(slides) ? slides.filter(Boolean) : [];
+  const hasMultipleSlides = safeSlides.length > 1;
+
   const [active, setActive] = useState(0);
   const timerRef = useRef(null);
   const touchStartX = useRef(null);
@@ -9,75 +55,114 @@ function BannerSlider({ slides }) {
 
   const resetTimer = useCallback(() => {
     clearInterval(timerRef.current);
+
+    if (!hasMultipleSlides) return;
+
     timerRef.current = setInterval(() => {
-      setActive((p) => (p + 1) % slides.length);
+      setActive((previous) => (previous + 1) % safeSlides.length);
     }, 5000);
-  }, [slides.length]);
+  }, [hasMultipleSlides, safeSlides.length]);
+
+  useEffect(() => {
+    if (active >= safeSlides.length) {
+      setActive(0);
+    }
+  }, [active, safeSlides.length]);
 
   useEffect(() => {
     resetTimer();
-    return () => clearInterval(timerRef.current);
+
+    return () => {
+      clearInterval(timerRef.current);
+    };
   }, [resetTimer]);
 
   const goTo = useCallback((idx) => {
+    if (!hasMultipleSlides) return;
+
     setActive(idx);
     resetTimer();
-  }, [resetTimer]);
+  }, [hasMultipleSlides, resetTimer]);
 
-  const prev = () => goTo((active - 1 + slides.length) % slides.length);
-  const next = () => goTo((active + 1) % slides.length);
+  const prev = () => {
+    if (!hasMultipleSlides) return;
+    goTo((active - 1 + safeSlides.length) % safeSlides.length);
+  };
 
-  /* touch */
+  const next = () => {
+    if (!hasMultipleSlides) return;
+    goTo((active + 1) % safeSlides.length);
+  };
+
   const onTouchStart = (e) => {
+    if (!hasMultipleSlides) return;
+
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
     isDragging.current = false;
   };
+
   const onTouchMove = (e) => {
+    if (!hasMultipleSlides) return;
     if (touchStartX.current === null) return;
+
     const dx = Math.abs(e.touches[0].clientX - touchStartX.current);
     const dy = Math.abs(e.touches[0].clientY - touchStartY.current);
-    if (dx > dy && dx > 8) { isDragging.current = true; e.preventDefault(); }
+
+    if (dx > dy && dx > 8) {
+      isDragging.current = true;
+      e.preventDefault();
+    }
   };
+
   const onTouchEnd = (e) => {
+    if (!hasMultipleSlides) return;
     if (touchStartX.current === null) return;
+
     const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (isDragging.current && Math.abs(dx) > 40) dx < 0 ? next() : prev();
+
+    if (isDragging.current && Math.abs(dx) > 40) {
+      dx < 0 ? next() : prev();
+    }
+
     touchStartX.current = null;
     touchStartY.current = null;
     isDragging.current = false;
   };
 
+  if (safeSlides.length === 0) {
+    return null;
+  }
+
   return (
     <div className="banner-slider">
-
-      {/* ── Row: [стрелка] [трек] [стрелка] ── */}
       <div className="banner-slider__row">
+        {hasMultipleSlides && (
+          <button
+            className="banner-slider__arrow banner-slider__arrow--prev"
+            onClick={prev}
+            aria-label="Предыдущий слайд"
+            type="button"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+        )}
 
-        <button
-          className="banner-slider__arrow banner-slider__arrow--prev"
-          onClick={prev}
-          aria-label="Предыдущий слайд"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-
-        {/* ── Track: все слайды в одну grid-ячейку ── */}
         <div
           className="banner-slider__track"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
-          {slides.map((slide, i) => (
+          {safeSlides.map((slide, i) => (
             <div
-              key={slide.id}
+              key={slide.id ?? i}
               className={`banner-slider__slide${i === active ? ' banner-slider__slide--active' : ''}`}
               aria-hidden={i !== active}
             >
-              <div className="banner-slider__bg" style={{ background: slide.bgGradient }}>
+              <div className="banner-slider__bg" style={getBackgroundStyle(slide)}>
                 <div className="banner-slider__noise" />
               </div>
 
@@ -90,46 +175,57 @@ function BannerSlider({ slides }) {
                     Событие
                   </span>
                 )}
-                <h3 className="banner-slider__title">{slide.title}</h3>
-                <p className="banner-slider__desc">{slide.desc}</p>
+
+                <h3 className="banner-slider__title">
+                  {slide.title}
+                </h3>
+
+                <p className="banner-slider__desc">
+                  {slide.desc}
+                </p>
+
                 {slide.btnLabel && (
-                  <a href={slide.btnHref} className="btn btn-primary banner-slider__btn">
+                  <BannerButton href={slide.btnHref}>
                     {slide.btnLabel}
+
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <line x1="5" y1="12" x2="19" y2="12" />
                       <polyline points="12 5 19 12 12 19" />
                     </svg>
-                  </a>
+                  </BannerButton>
                 )}
               </div>
             </div>
           ))}
         </div>
 
-        <button
-          className="banner-slider__arrow banner-slider__arrow--next"
-          onClick={next}
-          aria-label="Следующий слайд"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-
-      </div>
-
-      {/* ── Pagination ── */}
-      <div className="banner-slider__pagination">
-        {slides.map((_, i) => (
+        {hasMultipleSlides && (
           <button
-            key={i}
-            className={`banner-slider__dot${i === active ? ' banner-slider__dot--active' : ''}`}
-            onClick={() => goTo(i)}
-            aria-label={`Слайд ${i + 1}`}
-          />
-        ))}
+            className="banner-slider__arrow banner-slider__arrow--next"
+            onClick={next}
+            aria-label="Следующий слайд"
+            type="button"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        )}
       </div>
 
+      {hasMultipleSlides && (
+        <div className="banner-slider__pagination">
+          {safeSlides.map((_, i) => (
+            <button
+              key={i}
+              className={`banner-slider__dot${i === active ? ' banner-slider__dot--active' : ''}`}
+              onClick={() => goTo(i)}
+              aria-label={`Слайд ${i + 1}`}
+              type="button"
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

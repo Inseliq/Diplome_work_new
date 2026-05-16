@@ -7,66 +7,7 @@ import { useNews } from '../hooks/useNews';
 import { useEvents } from '../hooks/useEvents';
 import { TOURNAMENT_TYPES, TIER_ROMAN } from '../data/customsData';
 import { useCustomTournaments } from '../hooks/useTournaments';
-
-const BANNER_SLIDES_1 = [
-  {
-    id: 1,
-    type: 'event',
-    title: 'Глобальная карта: Сезон «Стальная воля»',
-    desc: 'Сражайтесь за территории на глобальной карте и получайте уникальные награды. Сезон продлится до конца месяца.',
-    btnLabel: 'Подробнее',
-    btnHref: '#',
-    bgGradient: 'linear-gradient(135deg, #1a0540 0%, #2d0870 40%, #582BBA 100%)',
-  },
-  {
-    id: 2,
-    type: null,
-    title: 'Обновление 1.24 уже в игре',
-    desc: 'Новые карты, ребаланс техники и режим «Осада крепости» — всё, что нужно знать об обновлении.',
-    btnLabel: 'Читать',
-    btnHref: '#',
-    bgGradient: 'linear-gradient(135deg, #0f1e40 0%, #1a3a6b 50%, #2d5bbf 100%)',
-  },
-  {
-    id: 3,
-    type: 'event',
-    title: 'Турнир кланов «Железный кулак» — регистрация открыта',
-    desc: 'Докажите превосходство своего клана в еженедельном турнире. Призовой фонд 10 000 золота.',
-    btnLabel: 'Зарегистрироваться',
-    btnHref: '#',
-    bgGradient: 'linear-gradient(135deg, #200a00 0%, #8a2200 50%, #FF5000 100%)',
-  },
-];
-
-const BANNER_SLIDES_2 = [
-  {
-    id: 1,
-    type: null,
-    title: 'Пригласи друга — получи награду',
-    desc: 'Используй реферальную программу CosmoManager и получай бонусы за каждого приглашённого игрока.',
-    btnLabel: 'Узнать больше',
-    btnHref: '#',
-    bgGradient: 'linear-gradient(135deg, #0a200a 0%, #145214 50%, #22c55e 100%)',
-  },
-  {
-    id: 2,
-    type: 'event',
-    title: 'Ивент «День танкиста» — специальные миссии',
-    desc: 'Выполняй ежедневные миссии и открывай эксклюзивные декали и стиль «Ветеран».',
-    btnLabel: 'К миссиям',
-    btnHref: '#',
-    bgGradient: 'linear-gradient(135deg, #1e1000 0%, #6b3800 50%, #FAB81B 100%)',
-  },
-  {
-    id: 3,
-    type: null,
-    title: 'CosmoManager Pro — расширенная аналитика',
-    desc: 'Глубокий анализ боёв, построение стратегий и управление казной клана в одном месте.',
-    btnLabel: 'Попробовать',
-    btnHref: '#',
-    bgGradient: 'linear-gradient(135deg, #1a0540 0%, #582BBA 60%, #835de4 100%)',
-  },
-];
+import { useHomeBanners } from '../hooks/useHomeBanners';
 
 const SERVICES_STUB = [
   {
@@ -92,7 +33,7 @@ const SERVICES_STUB = [
   },
   {
     id: 5,
-    path: '',
+    path: 'development',
     icon: '/images/services/achievements.service.svg',
     title: 'Достижения',
     desc: 'Ваши достижения в удобном и подробном формате.',
@@ -106,7 +47,7 @@ const SERVICES_STUB = [
   },
   {
     id: 4,
-    path: '',
+    path: 'development',
     icon: '/images/services/recruts.service.svg',
     title: 'Рекрутинг',
     desc: 'Параметры для вступления в клан. Академка и основа.',
@@ -236,6 +177,10 @@ function Home() {
   const { news, loading: newsLoading } = useNews();
   const { events, loading: eventsLoading } = useEvents();
   const { tournaments, loading: tournamentsLoading } = useCustomTournaments();
+  const {
+    banner1Slides,
+    banner2Slides,
+  } = useHomeBanners();
 
   const latestNews = [...news]
     .sort((a, b) => new Date(b.dateISO) - new Date(a.dateISO))
@@ -382,7 +327,7 @@ function Home() {
       {/* §2 BANNER 1 */}
       <section className="home__section home__banner" ref={section2Ref}>
         <div className="container">
-          <BannerSlider slides={BANNER_SLIDES_1} />
+          <BannerSlider slides={banner1Slides} />
         </div>
       </section>
 
@@ -604,12 +549,12 @@ function Home() {
                   </div>
                 </div>
 
-                <button className="btn btn-gold btn-lg home__donate-btn">
+                <Link to="development" className="btn btn-gold btn-lg home__donate-btn">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
                   Поддержать проект
-                </button>
+                </Link>
               </div>
 
               <div className="home__donate-right">
@@ -638,7 +583,7 @@ function Home() {
       {/* §7 BANNER 2 */}
       <section className="home__section home__banner">
         <div className="container">
-          <BannerSlider slides={BANNER_SLIDES_2} />
+          <BannerSlider slides={banner2Slides} />
         </div>
       </section>
 

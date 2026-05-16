@@ -29,29 +29,22 @@ namespace CosmoManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
+                name: "Clans",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Nickname = table.Column<string>(type: "text", nullable: false),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Tag = table.Column<string>(type: "character varying(5)", maxLength: 5, nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    EloRating = table.Column<int>(type: "integer", nullable: false, defaultValue: 1000),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.PrimaryKey("PK_Clans", x => x.Id);
+                    table.CheckConstraint("CK_Clans_EloRating_Min", "\"EloRating\" >= 0");
+                    table.CheckConstraint("CK_Clans_Tag_Format", "\"Tag\" ~ '^[A-Za-z0-9_-]{3,5}$'");
                 });
 
             migrationBuilder.CreateTable(
@@ -97,6 +90,29 @@ namespace CosmoManager.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DirectoryFieldModificationItems", x => x.Key);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HomeBanners",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Slot = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    ButtonLabel = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ButtonUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    ImageUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Gradient = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    IsPublished = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HomeBanners", x => x.Id);
+                    table.CheckConstraint("CK_HomeBanners_Slot", "\"Slot\" IN (1, 2)");
                 });
 
             migrationBuilder.CreateTable(
@@ -189,113 +205,56 @@ namespace CosmoManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
+                name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Nickname = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    ClanId = table.Column<int>(type: "integer", nullable: true),
+                    ClanRank = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_AspNetUsers_Clans_ClanId",
+                        column: x => x.ClanId,
+                        principalTable: "Clans",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
+                name: "ClanReserveInventories",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    ProviderKey = table.Column<string>(type: "text", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    ClanId = table.Column<int>(type: "integer", nullable: false),
+                    ReserveType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Amount = table.Column<int>(type: "integer", nullable: false),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.PrimaryKey("PK_ClanReserveInventories", x => new { x.ClanId, x.ReserveType });
+                    table.CheckConstraint("CK_ClanReserveInventories_Amount_Min", "\"Amount\" >= 0");
                     table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    RoleId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserTokens",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RefreshTokens",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TokenHash = table.Column<string>(type: "text", nullable: false),
-                    AppUserId = table.Column<string>(type: "text", nullable: false),
-                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ExpiresAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RevokedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ReplacedByTokenHash = table.Column<string>(type: "text", nullable: true),
-                    CreatedByIp = table.Column<string>(type: "text", nullable: true),
-                    RevokedByIp = table.Column<string>(type: "text", nullable: true),
-                    UserAgent = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RefreshTokens_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_ClanReserveInventories_Clans_ClanId",
+                        column: x => x.ClanId,
+                        principalTable: "Clans",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -401,6 +360,148 @@ namespace CosmoManager.Migrations
                         name: "FK_VehicleMasteries_Vehicles_VehicleId",
                         column: x => x.VehicleId,
                         principalTable: "Vehicles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClanReserveActivations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ClanId = table.Column<int>(type: "integer", nullable: false),
+                    ReserveType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    ReserveGroup = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    ActivatedByUserId = table.Column<string>(type: "text", nullable: false),
+                    ActivatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndsAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClanReserveActivations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClanReserveActivations_AspNetUsers_ActivatedByUserId",
+                        column: x => x.ActivatedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ClanReserveActivations_Clans_ClanId",
+                        column: x => x.ClanId,
+                        principalTable: "Clans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TokenHash = table.Column<string>(type: "text", nullable: false),
+                    AppUserId = table.Column<string>(type: "text", nullable: false),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ExpiresAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RevokedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ReplacedByTokenHash = table.Column<string>(type: "text", nullable: true),
+                    CreatedByIp = table.Column<string>(type: "text", nullable: true),
+                    RevokedByIp = table.Column<string>(type: "text", nullable: true),
+                    UserAgent = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -527,6 +628,115 @@ namespace CosmoManager.Migrations
                         principalTable: "DirectoryVehicles",
                         principalColumn: "VehicleId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TournamentMatches",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TournamentId = table.Column<int>(type: "integer", nullable: false),
+                    Bracket = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    RoundSize = table.Column<int>(type: "integer", nullable: false),
+                    RoundNumber = table.Column<int>(type: "integer", nullable: false),
+                    MatchNumber = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    ResultStatus = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Team1Score = table.Column<int>(type: "integer", nullable: false),
+                    Team2Score = table.Column<int>(type: "integer", nullable: false),
+                    WinnerRegistrationId = table.Column<int>(type: "integer", nullable: true),
+                    AdvancingRegistrationId = table.Column<int>(type: "integer", nullable: true),
+                    WinnerToMatchId = table.Column<int>(type: "integer", nullable: true),
+                    WinnerToSlotNumber = table.Column<int>(type: "integer", nullable: true),
+                    LoserToMatchId = table.Column<int>(type: "integer", nullable: true),
+                    LoserToSlotNumber = table.Column<int>(type: "integer", nullable: true),
+                    ScheduledAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    StartedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    FinishedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    StreamUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Comment = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TournamentMatches", x => x.Id);
+                    table.CheckConstraint("CK_TournamentMatches_LoserToSlot", "\"LoserToSlotNumber\" IS NULL OR \"LoserToSlotNumber\" IN (1, 2)");
+                    table.CheckConstraint("CK_TournamentMatches_MatchNumber_Min", "\"MatchNumber\" >= 1");
+                    table.CheckConstraint("CK_TournamentMatches_RoundNumber_Min", "\"RoundNumber\" >= 1");
+                    table.CheckConstraint("CK_TournamentMatches_RoundSize_Min", "\"RoundSize\" >= 2");
+                    table.CheckConstraint("CK_TournamentMatches_Team1Score_Min", "\"Team1Score\" >= 0");
+                    table.CheckConstraint("CK_TournamentMatches_Team2Score_Min", "\"Team2Score\" >= 0");
+                    table.CheckConstraint("CK_TournamentMatches_WinnerToSlot", "\"WinnerToSlotNumber\" IS NULL OR \"WinnerToSlotNumber\" IN (1, 2)");
+                    table.ForeignKey(
+                        name: "FK_TournamentMatches_TournamentMatches_LoserToMatchId",
+                        column: x => x.LoserToMatchId,
+                        principalTable: "TournamentMatches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TournamentMatches_TournamentMatches_WinnerToMatchId",
+                        column: x => x.WinnerToMatchId,
+                        principalTable: "TournamentMatches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TournamentMatches_TournamentRegistrations_AdvancingRegistra~",
+                        column: x => x.AdvancingRegistrationId,
+                        principalTable: "TournamentRegistrations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TournamentMatches_TournamentRegistrations_WinnerRegistratio~",
+                        column: x => x.WinnerRegistrationId,
+                        principalTable: "TournamentRegistrations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TournamentMatches_Tournaments_TournamentId",
+                        column: x => x.TournamentId,
+                        principalTable: "Tournaments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TournamentMatchSlots",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MatchId = table.Column<int>(type: "integer", nullable: false),
+                    SlotNumber = table.Column<int>(type: "integer", nullable: false),
+                    RegistrationId = table.Column<int>(type: "integer", nullable: true),
+                    SourceMatchId = table.Column<int>(type: "integer", nullable: true),
+                    SourceResult = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    SeedNumber = table.Column<int>(type: "integer", nullable: true),
+                    IsBye = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TournamentMatchSlots", x => x.Id);
+                    table.CheckConstraint("CK_TournamentMatchSlots_SlotNumber", "\"SlotNumber\" IN (1, 2)");
+                    table.CheckConstraint("CK_TournamentMatchSlots_SourceResult", "\"SourceResult\" IS NULL OR \"SourceResult\" IN ('winner', 'loser')");
+                    table.ForeignKey(
+                        name: "FK_TournamentMatchSlots_TournamentMatches_MatchId",
+                        column: x => x.MatchId,
+                        principalTable: "TournamentMatches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TournamentMatchSlots_TournamentMatches_SourceMatchId",
+                        column: x => x.SourceMatchId,
+                        principalTable: "TournamentMatches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TournamentMatchSlots_TournamentRegistrations_RegistrationId",
+                        column: x => x.RegistrationId,
+                        principalTable: "TournamentRegistrations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -701,6 +911,39 @@ namespace CosmoManager.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "UX_AspNetUsers_ClanId_Commander",
+                table: "AspNetUsers",
+                column: "ClanId",
+                unique: true,
+                filter: "\"ClanId\" IS NOT NULL AND \"ClanRank\" = 'Commander'");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClanReserveActivations_ActivatedByUserId",
+                table: "ClanReserveActivations",
+                column: "ActivatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClanReserveActivations_ClanId",
+                table: "ClanReserveActivations",
+                column: "ClanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClanReserveActivations_ClanId_ReserveGroup_EndsAtUtc",
+                table: "ClanReserveActivations",
+                columns: new[] { "ClanId", "ReserveGroup", "EndsAtUtc" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClanReserveInventories_ClanId",
+                table: "ClanReserveInventories",
+                column: "ClanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clans_Tag",
+                table: "Clans",
+                column: "Tag",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DirectoryBuilds_VehicleId_ModeKey_StateKey",
                 table: "DirectoryBuilds",
                 columns: new[] { "VehicleId", "ModeKey", "StateKey" },
@@ -710,6 +953,12 @@ namespace CosmoManager.Migrations
                 name: "IX_DirectoryFieldModifications_VehicleId_SectionKey",
                 table: "DirectoryFieldModifications",
                 columns: new[] { "VehicleId", "SectionKey" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HomeBanners_Slot",
+                table: "HomeBanners",
+                column: "Slot",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -762,6 +1011,58 @@ namespace CosmoManager.Migrations
                 name: "IX_TournamentMaps_TournamentId",
                 table: "TournamentMaps",
                 column: "TournamentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentMatches_AdvancingRegistrationId",
+                table: "TournamentMatches",
+                column: "AdvancingRegistrationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentMatches_LoserToMatchId",
+                table: "TournamentMatches",
+                column: "LoserToMatchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentMatches_TournamentId",
+                table: "TournamentMatches",
+                column: "TournamentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentMatches_WinnerRegistrationId",
+                table: "TournamentMatches",
+                column: "WinnerRegistrationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentMatches_WinnerToMatchId",
+                table: "TournamentMatches",
+                column: "WinnerToMatchId");
+
+            migrationBuilder.CreateIndex(
+                name: "UX_TournamentMatches_Position",
+                table: "TournamentMatches",
+                columns: new[] { "TournamentId", "Bracket", "RoundSize", "RoundNumber", "MatchNumber" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentMatchSlots_MatchId",
+                table: "TournamentMatchSlots",
+                column: "MatchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentMatchSlots_RegistrationId",
+                table: "TournamentMatchSlots",
+                column: "RegistrationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentMatchSlots_SourceMatchId",
+                table: "TournamentMatchSlots",
+                column: "SourceMatchId");
+
+            migrationBuilder.CreateIndex(
+                name: "UX_TournamentMatchSlots_Match_Slot",
+                table: "TournamentMatchSlots",
+                columns: new[] { "MatchId", "SlotNumber" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_TournamentPrizes_TournamentId",
@@ -834,6 +1135,12 @@ namespace CosmoManager.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ClanReserveActivations");
+
+            migrationBuilder.DropTable(
+                name: "ClanReserveInventories");
+
+            migrationBuilder.DropTable(
                 name: "DataSyncStates");
 
             migrationBuilder.DropTable(
@@ -849,6 +1156,9 @@ namespace CosmoManager.Migrations
                 name: "DirectoryFieldModifications");
 
             migrationBuilder.DropTable(
+                name: "HomeBanners");
+
+            migrationBuilder.DropTable(
                 name: "PopupNotifications");
 
             migrationBuilder.DropTable(
@@ -858,10 +1168,10 @@ namespace CosmoManager.Migrations
                 name: "TournamentMaps");
 
             migrationBuilder.DropTable(
-                name: "TournamentPrizes");
+                name: "TournamentMatchSlots");
 
             migrationBuilder.DropTable(
-                name: "TournamentRegistrations");
+                name: "TournamentPrizes");
 
             migrationBuilder.DropTable(
                 name: "VehicleMarks");
@@ -876,13 +1186,22 @@ namespace CosmoManager.Migrations
                 name: "DirectoryVehicles");
 
             migrationBuilder.DropTable(
+                name: "TournamentMatches");
+
+            migrationBuilder.DropTable(
+                name: "Vehicles");
+
+            migrationBuilder.DropTable(
+                name: "TournamentRegistrations");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Tournaments");
 
             migrationBuilder.DropTable(
-                name: "Vehicles");
+                name: "Clans");
 
             migrationBuilder.DropTable(
                 name: "InfoItems");

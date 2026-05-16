@@ -1,24 +1,24 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import logoFull from '/images/logo-full.svg';
 import lestaLogo from '/images/lesta_agency.svg';
 import logoFullVertical from '/images/logo-full.vertical.svg';
 import mtLogo from '/images/world_of_tanks.svg';
 
 const SERVICES_LINKS = [
-  { label: 'Управление кланом', to: '/services/clan-management' },
-  { label: 'Статистика игроков', to: '/services/player-stats' },
-  { label: 'Планировщик боёв', to: '/services/battle-planner' },
-  { label: 'Казна клана', to: '/services/treasury' },
-  { label: 'Рекрутинг', to: '/services/recruitment' },
+  { label: 'Знак классности мастер', to: '/achievements/masters' },
+  { label: 'Отличительные отметки', to: '/achievements/marks' },
+  { label: 'Каталог техники', to: '/directory' },
+  { label: 'Турниры', to: '/tournaments' },
+  { label: 'Клан', to: '/clan' },
 ];
 
 const INFO_LINKS = [
-  { label: 'О нас', to: '/about' },
-  { label: 'Руководство пользователя', to: '/guide' },
-  { label: 'Правила', to: '/rules' },
-  { label: 'Информация', to: '/info' },
-  { label: 'Конфиденциальность', to: '/privacy' },
+  { label: 'О нас', to: '/documents/about' },
+  { label: 'Лицензия', to: '/documents/license' },
+  { label: 'Соглашение', to: '/documents/use_data_policy' },
+  { label: 'Конфиденциальность', to: '/documents/privacy_policy' },
+  { label: 'Руководство пользователя', to: '/documents/user_guide' },
 ];
 
 function Footer() {
@@ -48,7 +48,7 @@ function Footer() {
           <a href="/" onClick={(e) => handleLink(e, '/')} className="footer__partner-link footer__partner-link--center">
             <img src={logoFull} alt="CosmoManager" className="footer__partner-img footer__partner-img--main" />
           </a>
-          <a href="https://worldoftanks.ru" target="_blank" rel="noopener noreferrer" className="footer__partner-link">
+          <a href="https://tanki.su" target="_blank" rel="noopener noreferrer" className="footer__partner-link">
             <img src={mtLogo} alt="Мир Танков" className="footer__partner-img" />
           </a>
         </div>
@@ -111,19 +111,19 @@ function Footer() {
             </li>
           </ul>
           <div className="footer__action-btns">
-            <button className="btn btn-gold btn-sm">
+            <Link to="development" className="btn btn-gold btn-sm">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
               Поддержать
-            </button>
-            <button className="btn btn-ghost btn-sm">
+            </Link>
+            <a href='mailto:support@cosmomanager.ru' className="btn btn-ghost btn-sm">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
               Сообщить об ошибке
-            </button>
+            </a>
           </div>
         </div>
 

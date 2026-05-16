@@ -24,6 +24,10 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
 
     public DbSet<TournamentRegistration> TournamentRegistrations => Set<TournamentRegistration>();
 
+    public DbSet<TournamentMatch> TournamentMatches => Set<TournamentMatch>();
+
+    public DbSet<TournamentMatchSlot> TournamentMatchSlots => Set<TournamentMatchSlot>();
+
     public DbSet<Vehicle> Vehicles => Set<Vehicle>();
 
     public DbSet<VehicleMark> VehicleMarks => Set<VehicleMark>();
@@ -44,6 +48,14 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
 
     public DbSet<PopupNotification> PopupNotifications => Set<PopupNotification>();
 
+    public DbSet<Clan> Clans => Set<Clan>();
+
+    public DbSet<ClanReserveInventory> ClanReserveInventories => Set<ClanReserveInventory>();
+
+    public DbSet<ClanReserveActivation> ClanReserveActivations => Set<ClanReserveActivation>();
+
+    public DbSet<HomeBanner> HomeBanners => Set<HomeBanner>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -62,6 +74,141 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
                 .WithMany()
                 .HasForeignKey(x => x.AppUserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Clan>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Tag)
+                .HasMaxLength(5)
+                .IsRequired();
+
+            entity.Property(x => x.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(x => x.Description)
+                .HasMaxLength(1000)
+                .IsRequired();
+
+            entity.Property(x => x.EloRating)
+                .HasDefaultValue(1000);
+
+            entity.Property(x => x.CreatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.HasIndex(x => x.Tag)
+                .IsUnique();
+
+            entity.ToTable(t =>
+            {
+                t.HasCheckConstraint(
+                    "CK_Clans_Tag_Format",
+                    "\"Tag\" ~ '^[A-Za-z0-9_-]{3,5}$'");
+
+                t.HasCheckConstraint(
+                    "CK_Clans_EloRating_Min",
+                    "\"EloRating\" >= 0");
+            });
+        });
+
+        builder.Entity<ClanReserveInventory>(entity =>
+        {
+            entity.HasKey(x => new { x.ClanId, x.ReserveType });
+
+            entity.Property(x => x.ReserveType)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(x => x.Amount)
+                .IsRequired();
+
+            entity.Property(x => x.UpdatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.HasOne(x => x.Clan)
+                .WithMany()
+                .HasForeignKey(x => x.ClanId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(x => x.ClanId);
+
+            entity.ToTable(t =>
+            {
+                t.HasCheckConstraint(
+                    "CK_ClanReserveInventories_Amount_Min",
+                    "\"Amount\" >= 0");
+            });
+        });
+
+        builder.Entity<ClanReserveActivation>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.ReserveType)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(x => x.ReserveGroup)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(x => x.ActivatedByUserId)
+                .IsRequired();
+
+            entity.Property(x => x.ActivatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.Property(x => x.EndsAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.HasOne(x => x.Clan)
+                .WithMany()
+                .HasForeignKey(x => x.ClanId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.ActivatedByUser)
+                .WithMany()
+                .HasForeignKey(x => x.ActivatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.ClanId);
+
+            entity.HasIndex(x => new { x.ClanId, x.ReserveGroup, x.EndsAtUtc });
+        });
+
+        builder.Entity<AppUser>(entity =>
+        {
+            entity.Property(x => x.Nickname)
+                .HasMaxLength(24)
+                .IsRequired();
+
+            entity.Property(x => x.ClanRank)
+                .HasConversion<string>()
+                .HasMaxLength(50);
+
+            entity.HasOne(x => x.Clan)
+                .WithMany(x => x.Users)
+                .HasForeignKey(x => x.ClanId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(x => x.ClanId)
+                .HasDatabaseName("IX_AspNetUsers_ClanId");
+
+            // В одном клане может быть только один командующий.
+            // Работает для PostgreSQL, потому что ClanRank хранится строкой.
+            entity.HasIndex(x => x.ClanId)
+                .IsUnique()
+                .HasFilter("\"ClanId\" IS NOT NULL AND \"ClanRank\" = 'Commander'")
+                .HasDatabaseName("UX_AspNetUsers_ClanId_Commander");
         });
 
         builder.Entity<InfoItem>(entity =>
@@ -281,6 +428,51 @@ CosmoManager объединяет новости, события, турниры
             }
         );
 
+        builder.Entity<HomeBanner>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Title)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            entity.Property(x => x.Description)
+                .HasMaxLength(1000)
+                .IsRequired();
+
+            entity.Property(x => x.ButtonLabel)
+                .HasMaxLength(100);
+
+            entity.Property(x => x.ButtonUrl)
+                .HasMaxLength(500);
+
+            entity.Property(x => x.ImageUrl)
+                .HasMaxLength(500);
+
+            entity.Property(x => x.Gradient)
+                .HasMaxLength(500);
+
+            entity.Property(x => x.IsPublished)
+                .HasDefaultValue(true);
+
+            entity.Property(x => x.CreatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.Property(x => x.UpdatedAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.HasIndex(x => x.Slot)
+                .IsUnique();
+
+            entity.ToTable(t =>
+            {
+                t.HasCheckConstraint(
+                    "CK_HomeBanners_Slot",
+                    "\"Slot\" IN (1, 2)");
+            });
+        });
+
         builder.Entity<Tournament>(entity =>
         {
             entity.HasKey(x => x.Id);
@@ -409,6 +601,151 @@ CosmoManager объединяет новости, события, турниры
 
             entity.HasIndex(x => new { x.TournamentId, x.AppUserId })
                 .IsUnique();
+        });
+
+        builder.Entity<TournamentMatch>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Bracket)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.Status)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.ResultStatus)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.StreamUrl)
+                .HasMaxLength(500);
+
+            entity.Property(x => x.Comment)
+                .HasMaxLength(1000);
+
+            entity.Property(x => x.ScheduledAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.Property(x => x.StartedAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.Property(x => x.FinishedAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.Property(x => x.CreatedAtUtc)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.HasOne(x => x.Tournament)
+                .WithMany(x => x.Matches)
+                .HasForeignKey(x => x.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.WinnerRegistration)
+                .WithMany()
+                .HasForeignKey(x => x.WinnerRegistrationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.AdvancingRegistration)
+                .WithMany()
+                .HasForeignKey(x => x.AdvancingRegistrationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne<TournamentMatch>()
+                .WithMany()
+                .HasForeignKey(x => x.WinnerToMatchId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne<TournamentMatch>()
+                .WithMany()
+                .HasForeignKey(x => x.LoserToMatchId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.TournamentId);
+
+            entity.HasIndex(x => new
+            {
+                x.TournamentId,
+                x.Bracket,
+                x.RoundSize,
+                x.RoundNumber,
+                x.MatchNumber
+            })
+            .IsUnique()
+            .HasDatabaseName("UX_TournamentMatches_Position");
+
+            entity.ToTable(t =>
+            {
+                t.HasCheckConstraint(
+                    "CK_TournamentMatches_RoundSize_Min",
+                    "\"RoundSize\" >= 2");
+
+                t.HasCheckConstraint(
+                    "CK_TournamentMatches_RoundNumber_Min",
+                    "\"RoundNumber\" >= 1");
+
+                t.HasCheckConstraint(
+                    "CK_TournamentMatches_MatchNumber_Min",
+                    "\"MatchNumber\" >= 1");
+
+                t.HasCheckConstraint(
+                    "CK_TournamentMatches_Team1Score_Min",
+                    "\"Team1Score\" >= 0");
+
+                t.HasCheckConstraint(
+                    "CK_TournamentMatches_Team2Score_Min",
+                    "\"Team2Score\" >= 0");
+
+                t.HasCheckConstraint(
+                    "CK_TournamentMatches_WinnerToSlot",
+                    "\"WinnerToSlotNumber\" IS NULL OR \"WinnerToSlotNumber\" IN (1, 2)");
+
+                t.HasCheckConstraint(
+                    "CK_TournamentMatches_LoserToSlot",
+                    "\"LoserToSlotNumber\" IS NULL OR \"LoserToSlotNumber\" IN (1, 2)");
+            });
+        });
+
+        builder.Entity<TournamentMatchSlot>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.SourceResult)
+                .HasMaxLength(20);
+
+            entity.HasOne(x => x.Match)
+                .WithMany(x => x.Slots)
+                .HasForeignKey(x => x.MatchId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.Registration)
+                .WithMany()
+                .HasForeignKey(x => x.RegistrationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.SourceMatch)
+                .WithMany()
+                .HasForeignKey(x => x.SourceMatchId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.MatchId);
+
+            entity.HasIndex(x => new { x.MatchId, x.SlotNumber })
+                .IsUnique()
+                .HasDatabaseName("UX_TournamentMatchSlots_Match_Slot");
+
+            entity.ToTable(t =>
+            {
+                t.HasCheckConstraint(
+                    "CK_TournamentMatchSlots_SlotNumber",
+                    "\"SlotNumber\" IN (1, 2)");
+
+                t.HasCheckConstraint(
+                    "CK_TournamentMatchSlots_SourceResult",
+                    "\"SourceResult\" IS NULL OR \"SourceResult\" IN ('winner', 'loser')");
+            });
         });
 
         builder.Entity<Tournament>().HasData(

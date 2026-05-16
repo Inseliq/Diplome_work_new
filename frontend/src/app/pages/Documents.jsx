@@ -1,8 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { DOCUMENTS, DOCUMENT_KEYS } from '../data/documentsData';
 import { parseDocMarkdown } from '../utils/parseDocMarkdown';
 
+const DEFAULT_DOCUMENT_KEY = 'privacy_policy';
+
 const SECTION_ICONS = {
+  about: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  ),
   privacy_policy: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -33,22 +43,34 @@ const SECTION_ICONS = {
 };
 
 function Documents() {
-  const [activeKey, setActiveKey] = useState(DOCUMENT_KEYS[0]);
+  const { documentKey } = useParams();
+  const navigate = useNavigate();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const contentRef = useRef(null);
 
-  // При смене секции — скроллим контент наверх
-  const handleSelect = (key) => {
-    setActiveKey(key);
-    setMenuOpen(false);
-    if (contentRef.current) {
-      contentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const activeKey = DOCUMENTS[documentKey]
+    ? documentKey
+    : DEFAULT_DOCUMENT_KEY;
 
   const doc = DOCUMENTS[activeKey];
   const nodes = parseDocMarkdown(doc.content, activeKey);
+
+  useEffect(() => {
+    if (documentKey && !DOCUMENTS[documentKey]) {
+      navigate(`/documents/${DEFAULT_DOCUMENT_KEY}`, { replace: true });
+    }
+  }, [documentKey, navigate]);
+
+  useEffect(() => {
+    setMenuOpen(false);
+
+    if (contentRef.current) {
+      contentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeKey]);
 
   return (
     <div className="docs-wrapper">
@@ -62,18 +84,25 @@ function Documents() {
         <nav className="docs-aside__nav">
           {DOCUMENT_KEYS.map((key) => {
             const d = DOCUMENTS[key];
+
             return (
-              <button
+              <Link
                 key={key}
+                to={`/documents/${key}`}
                 className={`docs-aside__item${activeKey === key ? ' docs-aside__item--active' : ''}`}
-                onClick={() => handleSelect(key)}
               >
-                <span className="docs-aside__item-icon">{SECTION_ICONS[key]}</span>
-                <span className="docs-aside__item-label">{d.title}</span>
+                <span className="docs-aside__item-icon">
+                  {SECTION_ICONS[key]}
+                </span>
+
+                <span className="docs-aside__item-label">
+                  {d.title}
+                </span>
+
                 {activeKey === key && (
                   <span className="docs-aside__item-dot" />
                 )}
-              </button>
+              </Link>
             );
           })}
         </nav>
@@ -88,8 +117,9 @@ function Documents() {
       {/* ── Мобильная кнопка ── */}
       <button
         className={`docs-mobile-toggle${menuOpen ? ' docs-mobile-toggle--open' : ''}`}
-        onClick={() => setMenuOpen((v) => !v)}
+        onClick={() => setMenuOpen((value) => !value)}
         aria-label="Меню документации"
+        type="button"
       >
         {menuOpen ? (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -103,12 +133,16 @@ function Documents() {
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         )}
+
         <span>{doc.title}</span>
       </button>
 
       {/* ── Оверлей мобильного меню ── */}
       {menuOpen && (
-        <div className="docs-mobile-overlay" onClick={() => setMenuOpen(false)} />
+        <div
+          className="docs-mobile-overlay"
+          onClick={() => setMenuOpen(false)}
+        />
       )}
 
       {/* ── Основной контент ── */}
@@ -117,6 +151,7 @@ function Documents() {
           <article className="docs-article">
             {nodes}
           </article>
+
           <div className="docs-content__footer">
             <span>CosmoManager — {doc.title}</span>
           </div>

@@ -3,17 +3,17 @@ import { Link } from 'react-router-dom';
 
 const CLAN_CARDS = [
   {
-    to: '/clan/global-map',
-    icon: '🗺️',
-    title: 'Глобальная карта',
-    desc: 'Управление боями на глобальной карте, захват провинций и стратегическое планирование.',
+    to: '/clan/me',
+    icon: '/images/services/clans.service.svg',
+    title: 'Информация о клане',
+    desc: 'Просмотр информации о клане, состав клана.',
     color: 'var(--main-accent-effect)',
     glow: 'rgba(131,93,228,0.18)',
     tag: 'ГК',
   },
   {
     to: '/clan/reserves',
-    icon: '⚡',
+    icon: '/images/services/reserve.service.svg',
     title: 'Активация резервов',
     desc: 'Управление клановыми резервами — активация бонусов для всех участников клана.',
     color: 'var(--third-accent)',
@@ -21,8 +21,8 @@ const CLAN_CARDS = [
     tag: 'Резервы',
   },
   {
-    to: '/achievements/clan',
-    icon: '🏅',
+    to: '/development',
+    icon: '/images/services/achievements.service.svg',
     title: 'Клановые достижения',
     desc: 'Медали, ордена и достижения клана за бои на глобальной карте и турниры.',
     color: 'var(--second-accent)',
@@ -31,7 +31,7 @@ const CLAN_CARDS = [
   },
   {
     to: '/events?category=Клан',
-    icon: '🗓️',
+    icon: '/images/services/events.service.svg',
     title: 'Информация о событиях',
     desc: 'Актуальные события клана: кланваты, тренировки, рейды и специальные операции.',
     color: '#22c55e',
@@ -65,7 +65,9 @@ function Clan() {
 
               <div className="service-card__top-row">
                 <div className="service-card__icon-wrap">
-                  <span className="service-card__icon">{c.icon}</span>
+                  <div className="service__service-card-icon">
+                    <img src={c.icon} alt={c.title} />
+                  </div>
                 </div>
                 <span className="service-card__tag" style={{ color: c.color }}>{c.tag}</span>
               </div>

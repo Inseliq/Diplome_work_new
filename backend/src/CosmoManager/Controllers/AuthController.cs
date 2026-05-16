@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.RegularExpressions;
 
 namespace CosmoManager.Controllers;
 
@@ -21,6 +22,10 @@ public class AuthController : ControllerBase
     private readonly UserManager<AppUser> _userManager;
     private readonly AppDbContext _dbContext;
     private readonly IConfiguration _configuration;
+
+    private static readonly Regex NicknameRegex = new(
+    "^[A-Za-z0-9_]{3,24}$",
+    RegexOptions.Compiled);
 
     public AuthController(
         UserManager<AppUser> userManager,
@@ -53,6 +58,14 @@ public class AuthController : ControllerBase
 
         var nickname = request.Nickname.Trim();
         var email = request.Email.Trim();
+
+        if (!NicknameRegex.IsMatch(nickname))
+        {
+            return BadRequest(new
+            {
+                message = "Никнейм должен быть от 3 до 24 символов и может содержать только A-Z, a-z, 0-9 и _."
+            });
+        }
 
         var existingUserByEmail = await _userManager.FindByEmailAsync(email);
 
@@ -400,11 +413,34 @@ public class AuthController : ControllerBase
     {
         var roles = await _userManager.GetRolesAsync(user);
 
+        ClanShortResponse? clan = null;
+
+        if (user.ClanId != null)
+        {
+            var clanEntity = await _dbContext.Clans
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == user.ClanId);
+
+            if (clanEntity != null)
+            {
+                clan = new ClanShortResponse(
+                    Id: clanEntity.Id,
+                    Tag: clanEntity.Tag,
+                    Name: clanEntity.Name
+                );
+            }
+        }
+
         return new AuthUserResponse(
             Id: user.Id,
             Nickname: user.Nickname,
             Email: user.Email ?? string.Empty,
-            Roles: roles.ToArray()
+            Roles: roles.ToArray(),
+            Clan: clan,
+            ClanRank: user.ClanRank?.ToString(),
+            ClanRankLabel: user.ClanRank.HasValue
+                ? ClanRankHelper.GetLabel(user.ClanRank.Value)
+                : null
         );
     }
 

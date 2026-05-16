@@ -4,5 +4,8 @@ public sealed record AuthUserResponse(
     string Id,
     string Nickname,
     string Email,
-    IReadOnlyCollection<string> Roles
+    IReadOnlyCollection<string> Roles,
+    ClanShortResponse? Clan,
+    string? ClanRank,
+    string? ClanRankLabel
 );

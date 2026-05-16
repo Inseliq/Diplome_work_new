@@ -34,6 +34,9 @@ import Maintenance from './app/pages/service/Maintenance';
 import Mods from './app/pages/Mods';
 import Documents from './app/pages/Documents';
 import ProtectedRoute from './app/components/ProtectedRoute';
+import Reserves from './app/pages/Reserves';
+import Profile from './app/pages/Profile';
+import MyClan from './app/pages/MyClan';
 
 import Login from './app/pages/Login';
 import Register from './app/pages/Register';
@@ -60,13 +63,9 @@ function App() {
         <Route path="clan" element={<Clan />} />
         <Route path="tournaments" element={<Tournaments />} />
         <Route path="news" element={<News />} />
-        {/* <Route path="mods" element={
-          <ProtectedRoute>
-            <Mods />
-          </ProtectedRoute>
-        } /> */}
         <Route path="mods" element={<Mods />} />
-        <Route path="documents" element={<Documents />} />
+        <Route path="/documents" element={<Documents />} />
+        <Route path="/documents/:documentKey" element={<Documents />} />
         <Route path="news/:id" element={<NewsDetail />} />
         <Route path="events" element={<Events />} />
         <Route path="events/:id" element={<EventDetail />} />
@@ -75,6 +74,36 @@ function App() {
         <Route path="achievements/masters" element={<Masters />} />
         <Route path="tournaments/custom" element={<Customs />} />
         <Route path="tournaments/custom/details/:id" element={<CustomDetail />} />
+        <Route path="directory" element={<CatalogsTanks />} />
+        <Route path="directory/:id" element={<TankDirectory />} />
+
+        <Route
+          path="profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="clan/me"
+          element={
+            <ProtectedRoute>
+              <MyClan />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="clan/reserves"
+          element={
+            <ProtectedRoute>
+              <Reserves />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="tournaments/custom/register/:id"
           element={
@@ -83,8 +112,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="directory" element={<CatalogsTanks />} />
-        <Route path="directory/:id" element={<TankDirectory />} />
+
 
         {/* ── ADMIN ── */}
         {/* <Route path="secure/helmet/admin" element={<AdminHome />} />
@@ -96,9 +124,9 @@ function App() {
         <Route path="secure/helmet/admin/catalog" element={<AdminCatalog />} /> */}
 
         {/* ── SERVICE ── */}
-        <Route path="/error" element={<ErrorPage code="404" />} />
-        <Route path="/development" element={<InDevelopment />} />
-        <Route path="/maintenance" element={<Maintenance />} />
+        <Route path="error" element={<ErrorPage code="404" />} />
+        <Route path="development" element={<InDevelopment />} />
+        <Route path="maintenance" element={<Maintenance />} />
       </Route>
 
 

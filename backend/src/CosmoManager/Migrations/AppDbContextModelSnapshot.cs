@@ -30,6 +30,13 @@ namespace CosmoManager.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ClanId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ClanRank")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -49,7 +56,8 @@ namespace CosmoManager.Migrations
 
                     b.Property<string>("Nickname")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -80,6 +88,11 @@ namespace CosmoManager.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClanId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_AspNetUsers_ClanId_Commander")
+                        .HasFilter("\"ClanId\" IS NOT NULL AND \"ClanRank\" = 'Commander'");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -88,6 +101,117 @@ namespace CosmoManager.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.Clan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("EloRating")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1000);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Tag")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Tag")
+                        .IsUnique();
+
+                    b.ToTable("Clans", t =>
+                        {
+                            t.HasCheckConstraint("CK_Clans_EloRating_Min", "\"EloRating\" >= 0");
+
+                            t.HasCheckConstraint("CK_Clans_Tag_Format", "\"Tag\" ~ '^[A-Za-z0-9_-]{3,5}$'");
+                        });
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.ClanReserveActivation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ActivatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ActivatedByUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ClanId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("EndsAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReserveGroup")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ReserveType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivatedByUserId");
+
+                    b.HasIndex("ClanId");
+
+                    b.HasIndex("ClanId", "ReserveGroup", "EndsAtUtc");
+
+                    b.ToTable("ClanReserveActivations");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.ClanReserveInventory", b =>
+                {
+                    b.Property<int>("ClanId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ReserveType")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ClanId", "ReserveType");
+
+                    b.HasIndex("ClanId");
+
+                    b.ToTable("ClanReserveInventories", t =>
+                        {
+                            t.HasCheckConstraint("CK_ClanReserveInventories_Amount_Min", "\"Amount\" >= 0");
+                        });
                 });
 
             modelBuilder.Entity("CosmoManager.Models.DataSyncState", b =>
@@ -513,6 +637,65 @@ namespace CosmoManager.Migrations
                             ImageUrl = "/images/tanks/r45_is-7.webp",
                             IsPublished = true,
                             UpdatedAtUtc = new DateTime(2026, 5, 15, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.HomeBanner", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ButtonLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ButtonUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Gradient")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsPublished")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("Slot")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slot")
+                        .IsUnique();
+
+                    b.ToTable("HomeBanners", t =>
+                        {
+                            t.HasCheckConstraint("CK_HomeBanners_Slot", "\"Slot\" IN (1, 2)");
                         });
                 });
 
@@ -1031,6 +1214,169 @@ namespace CosmoManager.Migrations
                         });
                 });
 
+            modelBuilder.Entity("CosmoManager.Models.TournamentMatch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AdvancingRegistrationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Bracket")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("FinishedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("LoserToMatchId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("LoserToSlotNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MatchNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ResultStatus")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<int>("RoundNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RoundSize")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ScheduledAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("StartedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("StreamUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Team1Score")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Team2Score")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TournamentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("WinnerRegistrationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("WinnerToMatchId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("WinnerToSlotNumber")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdvancingRegistrationId");
+
+                    b.HasIndex("LoserToMatchId");
+
+                    b.HasIndex("TournamentId");
+
+                    b.HasIndex("WinnerRegistrationId");
+
+                    b.HasIndex("WinnerToMatchId");
+
+                    b.HasIndex("TournamentId", "Bracket", "RoundSize", "RoundNumber", "MatchNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_TournamentMatches_Position");
+
+                    b.ToTable("TournamentMatches", t =>
+                        {
+                            t.HasCheckConstraint("CK_TournamentMatches_LoserToSlot", "\"LoserToSlotNumber\" IS NULL OR \"LoserToSlotNumber\" IN (1, 2)");
+
+                            t.HasCheckConstraint("CK_TournamentMatches_MatchNumber_Min", "\"MatchNumber\" >= 1");
+
+                            t.HasCheckConstraint("CK_TournamentMatches_RoundNumber_Min", "\"RoundNumber\" >= 1");
+
+                            t.HasCheckConstraint("CK_TournamentMatches_RoundSize_Min", "\"RoundSize\" >= 2");
+
+                            t.HasCheckConstraint("CK_TournamentMatches_Team1Score_Min", "\"Team1Score\" >= 0");
+
+                            t.HasCheckConstraint("CK_TournamentMatches_Team2Score_Min", "\"Team2Score\" >= 0");
+
+                            t.HasCheckConstraint("CK_TournamentMatches_WinnerToSlot", "\"WinnerToSlotNumber\" IS NULL OR \"WinnerToSlotNumber\" IN (1, 2)");
+                        });
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.TournamentMatchSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsBye")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MatchId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RegistrationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("SeedNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SlotNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("SourceMatchId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SourceResult")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MatchId");
+
+                    b.HasIndex("RegistrationId");
+
+                    b.HasIndex("SourceMatchId");
+
+                    b.HasIndex("MatchId", "SlotNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_TournamentMatchSlots_Match_Slot");
+
+                    b.ToTable("TournamentMatchSlots", t =>
+                        {
+                            t.HasCheckConstraint("CK_TournamentMatchSlots_SlotNumber", "\"SlotNumber\" IN (1, 2)");
+
+                            t.HasCheckConstraint("CK_TournamentMatchSlots_SourceResult", "\"SourceResult\" IS NULL OR \"SourceResult\" IN ('winner', 'loser')");
+                        });
+                });
+
             modelBuilder.Entity("CosmoManager.Models.TournamentPrize", b =>
                 {
                     b.Property<int>("Id")
@@ -1455,6 +1801,46 @@ namespace CosmoManager.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CosmoManager.Models.AppUser", b =>
+                {
+                    b.HasOne("CosmoManager.Models.Clan", "Clan")
+                        .WithMany("Users")
+                        .HasForeignKey("ClanId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Clan");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.ClanReserveActivation", b =>
+                {
+                    b.HasOne("CosmoManager.Models.AppUser", "ActivatedByUser")
+                        .WithMany()
+                        .HasForeignKey("ActivatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CosmoManager.Models.Clan", "Clan")
+                        .WithMany()
+                        .HasForeignKey("ClanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ActivatedByUser");
+
+                    b.Navigation("Clan");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.ClanReserveInventory", b =>
+                {
+                    b.HasOne("CosmoManager.Models.Clan", "Clan")
+                        .WithMany()
+                        .HasForeignKey("ClanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clan");
+                });
+
             modelBuilder.Entity("CosmoManager.Models.DirectoryBuild", b =>
                 {
                     b.HasOne("CosmoManager.Models.DirectoryVehicle", "DirectoryVehicle")
@@ -1518,6 +1904,66 @@ namespace CosmoManager.Migrations
                         .IsRequired();
 
                     b.Navigation("Tournament");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.TournamentMatch", b =>
+                {
+                    b.HasOne("CosmoManager.Models.TournamentRegistration", "AdvancingRegistration")
+                        .WithMany()
+                        .HasForeignKey("AdvancingRegistrationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CosmoManager.Models.TournamentMatch", null)
+                        .WithMany()
+                        .HasForeignKey("LoserToMatchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CosmoManager.Models.Tournament", "Tournament")
+                        .WithMany("Matches")
+                        .HasForeignKey("TournamentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CosmoManager.Models.TournamentRegistration", "WinnerRegistration")
+                        .WithMany()
+                        .HasForeignKey("WinnerRegistrationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CosmoManager.Models.TournamentMatch", null)
+                        .WithMany()
+                        .HasForeignKey("WinnerToMatchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AdvancingRegistration");
+
+                    b.Navigation("Tournament");
+
+                    b.Navigation("WinnerRegistration");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.TournamentMatchSlot", b =>
+                {
+                    b.HasOne("CosmoManager.Models.TournamentMatch", "Match")
+                        .WithMany("Slots")
+                        .HasForeignKey("MatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CosmoManager.Models.TournamentRegistration", "Registration")
+                        .WithMany()
+                        .HasForeignKey("RegistrationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CosmoManager.Models.TournamentMatch", "SourceMatch")
+                        .WithMany()
+                        .HasForeignKey("SourceMatchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Match");
+
+                    b.Navigation("Registration");
+
+                    b.Navigation("SourceMatch");
                 });
 
             modelBuilder.Entity("CosmoManager.Models.TournamentPrize", b =>
@@ -1623,6 +2069,11 @@ namespace CosmoManager.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CosmoManager.Models.Clan", b =>
+                {
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("CosmoManager.Models.DirectoryVehicle", b =>
                 {
                     b.Navigation("Builds");
@@ -1634,9 +2085,16 @@ namespace CosmoManager.Migrations
                 {
                     b.Navigation("Maps");
 
+                    b.Navigation("Matches");
+
                     b.Navigation("Prizes");
 
                     b.Navigation("Registrations");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.TournamentMatch", b =>
+                {
+                    b.Navigation("Slots");
                 });
 
             modelBuilder.Entity("CosmoManager.Models.Vehicle", b =>

@@ -2,21 +2,22 @@
 
 namespace CosmoManager.Requests;
 
-public sealed class RegisterRequest
+public class RegisterRequest
 {
-    [Required(ErrorMessage = "Никнейм обязателен")]
-    [MinLength(3, ErrorMessage = "Никнейм должен содержать минимум 3 символа")]
-    [MaxLength(32, ErrorMessage = "Никнейм должен содержать максимум 32 символа")]
+    [Required]
+    [RegularExpression(
+        "^[A-Za-z0-9_]{3,24}$",
+        ErrorMessage = "Никнейм должен быть от 3 до 24 символов и может содержать только A-Z, a-z, 0-9 и _."
+    )]
     public string Nickname { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Email обязателен")]
-    [EmailAddress(ErrorMessage = "Некорректный email")]
+    [Required]
+    [EmailAddress]
     public string Email { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Пароль обязателен")]
-    [MinLength(8, ErrorMessage = "Пароль должен содержать минимум 8 символов")]
+    [Required]
     public string Password { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Подтверждение пароля обязательно")]
+    [Required]
     public string ConfirmPassword { get; set; } = string.Empty;
 }

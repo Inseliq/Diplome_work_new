@@ -98,13 +98,52 @@
     gap: var(--sp-2);
     flex-shrink: 0;
 
-    .header__support {
-      color: var(--third-accent);
-      border-color: rgba(250, 184, 27, 0.2);
+    .header__quick-links {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    .header__quick-link {
+      padding: 6.5px;
+      border-color: rgba(255, 255, 255, 0.08);
+
+      &:hover,
+      &.header__quick-link--active {
+        background: rgba(88, 43, 186, 0.12);
+        border-color: var(--border-accent);
+        box-shadow: 0 0 16px rgba(88, 43, 186, 0.25);
+      }
+    }
+
+    .header__quick-link-img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .header__profile-name {
+      max-width: 125px;
+      min-width: 0;
+      padding-inline: 12px;
+    }
+
+    .header__profile-name-text {
+      display: block;
+      max-width: 125px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .header__logout {
+      color: var(--text-muted);
+
       &:hover {
-        background: rgba(250, 184, 27, 0.08);
-        border-color: rgba(250, 184, 27, 0.4);
-        box-shadow: 0 0 16px var(--gold-glow);
+        color: var(--second-accent);
+        border-color: rgba(255, 80, 0, 0.35);
+        background: rgba(255, 80, 0, 0.08);
       }
     }
   }
@@ -238,10 +277,35 @@
     display: flex;
     flex-direction: column;
     gap: var(--sp-2);
-    .mobile-menu__support {
+    .mobile-menu__quick-links {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+    }
+
+    .mobile-menu__quick-link {
       justify-content: flex-start;
-      color: var(--third-accent);
-      border-color: rgba(250, 184, 27, 0.2);
+      gap: var(--sp-2);
+    }
+
+    .mobile-menu__quick-link-img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .mobile-menu__profile {
+      justify-content: flex-start;
+      max-width: 100%;
+    }
+
+    .mobile-menu__profile-text {
+      display: block;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 }

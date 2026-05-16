@@ -72,4 +72,6 @@ public class Tournament
     public ICollection<TournamentPrize> Prizes { get; set; } = new List<TournamentPrize>();
 
     public ICollection<TournamentRegistration> Registrations { get; set; } = new List<TournamentRegistration>();
+
+    public ICollection<TournamentMatch> Matches { get; set; } = new List<TournamentMatch>();
 }

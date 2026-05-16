@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logoFull from '../../assets/images/logo-full.svg';
 import { useAuth } from '../../context/AuthContext';
 
@@ -8,6 +8,19 @@ const NAV_LINKS = [
   { to: '/services', label: 'Сервисы' },
   { to: '/tournaments', label: 'Турниры' },
   { to: '/clan', label: 'Клан' },
+];
+
+const QUICK_LINKS = [
+  {
+    to: '/achievements/marks',
+    label: 'Отметки',
+    icon: '/images/services/marks.service.svg',
+  },
+  {
+    to: '/achievements/masters',
+    label: 'Мастера',
+    icon: '/images/services/masters.service.svg',
+  },
 ];
 
 function Header() {
@@ -21,10 +34,13 @@ function Header() {
   const location = useLocation();
 
   const {
+    user,
     isAuthenticated,
     isAuthLoading,
     logout,
   } = useAuth();
+
+  const nickname = user?.nickname || user?.Nickname || 'Профиль';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -105,6 +121,11 @@ function Header() {
     setMenuOpen(false);
   };
 
+  const goToProfile = () => {
+    navigate('/profile');
+    setMenuOpen(false);
+  };
+
   return (
     <>
       <header className={`header${scrolled ? ' header--scrolled' : ''}`}>
@@ -127,8 +148,7 @@ function Header() {
                 key={to}
                 href={to}
                 onClick={(e) => handleNavClick(e, to)}
-                className={`header__nav-link${location.pathname === to ? ' header__nav-link--active' : ''
-                  }`}
+                className={`header__nav-link${location.pathname === to ? ' header__nav-link--active' : ''}`}
               >
                 {label}
               </a>
@@ -136,49 +156,25 @@ function Header() {
           </nav>
 
           <div className="header__actions">
-            <button
-              className="btn btn-ghost btn-icon header__support"
-              title="Поддержать проект"
-              type="button"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-            </button>
-
             {!isAuthLoading && isAuthenticated ? (
               <>
                 <button
-                  className="btn btn-ghost header__profile"
+                  className="btn btn-ghost header__profile-name"
                   type="button"
-                  onClick={() => navigate('/profile')}
+                  onClick={goToProfile}
+                  title={nickname}
                 >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                  <span>Профиль</span>
+                  <span className="header__profile-name-text">
+                    {nickname}
+                  </span>
                 </button>
 
                 <button
-                  className="btn btn-ghost"
+                  className="btn btn-ghost btn-icon header__logout"
                   type="button"
                   onClick={handleLogout}
                   title="Выйти"
+                  aria-label="Выйти из аккаунта"
                 >
                   <svg
                     width="16"
@@ -194,47 +190,71 @@ function Header() {
                   </svg>
                 </button>
               </>
-            ) : !isAuthLoading && location.pathname === '/login' ? (
-              <button
-                className="btn btn-primary"
-                type="button"
-                onClick={goToRegister}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <line x1="19" y1="8" x2="19" y2="14" />
-                  <line x1="22" y1="11" x2="16" y2="11" />
-                </svg>
-                Регистрация
-              </button>
             ) : !isAuthLoading ? (
-              <button
-                className="btn btn-primary"
-                type="button"
-                onClick={goToLogin}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                  <polyline points="10 17 15 12 10 7" />
-                  <line x1="15" y1="12" x2="3" y2="12" />
-                </svg>
-                Войти
-              </button>
+              <>
+                <div className="header__quick-links">
+                  {QUICK_LINKS.map((item) => (
+                    <a
+                      key={item.to}
+                      href={item.to}
+                      className={`btn btn-ghost btn-icon header__quick-link${location.pathname === item.to ? ' header__quick-link--active' : ''}`}
+                      title={item.label}
+                      aria-label={item.label}
+                      onClick={(e) => handleNavClick(e, item.to)}
+                    >
+                      <img
+                        src={item.icon}
+                        alt=""
+                        className="header__quick-link-img"
+                        aria-hidden="true"
+                      />
+                    </a>
+                  ))}
+                </div>
+
+                {location.pathname === '/login' ? (
+                  <button
+                    className="btn btn-primary"
+                    type="button"
+                    onClick={goToRegister}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <line x1="19" y1="8" x2="19" y2="14" />
+                      <line x1="22" y1="11" x2="16" y2="11" />
+                    </svg>
+                    Регистрация
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-primary"
+                    type="button"
+                    onClick={goToLogin}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                      <polyline points="10 17 15 12 10 7" />
+                      <line x1="15" y1="12" x2="3" y2="12" />
+                    </svg>
+                    Войти
+                  </button>
+                )}
+              </>
             ) : null}
           </div>
 
@@ -297,8 +317,7 @@ function Header() {
               key={to}
               href={to}
               onClick={(e) => handleNavClick(e, to)}
-              className={`mobile-menu__link${location.pathname === to ? ' mobile-menu__link--active' : ''
-                }`}
+              className={`mobile-menu__link${location.pathname === to ? ' mobile-menu__link--active' : ''}`}
             >
               {label}
             </a>
@@ -306,34 +325,17 @@ function Header() {
         </div>
 
         <div className="mobile-menu__footer">
-          <button
-            className="btn btn-ghost mobile-menu__support"
-            type="button"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-            Поддержать
-          </button>
-
           {!isAuthLoading && isAuthenticated ? (
             <>
               <button
-                className="btn btn-ghost"
+                className="btn btn-ghost mobile-menu__profile"
                 type="button"
-                onClick={() => {
-                  navigate('/profile');
-                  setMenuOpen(false);
-                }}
+                onClick={goToProfile}
+                title={nickname}
               >
-                Профиль
+                <span className="mobile-menu__profile-text">
+                  {nickname}
+                </span>
               </button>
 
               <button
@@ -345,16 +347,37 @@ function Header() {
               </button>
             </>
           ) : !isAuthLoading ? (
-            <button
-              className="btn btn-primary"
-              type="button"
-              onClick={() => {
-                navigate(location.pathname === '/login' ? '/register' : '/login');
-                setMenuOpen(false);
-              }}
-            >
-              {location.pathname === '/login' ? 'Регистрация' : 'Войти'}
-            </button>
+            <>
+              <div className="mobile-menu__quick-links">
+                {QUICK_LINKS.map((item) => (
+                  <a
+                    key={item.to}
+                    href={item.to}
+                    className="btn btn-ghost mobile-menu__quick-link"
+                    onClick={(e) => handleNavClick(e, item.to)}
+                  >
+                    <img
+                      src={item.icon}
+                      alt=""
+                      className="mobile-menu__quick-link-img"
+                      aria-hidden="true"
+                    />
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+
+              <button
+                className="btn btn-primary"
+                type="button"
+                onClick={() => {
+                  navigate(location.pathname === '/login' ? '/register' : '/login');
+                  setMenuOpen(false);
+                }}
+              >
+                {location.pathname === '/login' ? 'Регистрация' : 'Войти'}
+              </button>
+            </>
           ) : null}
         </div>
       </nav>
