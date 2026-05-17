@@ -7,6 +7,7 @@ using CosmoManager.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace CosmoManager.Controllers;
 
@@ -18,10 +19,14 @@ public class ClanReservesController : ControllerBase
     private static readonly TimeSpan ReserveDuration = TimeSpan.FromHours(2);
 
     private readonly AppDbContext _dbContext;
+    private readonly UserManager<AppUser> _userManager;
 
-    public ClanReservesController(AppDbContext dbContext)
+    public ClanReservesController(
+    AppDbContext dbContext,
+    UserManager<AppUser> userManager)
     {
         _dbContext = dbContext;
+        _userManager = userManager;
     }
 
     [HttpGet]
@@ -75,7 +80,7 @@ public class ClanReservesController : ControllerBase
             return StatusCode(StatusCodes.Status403Forbidden, accessError);
         }
 
-        if (!CanActivateReserves())
+        if (!await CanActivateReservesAsync(user))
         {
             return Forbid();
         }
@@ -186,10 +191,10 @@ public class ClanReservesController : ControllerBase
             .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
     }
 
-    private bool CanActivateReserves()
+    private async Task<bool> CanActivateReservesAsync(AppUser user)
     {
-        return User.IsInRole(AppRoles.Administrator) ||
-               User.IsInRole(AppRoles.Moderator);
+        return await _userManager.IsInRoleAsync(user, AppRoles.Administrator) ||
+               await _userManager.IsInRoleAsync(user, AppRoles.Moderator);
     }
 
     private async Task<ClanReserveStateResponse> BuildStateResponseAsync(
@@ -198,7 +203,7 @@ public class ClanReservesController : ControllerBase
     {
         var clanId = user.ClanId!.Value;
         var now = DateTime.UtcNow;
-        var canManage = CanActivateReserves();
+        var canManage = await CanActivateReservesAsync(user);
 
         var inventories = await _dbContext.ClanReserveInventories
             .AsNoTracking()

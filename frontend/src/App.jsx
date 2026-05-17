@@ -8,6 +8,19 @@ import './app/styles/globals.css';
 import './app/styles/assemble.css';
 import Layout from './app/components/layout/Layout';
 
+import AdminRoute from './app/components/routes/AdminRoute';
+import HomeAdmin from './app/admin/HomeAdmin';
+import AdminNotification from './app/pages/admins/AdminNotification';
+import AdminNews from './app/pages/admins/AdminNews';
+import AdminEvents from './app/pages/admins/AdminEvents';
+import AdminBanners from './app/pages/admins/AdminBanners';
+import AdminClans from './app/pages/admins/AdminClans';
+import AdminUsers from './app/pages/admins/AdminUsers';
+import AdminReserves from './app/pages/admins/AdminReserves';
+import AdminTournaments from './app/pages/admins/AdminTournaments';
+import AdminTournamentsMatches from './app/pages/admins/AdminTournamentsMatches';
+import AdminDirectory from './app/pages/admins/AdminDirectory';
+
 import Home from './app/pages/Home';
 import Services from './app/pages/Services';
 import Clan from './app/pages/Clan';
@@ -24,10 +37,6 @@ import CustomDetail from './app/pages/CustomDetail';
 import CustomRegister from './app/pages/CustomRegister';
 import CatalogsTanks from './app/pages/CatalogsTanks';
 import TankDirectory from './app/pages/TankDirectory';
-// import AdminHome from './app/pages/admin/AdminHome';
-// import { AdminNewsList, AdminNewsEdit } from './app/pages/admin/AdminNews';
-// import { AdminTournamentsList, AdminTournamentsEdit } from './app/pages/admin/AdminTournaments';
-// import { AdminServices, AdminCatalog } from './app/pages/admin/AdminServicesCatalog';
 import ErrorPage from './app/pages/service/ErrorPage';
 import InDevelopment from './app/pages/service/InDevelopment';
 import Maintenance from './app/pages/service/Maintenance';
@@ -40,16 +49,6 @@ import MyClan from './app/pages/MyClan';
 
 import Login from './app/pages/Login';
 import Register from './app/pages/Register';
-
-// Пример использования:
-{/* <Route
-  path="/admin"
-  element={
-    <ProtectedRoute roles={[ROLES.Administrator]}>
-      <AdminPanel />
-    </ProtectedRoute>
-  }
-/> */}
 
 function App() {
   return (
@@ -76,7 +75,6 @@ function App() {
         <Route path="tournaments/custom/details/:id" element={<CustomDetail />} />
         <Route path="directory" element={<CatalogsTanks />} />
         <Route path="directory/:id" element={<TankDirectory />} />
-
         <Route
           path="profile"
           element={
@@ -85,7 +83,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="clan/me"
           element={
@@ -94,7 +91,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="clan/reserves"
           element={
@@ -103,7 +99,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="tournaments/custom/register/:id"
           element={
@@ -115,13 +110,94 @@ function App() {
 
 
         {/* ── ADMIN ── */}
-        {/* <Route path="secure/helmet/admin" element={<AdminHome />} />
-        <Route path="secure/helmet/admin/news" element={<AdminNewsList />} />
-        <Route path="secure/helmet/admin/news/:id" element={<AdminNewsEdit />} />
-        <Route path="secure/helmet/admin/tournaments" element={<AdminTournamentsList />} />
-        <Route path="secure/helmet/admin/tournaments/:id" element={<AdminTournamentsEdit />} />
-        <Route path="secure/helmet/admin/services" element={<AdminServices />} />
-        <Route path="secure/helmet/admin/catalog" element={<AdminCatalog />} /> */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <HomeAdmin />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/notifications"
+          element={
+            <AdminRoute>
+              <AdminNotification />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/news"
+          element={
+            <AdminRoute>
+              <AdminNews />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/events"
+          element={
+            <AdminRoute>
+              <AdminEvents />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/home-banners"
+          element={
+            <AdminRoute>
+              <AdminBanners />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/clans"
+          element={
+            <AdminRoute>
+              <AdminClans />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <AdminUsers />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/reserves"
+          element={
+            <AdminRoute>
+              <AdminReserves />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/tournaments"
+          element={
+            <AdminRoute>
+              <AdminTournaments />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/tournament-matches"
+          element={
+            <AdminRoute>
+              <AdminTournamentsMatches />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/directory"
+          element={
+            <AdminRoute>
+              <AdminDirectory />
+            </AdminRoute>
+          }
+        />
 
         {/* ── SERVICE ── */}
         <Route path="error" element={<ErrorPage code="404" />} />

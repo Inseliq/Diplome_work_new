@@ -24,7 +24,19 @@ ASSEMBLE — все стили проекта
 @import url(./css/Masters.css);
 @import url(./css/TR.Customs.css);
 @import url(./css/Catalogs.css);
-@import url(./css/Admin.css);
 @import url(./css/ServicePages.css);
 @import url(./css/Auth.css);
 @import url(./css/Reserve.css);
+@import url(./css/Profile.css);
+
+/* Admins */
+@import url(./css/Admin/Notify.css);
+@import url(./css/Admin/News.css);
+@import url(./css/Admin/Events.css);
+@import url(./css/Admin/Banners.css);
+@import url(./css/Admin/Clans.css);
+@import url(./css/Admin/Users.css);
+@import url(./css/Admin/Reserves.css);
+@import url(./css/Admin/Tournaments.css);
+@import url(./css/Admin/TournamentsMatches.css);
+@import url(./css/Admin/Directory.css);

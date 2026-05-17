@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const { login } = useAuth();
+  const { login, user } = useAuth();
 
-  const returnUrl = searchParams.get('returnUrl') || '/profile';
+  const returnUrl = searchParams.get('returnUrl') || '/';
 
   const [form, setForm] = useState({
     email: '',
@@ -29,14 +29,14 @@ export default function Login() {
   }
 
   function getSafeReturnUrl(url) {
-    if (!url) return '/profile';
+    if (!url) return '/';
 
     if (!url.startsWith('/')) {
-      return '/profile';
+      return '/';
     }
 
     if (url.startsWith('//')) {
-      return '/profile';
+      return '/';
     }
 
     return url;
@@ -51,7 +51,7 @@ export default function Login() {
     try {
       await login(form.email, form.password);
 
-      navigate(getSafeReturnUrl(returnUrl), {
+      navigate(safeReturnUrl, {
         replace: true,
       });
     } catch (err) {
@@ -61,9 +61,15 @@ export default function Login() {
     }
   }
 
-  const registerUrl = returnUrl && returnUrl !== '/profile'
-    ? `/register?returnUrl=${encodeURIComponent(returnUrl)}`
+  const safeReturnUrl = getSafeReturnUrl(returnUrl);
+
+  const registerUrl = safeReturnUrl !== '/'
+    ? `/register?returnUrl=${encodeURIComponent(safeReturnUrl)}`
     : '/register';
+
+  if (user) {
+    return <Navigate to={safeReturnUrl} replace />;
+  }
 
   return (
     <div className="auth-page">

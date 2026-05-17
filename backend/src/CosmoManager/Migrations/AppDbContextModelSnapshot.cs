@@ -56,8 +56,8 @@ namespace CosmoManager.Migrations
 
                     b.Property<string>("Nickname")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -690,8 +690,7 @@ namespace CosmoManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Slot")
-                        .IsUnique();
+                    b.HasIndex("Slot");
 
                     b.ToTable("HomeBanners", t =>
                         {
@@ -1517,6 +1516,21 @@ namespace CosmoManager.Migrations
                     b.Property<DateTime>("RegisteredAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("ReviewComment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("ReviewedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReviewedByUserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
                     b.Property<string>("TeamName")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
@@ -1528,10 +1542,60 @@ namespace CosmoManager.Migrations
 
                     b.HasIndex("AppUserId");
 
+                    b.HasIndex("ReviewedByUserId");
+
                     b.HasIndex("TournamentId", "AppUserId")
                         .IsUnique();
 
                     b.ToTable("TournamentRegistrations");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.TournamentRegistrationPlayer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("BlocksNickname")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Nickname")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("NormalizedNickname")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("RegistrationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TournamentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RegistrationId");
+
+                    b.HasIndex("TournamentId", "NormalizedNickname")
+                        .IsUnique()
+                        .HasFilter("\"BlocksNickname\" = TRUE");
+
+                    b.ToTable("TournamentRegistrationPlayers");
                 });
 
             modelBuilder.Entity("CosmoManager.Models.Vehicle", b =>
@@ -1985,15 +2049,41 @@ namespace CosmoManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CosmoManager.Models.AppUser", "ReviewedByUser")
+                        .WithMany()
+                        .HasForeignKey("ReviewedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("CosmoManager.Models.Tournament", "Tournament")
                         .WithMany("Registrations")
                         .HasForeignKey("TournamentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("ReviewedByUser");
+
                     b.Navigation("Tournament");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.TournamentRegistrationPlayer", b =>
+                {
+                    b.HasOne("CosmoManager.Models.TournamentRegistration", "Registration")
+                        .WithMany("Players")
+                        .HasForeignKey("RegistrationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CosmoManager.Models.Tournament", "Tournament")
+                        .WithMany()
+                        .HasForeignKey("TournamentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Registration");
+
+                    b.Navigation("Tournament");
                 });
 
             modelBuilder.Entity("CosmoManager.Models.VehicleMark", b =>
@@ -2095,6 +2185,11 @@ namespace CosmoManager.Migrations
             modelBuilder.Entity("CosmoManager.Models.TournamentMatch", b =>
                 {
                     b.Navigation("Slots");
+                });
+
+            modelBuilder.Entity("CosmoManager.Models.TournamentRegistration", b =>
+                {
+                    b.Navigation("Players");
                 });
 
             modelBuilder.Entity("CosmoManager.Models.Vehicle", b =>

@@ -208,12 +208,6 @@ function MyClan() {
 
                     <span>{member.rankLabel}</span>
                   </div>
-
-                  {member.email && (
-                    <div className="my-clan-member__email">
-                      {member.email}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>

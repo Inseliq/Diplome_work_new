@@ -1,0 +1,556 @@
+.wrapper.admin-directory {
+  min-height: calc(100vh - var(--header-height));
+  padding-top: calc(var(--header-height) + 32px);
+  padding-bottom: 72px;
+  background: #050505;
+  color: #ffffff;
+}
+
+.wrapper.admin-directory .admin-directory__container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-inline: var(--container-pad);
+}
+
+.wrapper.admin-directory .admin-directory__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 28px;
+  border-radius: 24px;
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.wrapper.admin-directory .admin-directory__label {
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.wrapper.admin-directory .admin-directory__title {
+  margin-bottom: 12px;
+  color: #ffffff;
+  font-size: clamp(32px, 5vw, 52px);
+}
+
+.wrapper.admin-directory .admin-directory__subtitle {
+  max-width: 880px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.wrapper.admin-directory .admin-directory__back,
+.wrapper.admin-directory .admin-directory__submit,
+.wrapper.admin-directory .admin-directory__small-btn,
+.wrapper.admin-directory .admin-directory__tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  transition: 0.22s ease;
+}
+
+.wrapper.admin-directory .admin-directory__back {
+  min-height: 42px;
+  padding: 10px 18px;
+  color: #ffffff;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.wrapper.admin-directory .admin-directory__back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #ffffff;
+}
+
+.wrapper.admin-directory .admin-directory__message {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+}
+
+.wrapper.admin-directory .admin-directory__message--success {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  color: #8ff0ad;
+}
+
+.wrapper.admin-directory .admin-directory__message--error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: #ffb4b4;
+}
+
+.wrapper.admin-directory .admin-directory__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 18px;
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.wrapper.admin-directory .admin-directory__tab {
+  min-height: 38px;
+  padding: 8px 14px;
+  background: #050505;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+}
+
+.wrapper.admin-directory .admin-directory__tab--active,
+.wrapper.admin-directory .admin-directory__tab:hover {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+.wrapper.admin-directory .admin-directory__layout {
+  display: grid;
+  grid-template-columns: 390px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.wrapper.admin-directory .admin-directory__wide {
+  display: grid;
+  gap: 20px;
+}
+
+.wrapper.admin-directory .admin-directory__sidebar,
+.wrapper.admin-directory .admin-directory__content,
+.wrapper.admin-directory .admin-directory__selected,
+.wrapper.admin-directory .admin-directory__panel,
+.wrapper.admin-directory .admin-directory__vehicle-card,
+.wrapper.admin-directory .admin-directory__dict-card,
+.wrapper.admin-directory .admin-directory__sub-item {
+  border-radius: 24px;
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.wrapper.admin-directory .admin-directory__sidebar,
+.wrapper.admin-directory .admin-directory__content,
+.wrapper.admin-directory .admin-directory__selected,
+.wrapper.admin-directory .admin-directory__panel,
+.wrapper.admin-directory .admin-directory__vehicle-card,
+.wrapper.admin-directory .admin-directory__dict-card,
+.wrapper.admin-directory .admin-directory__sub-item {
+  padding: 24px;
+}
+
+.wrapper.admin-directory .admin-directory__content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.wrapper.admin-directory .admin-directory__section-head,
+.wrapper.admin-directory .admin-directory__panel-head,
+.wrapper.admin-directory .admin-directory__selected {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.wrapper.admin-directory .admin-directory__section-head h2,
+.wrapper.admin-directory .admin-directory__panel-head h2,
+.wrapper.admin-directory .admin-directory__panel-head h3,
+.wrapper.admin-directory .admin-directory__selected h2 {
+  color: #ffffff;
+  font-size: 24px;
+}
+
+.wrapper.admin-directory .admin-directory__section-head p,
+.wrapper.admin-directory .admin-directory__panel-head p,
+.wrapper.admin-directory .admin-directory__selected p {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.wrapper.admin-directory .admin-directory__selected {
+  margin-bottom: 0;
+}
+
+.wrapper.admin-directory .admin-directory__selected > img {
+  width: 120px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.wrapper.admin-directory .admin-directory__selected span {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.wrapper.admin-directory .admin-directory__section-head > span,
+.wrapper.admin-directory .admin-directory__panel-head > span {
+  min-width: 32px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.wrapper.admin-directory .admin-directory__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.wrapper.admin-directory .admin-directory__field span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wrapper.admin-directory .admin-directory__field input,
+.wrapper.admin-directory .admin-directory__field select,
+.wrapper.admin-directory .admin-directory__field textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: #050505;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 14px;
+}
+
+.wrapper.admin-directory .admin-directory__field select option {
+  background: #050505;
+  color: #ffffff;
+}
+
+.wrapper.admin-directory .admin-directory__field input:focus,
+.wrapper.admin-directory .admin-directory__field select:focus,
+.wrapper.admin-directory .admin-directory__field textarea:focus {
+  border-color: #ffffff;
+}
+
+.wrapper.admin-directory .admin-directory__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.wrapper.admin-directory .admin-directory__row--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.wrapper.admin-directory .admin-directory__row--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.wrapper.admin-directory .admin-directory__columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.wrapper.admin-directory .admin-directory__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+}
+
+.wrapper.admin-directory .admin-directory__check input {
+  width: 16px;
+  height: 16px;
+  accent-color: #ffffff;
+}
+
+.wrapper.admin-directory .admin-directory__actions,
+.wrapper.admin-directory .admin-directory__sub-actions,
+.wrapper.admin-directory .admin-directory__dict-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wrapper.admin-directory .admin-directory__submit {
+  min-height: 42px;
+  padding: 10px 16px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  font-size: 12px;
+}
+
+.wrapper.admin-directory .admin-directory__small-btn {
+  min-height: 34px;
+  padding: 7px 11px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  font-size: 11px;
+}
+
+.wrapper.admin-directory .admin-directory__small-btn--danger {
+  background: rgba(239, 68, 68, 0.16);
+  color: #ffb4b4;
+  border: 1px solid rgba(239, 68, 68, 0.32);
+}
+
+.wrapper.admin-directory .admin-directory__submit:hover,
+.wrapper.admin-directory .admin-directory__small-btn:hover {
+  opacity: 0.86;
+  transform: translateY(-1px);
+}
+
+.wrapper.admin-directory button:disabled {
+  opacity: 0.45;
+  transform: none;
+  pointer-events: none;
+}
+
+.wrapper.admin-directory .admin-directory__vehicle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 780px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.wrapper.admin-directory .admin-directory__vehicle-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 14px;
+  text-align: left;
+  background: #050505;
+  transition: 0.22s ease;
+}
+
+.wrapper.admin-directory .admin-directory__vehicle-card:hover,
+.wrapper.admin-directory .admin-directory__vehicle-card--active {
+  border-color: #ffffff;
+  background: #111111;
+}
+
+.wrapper.admin-directory .admin-directory__vehicle-card img {
+  width: 82px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.wrapper.admin-directory .admin-directory__vehicle-card strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.wrapper.admin-directory .admin-directory__vehicle-card span {
+  display: block;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 12px;
+}
+
+.wrapper.admin-directory .admin-directory__vehicle-meta,
+.wrapper.admin-directory .admin-directory__dict-meta {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.wrapper.admin-directory .admin-directory__vehicle-meta em,
+.wrapper.admin-directory .admin-directory__vehicle-meta b,
+.wrapper.admin-directory .admin-directory__dict-meta em {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 11px;
+  font-style: normal;
+}
+
+.wrapper.admin-directory .admin-directory__vehicle-meta b {
+  background: #ffffff;
+  color: #000000;
+}
+
+.wrapper.admin-directory .admin-directory__placeholder {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.wrapper.admin-directory .admin-directory__placeholder h2 {
+  color: #ffffff;
+  font-size: 28px;
+}
+
+.wrapper.admin-directory .admin-directory__placeholder p {
+  max-width: 520px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 14px;
+}
+
+.wrapper.admin-directory .admin-directory__sub-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wrapper.admin-directory .admin-directory__sub-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  background: #050505;
+}
+
+.wrapper.admin-directory .admin-directory__sub-item strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.wrapper.admin-directory .admin-directory__sub-item span {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+}
+
+.wrapper.admin-directory .admin-directory__dict-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.wrapper.admin-directory .admin-directory__dict-card {
+  background: #050505;
+}
+
+.wrapper.admin-directory .admin-directory__dict-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.wrapper.admin-directory .admin-directory__dict-top img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.wrapper.admin-directory .admin-directory__dict-top strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.wrapper.admin-directory .admin-directory__dict-top span {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 12px;
+}
+
+.wrapper.admin-directory .admin-directory__dict-actions {
+  margin-top: 14px;
+}
+
+.wrapper.admin-directory .admin-directory__empty {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+}
+
+@media (max-width: 1280px) {
+  .wrapper.admin-directory .admin-directory__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .wrapper.admin-directory .admin-directory__vehicle-list {
+    max-height: 440px;
+  }
+
+  .wrapper.admin-directory .admin-directory__dict-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .wrapper.admin-directory {
+    padding-top: calc(var(--header-height) + 20px);
+  }
+
+  .wrapper.admin-directory .admin-directory__header,
+  .wrapper.admin-directory .admin-directory__section-head,
+  .wrapper.admin-directory .admin-directory__panel-head,
+  .wrapper.admin-directory .admin-directory__selected,
+  .wrapper.admin-directory .admin-directory__sub-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .wrapper.admin-directory .admin-directory__row,
+  .wrapper.admin-directory .admin-directory__row--3,
+  .wrapper.admin-directory .admin-directory__row--4,
+  .wrapper.admin-directory .admin-directory__columns {
+    grid-template-columns: 1fr;
+  }
+
+  .wrapper.admin-directory .admin-directory__dict-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .wrapper.admin-directory .admin-directory__sidebar,
+  .wrapper.admin-directory .admin-directory__content,
+  .wrapper.admin-directory .admin-directory__selected,
+  .wrapper.admin-directory .admin-directory__panel,
+  .wrapper.admin-directory .admin-directory__vehicle-card,
+  .wrapper.admin-directory .admin-directory__dict-card,
+  .wrapper.admin-directory .admin-directory__sub-item {
+    padding: 16px;
+  }
+
+  .wrapper.admin-directory .admin-directory__vehicle-card {
+    grid-template-columns: 1fr;
+  }
+
+  .wrapper.admin-directory .admin-directory__dict-grid {
+    grid-template-columns: 1fr;
+  }
+}

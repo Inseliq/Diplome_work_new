@@ -126,6 +126,6 @@ public class TournamentMatchesController : ControllerBase
             return registration.TeamName;
         }
 
-        return registration.User.Nickname;
+        return registration.User?.Nickname ?? "Пользователь не найден";
     }
 }

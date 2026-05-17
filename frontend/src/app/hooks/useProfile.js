@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   getProfile,
+  updateProfileNickname,
+  updateProfileEmail,
   changeProfilePassword,
   leaveClan,
 } from '../../api/endpoints';
@@ -26,6 +28,18 @@ export function useProfile() {
       setLoading(false);
     }
   }, []);
+
+  const updateNickname = useCallback(async (nickname) => {
+    const result = await updateProfileNickname({ nickname });
+    await loadProfile();
+    return result;
+  }, [loadProfile]);
+
+  const updateEmail = useCallback(async (email) => {
+    const result = await updateProfileEmail({ email });
+    await loadProfile();
+    return result;
+  }, [loadProfile]);
 
   const changePassword = useCallback(async (payload) => {
     return await changeProfilePassword(payload);
@@ -75,6 +89,8 @@ export function useProfile() {
     loading,
     error,
     reload: loadProfile,
+    updateNickname,
+    updateEmail,
     changePassword,
     leaveCurrentClan,
   };

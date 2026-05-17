@@ -1,0 +1,443 @@
+.wrapper.admin-users {
+  min-height: calc(100vh - var(--header-height));
+  padding-top: calc(var(--header-height) + 32px);
+  padding-bottom: 72px;
+  background: #050505;
+  color: #ffffff;
+}
+
+.wrapper.admin-users .admin-users__container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-inline: var(--container-pad);
+}
+
+.wrapper.admin-users .admin-users__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 28px;
+  border-radius: 24px;
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.wrapper.admin-users .admin-users__label {
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.wrapper.admin-users .admin-users__title {
+  margin-bottom: 12px;
+  color: #ffffff;
+  font-size: clamp(32px, 5vw, 52px);
+}
+
+.wrapper.admin-users .admin-users__subtitle {
+  max-width: 780px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 15px;
+}
+
+.wrapper.admin-users .admin-users__back,
+.wrapper.admin-users .admin-users__submit,
+.wrapper.admin-users .admin-users__small-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  transition: 0.22s ease;
+}
+
+.wrapper.admin-users .admin-users__back {
+  min-height: 42px;
+  padding: 10px 18px;
+  color: #ffffff;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.wrapper.admin-users .admin-users__back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #ffffff;
+}
+
+.wrapper.admin-users .admin-users__message {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+}
+
+.wrapper.admin-users .admin-users__message--success {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  color: #8ff0ad;
+}
+
+.wrapper.admin-users .admin-users__message--error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: #ffb4b4;
+}
+
+.wrapper.admin-users .admin-users__layout {
+  display: grid;
+  grid-template-columns: 390px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.wrapper.admin-users .admin-users__list-panel,
+.wrapper.admin-users .admin-users__details,
+.wrapper.admin-users .admin-users__card {
+  border-radius: 24px;
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.wrapper.admin-users .admin-users__list-panel,
+.wrapper.admin-users .admin-users__details,
+.wrapper.admin-users .admin-users__card {
+  padding: 24px;
+}
+
+.wrapper.admin-users .admin-users__section-head,
+.wrapper.admin-users .admin-users__profile-head,
+.wrapper.admin-users .admin-users__card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.wrapper.admin-users .admin-users__section-head h2,
+.wrapper.admin-users .admin-users__profile-head h2,
+.wrapper.admin-users .admin-users__card-head h3 {
+  color: #ffffff;
+  font-size: 24px;
+}
+
+.wrapper.admin-users .admin-users__profile-head p,
+.wrapper.admin-users .admin-users__section-head p,
+.wrapper.admin-users .admin-users__card-head p {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 13px;
+}
+
+.wrapper.admin-users .admin-users__section-head > span {
+  min-width: 32px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.wrapper.admin-users .admin-users__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.wrapper.admin-users .admin-users__field span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wrapper.admin-users .admin-users__field input,
+.wrapper.admin-users .admin-users__field select {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: #050505;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 14px;
+}
+
+.wrapper.admin-users .admin-users__field select option {
+  background: #050505;
+  color: #ffffff;
+}
+
+.wrapper.admin-users .admin-users__field input:focus,
+.wrapper.admin-users .admin-users__field select:focus {
+  border-color: #ffffff;
+}
+
+.wrapper.admin-users .admin-users__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 760px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.wrapper.admin-users .admin-users__user-card {
+  width: 100%;
+  text-align: left;
+  padding: 16px;
+  border-radius: 18px;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: 0.22s ease;
+}
+
+.wrapper.admin-users .admin-users__user-card:hover,
+.wrapper.admin-users .admin-users__user-card--active {
+  border-color: #ffffff;
+  background: #111111;
+}
+
+.wrapper.admin-users .admin-users__user-main strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.wrapper.admin-users .admin-users__user-main span {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 12px;
+}
+
+.wrapper.admin-users .admin-users__user-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.wrapper.admin-users .admin-users__user-meta span,
+.wrapper.admin-users .admin-users__user-meta b {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 11px;
+}
+
+.wrapper.admin-users .admin-users__user-meta b {
+  background: #ffffff;
+  color: #000000;
+}
+
+.wrapper.admin-users .admin-users__placeholder {
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.wrapper.admin-users .admin-users__placeholder h2 {
+  color: #ffffff;
+  font-size: 28px;
+}
+
+.wrapper.admin-users .admin-users__placeholder p {
+  max-width: 460px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 14px;
+}
+
+.wrapper.admin-users .admin-users__profile-id {
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.wrapper.admin-users .admin-users__cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.wrapper.admin-users .admin-users__current-clan {
+  margin-bottom: 18px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.wrapper.admin-users .admin-users__current-clan span {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.wrapper.admin-users .admin-users__current-clan strong {
+  display: block;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.wrapper.admin-users .admin-users__current-clan p {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
+}
+
+.wrapper.admin-users .admin-users__inline-link {
+  display: inline-flex;
+  margin-top: 12px;
+  color: #ffffff;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+.wrapper.admin-users .admin-users__actions-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.wrapper.admin-users .admin-users__submit {
+  min-height: 44px;
+  padding: 10px 16px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  font-size: 12px;
+}
+
+.wrapper.admin-users .admin-users__submit--danger {
+  width: 100%;
+  background: rgba(239, 68, 68, 0.16);
+  color: #ffb4b4;
+  border: 1px solid rgba(239, 68, 68, 0.32);
+}
+
+.wrapper.admin-users .admin-users__small-btn {
+  min-height: 36px;
+  padding: 8px 12px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  font-size: 11px;
+}
+
+.wrapper.admin-users .admin-users__small-btn--danger {
+  background: rgba(239, 68, 68, 0.16);
+  color: #ffb4b4;
+  border: 1px solid rgba(239, 68, 68, 0.32);
+}
+
+.wrapper.admin-users .admin-users__submit:hover,
+.wrapper.admin-users .admin-users__small-btn:hover {
+  opacity: 0.86;
+  transform: translateY(-1px);
+}
+
+.wrapper.admin-users .admin-users__submit:disabled,
+.wrapper.admin-users .admin-users__small-btn:disabled {
+  opacity: 0.45;
+  transform: none;
+}
+
+.wrapper.admin-users .admin-users__roles {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.wrapper.admin-users .admin-users__roles span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #050505;
+  color: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 12px;
+}
+
+.wrapper.admin-users .admin-users__summary {
+  display: grid;
+  gap: 12px;
+}
+
+.wrapper.admin-users .admin-users__summary div {
+  padding: 13px;
+  border-radius: 14px;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.wrapper.admin-users .admin-users__summary span {
+  display: block;
+  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.44);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.wrapper.admin-users .admin-users__summary strong {
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.wrapper.admin-users .admin-users__empty {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+}
+
+@media (max-width: 1180px) {
+  .wrapper.admin-users .admin-users__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .wrapper.admin-users .admin-users__list {
+    max-height: 430px;
+  }
+}
+
+@media (max-width: 860px) {
+  .wrapper.admin-users {
+    padding-top: calc(var(--header-height) + 20px);
+  }
+
+  .wrapper.admin-users .admin-users__header,
+  .wrapper.admin-users .admin-users__profile-head,
+  .wrapper.admin-users .admin-users__section-head,
+  .wrapper.admin-users .admin-users__card-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .wrapper.admin-users .admin-users__cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .wrapper.admin-users .admin-users__list-panel,
+  .wrapper.admin-users .admin-users__details,
+  .wrapper.admin-users .admin-users__card {
+    padding: 16px;
+  }
+}

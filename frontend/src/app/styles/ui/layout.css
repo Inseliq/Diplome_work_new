@@ -129,6 +129,10 @@
       padding-inline: 12px;
     }
 
+    .header__admin {
+      padding-inline: 14px;
+    }
+
     .header__profile-name-text {
       display: block;
       max-width: 125px;

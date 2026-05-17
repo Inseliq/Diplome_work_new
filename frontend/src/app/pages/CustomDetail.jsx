@@ -91,6 +91,8 @@ function CustomDetail() {
     return <Navigate to="/tournaments/custom" replace />;
   }
 
+  const hasMyRegistration = Boolean(t.myRegistration);
+
   const type = TOURNAMENT_TYPES[t.type] || TOURNAMENT_TYPES.common;
   const status = TOURNAMENT_STATUS[t.status] || TOURNAMENT_STATUS.upcoming;
 
@@ -246,7 +248,8 @@ function CustomDetail() {
                   <line x1="19" y1="8" x2="19" y2="14" />
                   <line x1="22" y1="11" x2="16" y2="11" />
                 </svg>
-                Зарегистрироваться
+
+                {hasMyRegistration ? 'К команде' : 'Зарегистрироваться'}
               </Link>
             )}
 

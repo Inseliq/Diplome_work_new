@@ -42,6 +42,21 @@ function Header() {
 
   const nickname = user?.nickname || user?.Nickname || 'Профиль';
 
+  const roles = user?.roles || user?.Roles || [];
+
+  const isAdmin = roles.some((role) => {
+    const normalized = String(role).toLowerCase();
+
+    return normalized === 'administrator' ||
+      normalized === 'admin' ||
+      normalized === 'администратор';
+  });
+
+  const goToAdmin = () => {
+    navigate('/admin');
+    setMenuOpen(false);
+  };
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
 
@@ -158,6 +173,16 @@ function Header() {
           <div className="header__actions">
             {!isAuthLoading && isAuthenticated ? (
               <>
+                {isAdmin && (
+                  <button
+                    className="btn btn-ghost header__admin"
+                    type="button"
+                    onClick={goToAdmin}
+                  >
+                    Управление
+                  </button>
+                )}
+
                 <button
                   className="btn btn-ghost header__profile-name"
                   type="button"
@@ -327,6 +352,16 @@ function Header() {
         <div className="mobile-menu__footer">
           {!isAuthLoading && isAuthenticated ? (
             <>
+              {isAdmin && (
+                <button
+                  className="btn btn-ghost"
+                  type="button"
+                  onClick={goToAdmin}
+                >
+                  Управление
+                </button>
+              )}
+
               <button
                 className="btn btn-ghost mobile-menu__profile"
                 type="button"

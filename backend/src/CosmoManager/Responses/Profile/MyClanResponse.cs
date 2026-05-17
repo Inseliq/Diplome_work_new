@@ -23,8 +23,6 @@ public class MyClanMemberResponse
 
     public string Nickname { get; set; } = string.Empty;
 
-    public string? Email { get; set; }
-
     public string Rank { get; set; } = string.Empty;
 
     public string RankLabel { get; set; } = string.Empty;

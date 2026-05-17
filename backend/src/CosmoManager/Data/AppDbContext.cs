@@ -24,6 +24,8 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole, string>
 
     public DbSet<TournamentRegistration> TournamentRegistrations => Set<TournamentRegistration>();
 
+    public DbSet<TournamentRegistrationPlayer> TournamentRegistrationPlayers => Set<TournamentRegistrationPlayer>();
+
     public DbSet<TournamentMatch> TournamentMatches => Set<TournamentMatch>();
 
     public DbSet<TournamentMatchSlot> TournamentMatchSlots => Set<TournamentMatchSlot>();
@@ -462,8 +464,7 @@ CosmoManager объединяет новости, события, турниры
             entity.Property(x => x.UpdatedAtUtc)
                 .HasColumnType("timestamp with time zone");
 
-            entity.HasIndex(x => x.Slot)
-                .IsUnique();
+            entity.HasIndex(x => x.Slot);
 
             entity.ToTable(t =>
             {
@@ -586,8 +587,19 @@ CosmoManager объединяет новости, события, турниры
             entity.Property(x => x.Comment)
                 .HasMaxLength(1000);
 
+            entity.Property(x => x.Status)
+                .HasConversion<string>()
+                .HasMaxLength(30)
+                .IsRequired();
+
             entity.Property(x => x.RegisteredAtUtc)
                 .HasColumnType("timestamp with time zone");
+
+            entity.Property(x => x.ReviewedAtUtc)
+                .HasColumnType("timestamp with time zone");
+
+            entity.Property(x => x.ReviewComment)
+                .HasMaxLength(1000);
 
             entity.HasOne(x => x.Tournament)
                 .WithMany(x => x.Registrations)
@@ -599,8 +611,50 @@ CosmoManager объединяет новости, события, турниры
                 .HasForeignKey(x => x.AppUserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            entity.HasOne(x => x.ReviewedByUser)
+                .WithMany()
+                .HasForeignKey(x => x.ReviewedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             entity.HasIndex(x => new { x.TournamentId, x.AppUserId })
                 .IsUnique();
+        });
+
+        builder.Entity<TournamentRegistrationPlayer>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Nickname)
+                .HasMaxLength(64)
+                .IsRequired();
+
+            entity.Property(x => x.NormalizedNickname)
+                .HasMaxLength(64)
+                .IsRequired();
+
+            entity.Property(x => x.Role)
+                .HasConversion<string>()
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(x => x.BlocksNickname)
+                .HasDefaultValue(true);
+
+            entity.HasOne(x => x.Tournament)
+                .WithMany()
+                .HasForeignKey(x => x.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.Registration)
+                .WithMany(x => x.Players)
+                .HasForeignKey(x => x.RegistrationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(x => x.RegistrationId);
+
+            entity.HasIndex(x => new { x.TournamentId, x.NormalizedNickname })
+                .IsUnique()
+                .HasFilter("\"BlocksNickname\" = TRUE");
         });
 
         builder.Entity<TournamentMatch>(entity =>

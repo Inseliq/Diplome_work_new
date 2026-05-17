@@ -23,6 +23,7 @@ public class HomeBannersController : ControllerBase
             .AsNoTracking()
             .Where(x => x.IsPublished)
             .OrderBy(x => x.Slot)
+            .ThenByDescending(x => x.CreatedAtUtc)
             .Select(x => new HomeBannerResponse
             {
                 Id = x.Id,

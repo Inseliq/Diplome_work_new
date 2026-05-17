@@ -3,46 +3,51 @@ import { getHomeBanners } from '../../api/endpoints';
 import { logger } from '../utils/logger';
 
 const DEFAULT_GRADIENT =
-  'linear-gradient(135deg, #1a0540 0%, #2d0870 40%, #582BBA 100%)';
+  'linear-gradient(135deg, #1a0540 0%, #582BBA 60%, #835de4 100%)';
 
-const DEFAULT_BANNER = {
+const FALLBACK_SLIDE = {
+  id: 'fallback',
+  type: null,
   title: 'Добро пожаловать в CosmoManager',
-  desc: 'CosmoManager — платформа для игроков и кланов Мира Танков: турниры, события, статистика, достижения, отметки, знаки классности и инструменты для управления сообществом.',
+  desc: 'CosmoManager — платформа для игроков и кланов Мира Танков: турниры, события, новости, сборки техники, достижения и удобные инструменты управления.',
   btnLabel: 'Сервисы',
   btnHref: '/services',
   imageUrl: null,
   bgGradient: DEFAULT_GRADIENT,
 };
 
-function makeFallbackBanner(slot) {
+function toSlide(banner) {
   return {
-    id: `fallback-${slot}`,
-    slot,
+    id: banner.id,
     type: null,
-    ...DEFAULT_BANNER,
+    title: banner.title,
+    desc: banner.description,
+    btnLabel: banner.buttonLabel,
+    btnHref: banner.buttonUrl,
+    imageUrl: banner.imageUrl,
+    bgGradient: banner.gradient || DEFAULT_GRADIENT,
   };
 }
 
-function normalizeBanner(item, slot) {
-  if (!item) {
-    return makeFallbackBanner(slot);
+function buildSlotSlides(banners, slot) {
+  const slotSlides = banners
+    .filter((banner) => Number(banner.slot) === Number(slot))
+    .map(toSlide);
+
+  if (slotSlides.length === 0) {
+    return [
+      {
+        ...FALLBACK_SLIDE,
+        id: `fallback-${slot}`,
+      },
+    ];
   }
 
-  return {
-    id: item.id ?? `banner-${slot}`,
-    slot,
-    type: null,
-    title: item.title || DEFAULT_BANNER.title,
-    desc: item.description || DEFAULT_BANNER.desc,
-    btnLabel: item.buttonLabel || DEFAULT_BANNER.btnLabel,
-    btnHref: item.buttonUrl || DEFAULT_BANNER.btnHref,
-    imageUrl: item.imageUrl || null,
-    bgGradient: item.gradient || DEFAULT_GRADIENT,
-  };
+  return slotSlides;
 }
 
 export function useHomeBanners() {
-  const [rawBanners, setRawBanners] = useState([]);
+  const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -56,16 +61,16 @@ export function useHomeBanners() {
       try {
         const data = await getHomeBanners();
 
-        if (!cancelled) {
-          setRawBanners(Array.isArray(data) ? data : []);
-        }
-      } catch (err) {
-        logger.warn('useHomeBanners: не удалось загрузить баннеры главной страницы', err);
+        if (cancelled) return;
 
-        if (!cancelled) {
-          setRawBanners([]);
-          setError(err);
-        }
+        setBanners(Array.isArray(data) ? data : []);
+      } catch (err) {
+        if (cancelled) return;
+
+        logger.warn('useHomeBanners: не удалось загрузить баннеры', err);
+
+        setBanners([]);
+        setError(err);
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -80,18 +85,20 @@ export function useHomeBanners() {
     };
   }, []);
 
-  const banners = useMemo(() => {
-    const banner1 = rawBanners.find((x) => Number(x.slot) === 1);
-    const banner2 = rawBanners.find((x) => Number(x.slot) === 2);
+  const banner1Slides = useMemo(
+    () => buildSlotSlides(banners, 1),
+    [banners]
+  );
 
-    return {
-      banner1Slides: [normalizeBanner(banner1, 1)],
-      banner2Slides: [normalizeBanner(banner2, 2)],
-    };
-  }, [rawBanners]);
+  const banner2Slides = useMemo(
+    () => buildSlotSlides(banners, 2),
+    [banners]
+  );
 
   return {
-    ...banners,
+    banners,
+    banner1Slides,
+    banner2Slides,
     loading,
     error,
   };

@@ -24,5 +24,18 @@ public class TournamentRegistration
     [StringLength(1000)]
     public string? Comment { get; set; }
 
+    public TournamentRegistrationStatus Status { get; set; } = TournamentRegistrationStatus.Sent;
+
     public DateTime RegisteredAtUtc { get; set; } = DateTime.UtcNow;
+
+    public DateTime? ReviewedAtUtc { get; set; }
+
+    public string? ReviewedByUserId { get; set; }
+
+    public AppUser? ReviewedByUser { get; set; }
+
+    [StringLength(1000)]
+    public string? ReviewComment { get; set; }
+
+    public ICollection<TournamentRegistrationPlayer> Players { get; set; } = new List<TournamentRegistrationPlayer>();
 }

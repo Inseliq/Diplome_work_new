@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using CosmoManager.Data;
 using CosmoManager.Models;
 using CosmoManager.Requests.Profile;
@@ -17,6 +18,10 @@ namespace CosmoManager.Controllers;
 [Authorize]
 public class ProfileController : ControllerBase
 {
+    private static readonly Regex NicknameRegex = new(
+        "^[A-Za-z0-9_]{3,24}$",
+        RegexOptions.Compiled);
+
     private readonly AppDbContext _dbContext;
     private readonly UserManager<AppUser> _userManager;
 
@@ -104,6 +109,122 @@ public class ProfileController : ControllerBase
         };
 
         return Ok(response);
+    }
+
+    [HttpPut("nickname")]
+    public async Task<IActionResult> UpdateNickname(
+        [FromBody] UpdateNicknameRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var user = await GetCurrentUserAsync(cancellationToken);
+
+        if (user == null)
+        {
+            return Unauthorized(new
+            {
+                message = "Необходимо войти в аккаунт"
+            });
+        }
+
+        var nickname = request.Nickname.Trim();
+
+        if (!NicknameRegex.IsMatch(nickname))
+        {
+            return BadRequest(new
+            {
+                message = "Никнейм должен быть от 3 до 24 символов и может содержать только A-Z, a-z, 0-9 и _."
+            });
+        }
+
+        var existingUser = await _userManager.FindByNameAsync(nickname);
+
+        if (existingUser != null && existingUser.Id != user.Id)
+        {
+            return BadRequest(new
+            {
+                message = "Пользователь с таким никнеймом уже существует"
+            });
+        }
+
+        user.Nickname = nickname;
+        user.UserName = nickname;
+        user.NormalizedUserName = _userManager.NormalizeName(nickname);
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(new
+            {
+                message = "Не удалось обновить никнейм",
+                errors = result.Errors.Select(x => x.Description).ToArray()
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Никнейм успешно обновлён",
+            nickname = user.Nickname
+        });
+    }
+
+    [HttpPut("email")]
+    public async Task<IActionResult> UpdateEmail(
+        [FromBody] UpdateEmailRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var user = await GetCurrentUserAsync(cancellationToken);
+
+        if (user == null)
+        {
+            return Unauthorized(new
+            {
+                message = "Необходимо войти в аккаунт"
+            });
+        }
+
+        var email = request.Email.Trim();
+
+        var existingUser = await _userManager.FindByEmailAsync(email);
+
+        if (existingUser != null && existingUser.Id != user.Id)
+        {
+            return BadRequest(new
+            {
+                message = "Пользователь с такой почтой уже существует"
+            });
+        }
+
+        user.Email = email;
+        user.NormalizedEmail = _userManager.NormalizeEmail(email);
+        user.EmailConfirmed = false;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(new
+            {
+                message = "Не удалось обновить почту",
+                errors = result.Errors.Select(x => x.Description).ToArray()
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Почта успешно обновлена",
+            email = user.Email
+        });
     }
 
     [HttpPost("change-password")]
@@ -238,7 +359,6 @@ public class ProfileController : ControllerBase
                     {
                         Id = member.Id,
                         Nickname = member.Nickname,
-                        Email = member.Email,
                         Rank = member.ClanRank.HasValue
                             ? member.ClanRank.Value.ToString()
                             : string.Empty,

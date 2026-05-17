@@ -4,10 +4,18 @@ import { useProfile } from '../hooks/useProfile';
 import { useAuth } from '../context/AuthContext';
 import { LoadingSpinner } from '../components/ui/StatusComponents';
 
-const VISIBLE_ROLES = ['Administrator', 'Moderator'];
+const ROLE_LABELS = {
+  administrator: 'Администратор',
+  admin: 'Администратор',
+  moderator: 'Модератор',
+  администратор: 'Администратор',
+  модератор: 'Модератор',
+};
 
 function getVisibleRoles(roles = []) {
-  return roles.filter((role) => VISIBLE_ROLES.includes(role));
+  return roles
+    .map((role) => ROLE_LABELS[String(role).toLowerCase()])
+    .filter(Boolean);
 }
 
 function ChangePasswordModal({ onClose, onSubmit }) {
@@ -129,12 +137,120 @@ function ChangePasswordModal({ onClose, onSubmit }) {
   );
 }
 
+const NICKNAME_REGEX = /^[A-Za-z0-9_]{3,24}$/;
+
+function EditTextModal({
+  title,
+  label,
+  initialValue,
+  inputType = 'text',
+  placeholder,
+  validate,
+  onClose,
+  onSubmit,
+}) {
+  const [value, setValue] = useState(initialValue ?? '');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError(null);
+
+    const nextValue = value.trim();
+
+    if (validate) {
+      const validationError = validate(nextValue);
+
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
+    }
+
+    setSubmitting(true);
+
+    try {
+      await onSubmit(nextValue);
+      onClose();
+    } catch (err) {
+      setError(err?.data?.message || err?.message || 'Не удалось сохранить изменения');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="profile-modal" role="dialog" aria-modal="true">
+      <div className="profile-modal__overlay" onClick={onClose} />
+
+      <div className="profile-modal__content">
+        <div className="profile-modal__header">
+          <h2>{title}</h2>
+
+          <button
+            type="button"
+            className="profile-modal__close"
+            onClick={onClose}
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        </div>
+
+        <form className="profile-modal__form" onSubmit={handleSubmit}>
+          <label className="profile-form__field">
+            <span>{label}</span>
+
+            <input
+              type={inputType}
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+              placeholder={placeholder}
+              minLength={inputType === 'text' ? 3 : undefined}
+              maxLength={inputType === 'text' ? 24 : undefined}
+              required
+            />
+          </label>
+
+          {error && (
+            <div className="profile-modal__error">
+              {error}
+            </div>
+          )}
+
+          <div className="profile-modal__actions">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={onClose}
+              disabled={submitting}
+            >
+              Отмена
+            </button>
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={submitting}
+            >
+              {submitting ? 'Сохраняем...' : 'Сохранить'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function Profile() {
   const {
     profile,
     loading,
     error,
     reload,
+    updateNickname,
+    updateEmail,
     changePassword,
     leaveCurrentClan,
   } = useProfile();
@@ -144,6 +260,8 @@ function Profile() {
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [leavingClan, setLeavingClan] = useState(false);
   const [message, setMessage] = useState(null);
+  const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
 
   if (loading) {
     return (
@@ -215,6 +333,18 @@ function Profile() {
     setMessage(result?.message || 'Пароль успешно изменён');
   };
 
+  const handleUpdateNickname = async (nickname) => {
+    const result = await updateNickname(nickname);
+    await refreshUser?.();
+    setMessage(result?.message || 'Никнейм успешно обновлён');
+  };
+
+  const handleUpdateEmail = async (email) => {
+    const result = await updateEmail(email);
+    await refreshUser?.();
+    setMessage(result?.message || 'Почта успешно обновлена');
+  };
+
   return (
     <div className="wrapper profile-page">
       <div className="container">
@@ -246,12 +376,38 @@ function Profile() {
           <div className="profile-card__grid">
             <div className="profile-field">
               <span className="profile-field__label">Никнейм</span>
-              <strong className="profile-field__value">{profile.nickname}</strong>
+
+              <div className="profile-field__row">
+                <strong className="profile-field__value">
+                  {profile.nickname}
+                </strong>
+
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => setNicknameModalOpen(true)}
+                >
+                  Изменить
+                </button>
+              </div>
             </div>
 
             <div className="profile-field">
               <span className="profile-field__label">Почта</span>
-              <strong className="profile-field__value">{profile.email}</strong>
+
+              <div className="profile-field__row">
+                <strong className="profile-field__value">
+                  {profile.email}
+                </strong>
+
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => setEmailModalOpen(true)}
+                >
+                  Изменить
+                </button>
+              </div>
             </div>
 
             <div className="profile-field">
@@ -345,6 +501,43 @@ function Profile() {
           <ChangePasswordModal
             onClose={() => setPasswordModalOpen(false)}
             onSubmit={handleChangePassword}
+          />
+        )}
+
+        {nicknameModalOpen && (
+          <EditTextModal
+            title="Изменить никнейм"
+            label="Новый никнейм"
+            initialValue={profile.nickname}
+            placeholder="Например: Player_123"
+            validate={(value) => {
+              if (!NICKNAME_REGEX.test(value)) {
+                return 'Никнейм должен быть от 3 до 24 символов и может содержать только A-Z, a-z, 0-9 и _.';
+              }
+
+              return null;
+            }}
+            onClose={() => setNicknameModalOpen(false)}
+            onSubmit={handleUpdateNickname}
+          />
+        )}
+
+        {emailModalOpen && (
+          <EditTextModal
+            title="Изменить почту"
+            label="Новая почта"
+            initialValue={profile.email}
+            inputType="email"
+            placeholder="you@example.com"
+            validate={(value) => {
+              if (!value.includes('@')) {
+                return 'Введите корректную почту';
+              }
+
+              return null;
+            }}
+            onClose={() => setEmailModalOpen(false)}
+            onSubmit={handleUpdateEmail}
           />
         )}
       </div>

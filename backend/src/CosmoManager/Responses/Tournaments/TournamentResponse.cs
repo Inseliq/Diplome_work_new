@@ -59,6 +59,8 @@ public class TournamentResponse
     public string? PrizeText { get; set; }
 
     public bool IsRegistered { get; set; }
+
+    public TournamentMyRegistrationResponse? MyRegistration { get; set; }
 }
 
 public class TournamentMapResponse

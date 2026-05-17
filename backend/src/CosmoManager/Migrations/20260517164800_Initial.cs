@@ -209,7 +209,7 @@ namespace CosmoManager.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Nickname = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Nickname = table.Column<string>(type: "character varying(24)", maxLength: 24, nullable: false),
                     ClanId = table.Column<int>(type: "integer", nullable: true),
                     ClanRank = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -561,7 +561,11 @@ namespace CosmoManager.Migrations
                     TeamName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     Contact = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     Comment = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    RegisteredAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Status = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    RegisteredAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ReviewedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ReviewedByUserId = table.Column<string>(type: "text", nullable: true),
+                    ReviewComment = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -572,6 +576,12 @@ namespace CosmoManager.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TournamentRegistrations_AspNetUsers_ReviewedByUserId",
+                        column: x => x.ReviewedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_TournamentRegistrations_Tournaments_TournamentId",
                         column: x => x.TournamentId,
@@ -694,6 +704,37 @@ namespace CosmoManager.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TournamentMatches_Tournaments_TournamentId",
+                        column: x => x.TournamentId,
+                        principalTable: "Tournaments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TournamentRegistrationPlayers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TournamentId = table.Column<int>(type: "integer", nullable: false),
+                    RegistrationId = table.Column<int>(type: "integer", nullable: false),
+                    Nickname = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    NormalizedNickname = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Role = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    SortOrder = table.Column<int>(type: "integer", nullable: false),
+                    BlocksNickname = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TournamentRegistrationPlayers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TournamentRegistrationPlayers_TournamentRegistrations_Regis~",
+                        column: x => x.RegistrationId,
+                        principalTable: "TournamentRegistrations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TournamentRegistrationPlayers_Tournaments_TournamentId",
                         column: x => x.TournamentId,
                         principalTable: "Tournaments",
                         principalColumn: "Id",
@@ -958,8 +999,7 @@ namespace CosmoManager.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_HomeBanners_Slot",
                 table: "HomeBanners",
-                column: "Slot",
-                unique: true);
+                column: "Slot");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InfoItems_DateStart",
@@ -1070,9 +1110,26 @@ namespace CosmoManager.Migrations
                 column: "TournamentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TournamentRegistrationPlayers_RegistrationId",
+                table: "TournamentRegistrationPlayers",
+                column: "RegistrationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentRegistrationPlayers_TournamentId_NormalizedNickna~",
+                table: "TournamentRegistrationPlayers",
+                columns: new[] { "TournamentId", "NormalizedNickname" },
+                unique: true,
+                filter: "\"BlocksNickname\" = TRUE");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TournamentRegistrations_AppUserId",
                 table: "TournamentRegistrations",
                 column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TournamentRegistrations_ReviewedByUserId",
+                table: "TournamentRegistrations",
+                column: "ReviewedByUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TournamentRegistrations_TournamentId_AppUserId",
@@ -1172,6 +1229,9 @@ namespace CosmoManager.Migrations
 
             migrationBuilder.DropTable(
                 name: "TournamentPrizes");
+
+            migrationBuilder.DropTable(
+                name: "TournamentRegistrationPlayers");
 
             migrationBuilder.DropTable(
                 name: "VehicleMarks");
