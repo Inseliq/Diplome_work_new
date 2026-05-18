@@ -28,6 +28,7 @@ ASSEMBLE — все стили проекта
 @import url(./css/Auth.css);
 @import url(./css/Reserve.css);
 @import url(./css/Profile.css);
+@import url(./css/MyClan.css);
 
 /* Admins */
 @import url(./css/Admin/Notify.css);

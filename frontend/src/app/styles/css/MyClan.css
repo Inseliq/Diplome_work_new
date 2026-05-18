@@ -1,0 +1,287 @@
+/* ============================================================
+   MY CLAN  /clan/me
+   ============================================================ */
+
+.wrapper.my-clan-page {
+  padding-top: calc(var(--header-height) + var(--sp-12));
+  padding-bottom: var(--section-gap);
+
+  /* ── Container ── */
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+  }
+
+  /* ── Header ── */
+  .my-clan-page__header {
+    text-align: center;
+    margin-bottom: var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-4);
+
+    .my-clan-page__label {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--second-accent);
+      background: rgba(255,80,0,0.08);
+      border: 1px solid rgba(255,80,0,0.25);
+      padding: 5px 16px;
+      border-radius: var(--radius-full);
+    }
+
+    .my-clan-page__title {
+      font-size: clamp(var(--text-3xl), 6vw, var(--text-5xl));
+      background: linear-gradient(135deg, var(--text-effect) 30%, var(--second-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: var(--leading-tight);
+    }
+
+    .my-clan-page__subtitle {
+      font-size: var(--text-base);
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: var(--leading-relaxed);
+    }
+  }
+
+  /* ── Message banner ── */
+  .my-clan-page__message {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-5);
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.25);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-sm);
+    color: #22c55e;
+    font-weight: 500;
+
+    &::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px #22c55e;
+    }
+  }
+
+  /* ── Empty / error state ── */
+  .my-clan-page__empty {
+    padding: var(--sp-20) var(--sp-8);
+    text-align: center;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-4);
+
+    h1 {
+      font-size: var(--text-2xl);
+      color: var(--text-effect);
+      font-family: var(--font-heading);
+    }
+
+    p {
+      font-size: var(--text-base);
+      color: var(--text-muted);
+      max-width: 480px;
+      line-height: var(--leading-relaxed);
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CLAN CARD
+══════════════════════════════════════════════════════════════ */
+
+.my-clan-card {
+  background: var(--card-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: border-color var(--transition-md);
+
+  &:hover { border-color: var(--glass-border-hover); }
+
+  .my-clan-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-5) var(--sp-6);
+    border-bottom: 1px solid var(--glass-border);
+    background: var(--glass-bg-strong);
+
+    h2 {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+  }
+
+  .my-clan-card__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .my-clan-card__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-5) var(--sp-6);
+    flex-wrap: wrap;
+  }
+
+  .my-clan-card__empty {
+    padding: var(--sp-8) var(--sp-6);
+    font-size: var(--text-sm);
+    color: var(--text-dim);
+    text-align: center;
+  }
+}
+
+/* ── Поле клана ── */
+.my-clan-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-5) var(--sp-6);
+  background: var(--card-bg);
+  transition: background var(--transition);
+  text-align: center;
+  align-items: center;
+
+  &:hover { background: var(--glass-bg); }
+
+  span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  strong {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--text-effect);
+    font-family: var(--font-heading);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MEMBERS LIST
+══════════════════════════════════════════════════════════════ */
+
+.my-clan-members {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--glass-border);
+}
+
+.my-clan-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-6);
+  background: var(--card-bg);
+  transition: background var(--transition);
+
+  &:hover { background: var(--glass-bg); }
+
+  /* Текущий пользователь */
+  &.my-clan-member--me {
+    background: rgba(131,93,228,0.06);
+    border-left: 3px solid var(--main-accent-effect);
+
+    &:hover { background: rgba(131,93,228,0.1); }
+
+    .my-clan-member__main strong {
+      color: var(--main-accent-effect);
+    }
+  }
+
+  .my-clan-member__main {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    min-width: 0;
+
+    /* Аватар-заглушка */
+    &::before {
+      content: '';
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--glass-border);
+      flex-shrink: 0;
+    }
+
+    strong {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--text-effect);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    span {
+      font-size: var(--text-xs);
+      color: var(--text-dim);
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--glass-border);
+      padding: 2px 9px;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+  }
+}
+
+/* ══ RESPONSIVE ══════════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  .wrapper.my-clan-page {
+    .my-clan-card__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+}
+
+@media (max-width: 640px) {
+  .wrapper.my-clan-page {
+    padding-top: calc(var(--header-height) + var(--sp-8));
+
+    .my-clan-page__header { margin-bottom: 0; }
+    .my-clan-card__grid   { grid-template-columns: 1fr 1fr; }
+  }
+
+  .my-clan-member {
+    .my-clan-member__main { flex-wrap: wrap; gap: var(--sp-2); }
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper.my-clan-page {
+    .my-clan-card__grid { grid-template-columns: 1fr; }
+    .my-clan-card__actions { flex-direction: column; .btn { width: 100%; justify-content: center; } }
+  }
+
+  .my-clan-field { text-align: left; align-items: flex-start; }
+}
