@@ -435,3 +435,27 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Docker local overrides
+docker-compose.override.yml
+docker-compose.*.override.yml
+
+# Local database / backup dumps
+*.dump
+*.backup
+*.sql.gz
+*.bak
+
+# Runtime uploads/temp
+uploads/
+temp/
+tmp/
+
+# OS
+Thumbs.db
+desktop.ini
+
+/text
+
+site.zip
+backend/src/CosmoManager/appsettings.Development.json
