@@ -108,6 +108,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+if (app.Environment.IsProduction())
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+}
+
 await app.SeedRolesAsync();
 
 app.Run();

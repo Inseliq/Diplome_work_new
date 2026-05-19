@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CosmoManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260519144111_Initial")]
+    [Migration("20260519174139_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

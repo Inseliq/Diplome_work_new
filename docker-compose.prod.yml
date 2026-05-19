@@ -69,7 +69,7 @@ services:
 
       Seed__AdminEmail: ${SEED_ADMIN_EMAIL}
 
-      Cors__AllowedOrigins: https://cosmo-manager.ru;https://www.cosmo-manager.ru
+      Cors__AllowedOrigins: https://${DOMAIN};https://www.${DOMAIN}
     labels:
       - "traefik.enable=true"
 
@@ -98,7 +98,7 @@ services:
     labels:
       - "traefik.enable=true"
 
-      - "traefik.http.routers.cosmomanager-frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.cosmomanager-frontend.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
       - "traefik.http.routers.cosmomanager-frontend.entrypoints=websecure"
       - "traefik.http.routers.cosmomanager-frontend.tls=true"
       - "traefik.http.routers.cosmomanager-frontend.tls.certresolver=letsencrypt"
