@@ -42,10 +42,10 @@ export const getPolevayaSectionCount = (tier) => {
 export const EQUIPMENT = {
   rammer: { label: 'Досылатель', tier: 'std', img: '/images/equipment/rammer.png' },
   rammer__bonns: { label: 'Досылатель', tier: 'bonns', img: '/images/equipment/rammer_bonns.png' },
-  rammer__t3: { label: 'Досылатель', tier: 't3', img: '/images/equipment/rammer_t3.png' },
+  rammer__t3: { label: 'Многозубая каретка досылателя', tier: 't3', img: '/images/equipment/rammer_t3.png' },
 
   stabilizer: { label: 'Стабилизатор', tier: 'std', img: '/images/equipment/stabilizer.png' },
-  stabilizer__bonns: { label: 'Стабилизатор', tier: 'bonns', img: '/images/equipment/stabilizer_bonns.png' },
+  stabilizer__bonns: { label: 'Боновый стабилизатор', tier: 'bonns', img: '/images/equipment/stabilizer_bonns.png' },
   stabilizer__t3: { label: 'Стабилизатор', tier: 't3', img: '/images/equipment/stabilizer_t3.png' },
 
   optics: { label: 'Просмотр', tier: 'std', img: '/images/equipment/optics.png' },
@@ -64,9 +64,13 @@ export const EQUIPMENT = {
   enhoptics__bonns: { label: 'Улучш. оптика', tier: 'bonns', img: '/images/equipment/enhoptics_bonns.png' },
   enhoptics__t3: { label: 'Улучш. оптика', tier: 't3', img: '/images/equipment/enhoptics_t3.png' },
 
-  turbine: { label: 'Турбонаддув', tier: 'std', img: '/images/equipment/turbine.png' },
-  turbine__bonns: { label: 'Турбонаддув', tier: 'bonns', img: '/images/equipment/turbine_bonns.png' },
-  turbine__t3: { label: 'Турбонаддув', tier: 't3', img: '/images/equipment/turbine_t3.png' },
+  turbine: { label: 'Турбина', tier: 'std', img: '/images/equipment/turbine.png' },
+  turbine__bonns: { label: 'Боновая турбина', tier: 'bonns', img: '/images/equipment/turbine_bonns.png' },
+  turbine__t3: { label: 'Система повышения мобильности', tier: 't3', img: '/images/equipment/turbine_t3.png' },
+
+  hardening: { label: 'Закалка', tier: 'std', img: '/images/equipment/hardening.png' },
+  hardening__bonns: { label: 'Боновая закалка', tier: 'bonns', img: '/images/equipment/hardening_bonns.png' },
+  hardening__t3: { label: 'Комплекс улучшения выживаемости', tier: 't3', img: '/images/equipment/hardening_t3.png' },
 
   reinforced_aim: { label: 'Усил. приводы', tier: 'std', img: '/images/equipment/reinforced_aim.png' },
   reinforced_aim__bonns: { label: 'Усил. приводы', tier: 'bonns', img: '/images/equipment/reinforced_aim_bonns.png' },
@@ -79,8 +83,8 @@ export const EQUIPMENT = {
 
 export const EQUIPMENT_TIER_COLORS = {
   std: { color: '#CCCCCC', bg: 'rgba(200,200,200,0.08)', border: 'rgba(200,200,200,0.2)', label: 'Стандарт' },
-  bonns: { color: '#FAB81B', bg: 'rgba(250,184,27,0.12)', border: 'rgba(250,184,27,0.35)', label: 'Улучшенное' },
-  t3: { color: '#a855f7', bg: 'rgba(168,85,247,0.12)', border: 'rgba(168,85,247,0.45)', label: 'Технологии 3 ур.' },
+  bonns: { color: '#a855f7', bg: 'rgba(168,85,247,0.12)', border: 'rgba(168,85,247,0.45)', label: 'Технологии 3 ур.' },
+  t3: { color: '#FAB81B', bg: 'rgba(250,184,27,0.12)', border: 'rgba(250,184,27,0.35)', label: 'Улучшенное' },
 };
 
 export const getEquipmentTier = (key) => {
@@ -114,11 +118,11 @@ export const ROLE_LABELS = {
 // ─── ИКОНКИ ТИПОВ (5 значков под оборудованием) ─────────────────
 
 export const TYPE_ROLE_ICONS = {
-  heavyTank: '/images/type/heavyTank.png',
-  mediumTank: '/images/type/mediumTank.png',
-  lightTank: '/images/type/lightTank.png',
-  'AT-SPG': '/images/type/at-spg.png',
-  SPG: '/images/type/spg.png',
+  heavyTank: '/images/types/heavy_tank.svg',
+  mediumTank: '/images/types/medium_tank.svg',
+  lightTank: '/images/types/light_tank.svg',
+  'AT-SPG': '/images/types/at_spg.svg',
+  SPG: '/images/types/spg.svg',
 };
 
 // ─── РЕЖИМЫ / СБОРКИ ─────────────────────────────────────────────
@@ -129,7 +133,7 @@ export const BUILD_LABELS = {
 };
 
 export const STATE_LABELS = {
-  state1: { label: 'Статистика (Т3)', color: '#a855f7', icon: '▲' },
-  state2: { label: 'Статистика (Бонус)', color: '#FAB81B', icon: '▲' },
+  state1: { label: 'Статистика (Т3)', color: '#FAB81B', icon: '▲' },
+  state2: { label: 'Статистика (Бонус)', color: '#a855f7', icon: '▲' },
   default: { label: 'Обычная сборка', color: '#888888', icon: '◆' },
 };

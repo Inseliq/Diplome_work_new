@@ -785,10 +785,10 @@ namespace CosmoManager.Migrations
                 columns: new[] { "Key", "ImageUrl", "IsActive", "Label", "SortOrder", "Tier" },
                 values: new object[,]
                 {
-                    { "hardening", "/images/equipment/hardening.png", true, "Улучшенная закалка", 1, "std" },
-                    { "rammer", "/images/equipment/rammer.png", true, "Орудийный досылатель", 2, "std" },
-                    { "stabilizer", "/images/equipment/stabilizer.png", true, "Стабилизатор вертикальной наводки", 3, "std" },
-                    { "turbo", "/images/equipment/turbo.png", true, "Турбонагнетатель", 4, "std" },
+                    { "hardening__t3", "/images/equipment/hardening_t3.png", true, "Комплекс улучшения выживаемости", 1, "t3" },
+                    { "rammer__t3", "/images/equipment/rammer_t3.png", true, "Многозубая каретка досылателя", 2, "t3" },
+                    { "stabilizer__bonns", "/images/equipment/stabilizer_bonns.png", true, "Боновый стабилизатор", 3, "bonns" },
+                    { "turbine__t3", "/images/equipment/turbine_t3.png", true, "Система повышения мобильности", 4, "t3" },
                     { "vents", "/images/equipment/vents.png", true, "Улучшенная вентиляция", 5, "std" }
                 });
 
@@ -870,9 +870,9 @@ namespace CosmoManager.Migrations
                 columns: new[] { "Id", "Equipment1Key", "Equipment2Key", "Equipment3Key", "ModeKey", "SortOrder", "StateKey", "VehicleId" },
                 values: new object[,]
                 {
-                    { 716901, "hardening", "rammer", "stabilizer", "random", 1, "default", 7169 },
-                    { 716902, "hardening", "rammer", "turbo", "random", 2, "state1", 7169 },
-                    { 716903, "hardening", "rammer", "vents", "fortified", 3, "default", 7169 }
+                    { 716901, "turbine__t3", "stabilizer__bonns", "rammer__t3", "random", 1, "default", 7169 },
+                    { 716902, "hardening__t3", "stabilizer__bonns", "rammer__t3", "random", 2, "state1", 7169 },
+                    { 716903, "hardening__t3", "rammer__t3", "turbine__t3", "fortified", 3, "default", 7169 }
                 });
 
             migrationBuilder.InsertData(

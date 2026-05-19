@@ -13,18 +13,18 @@ import {
 import { LoadingSpinner } from '../components/ui/StatusComponents';
 
 const NATION_ICONS = {
-  ussr: { src: '/images/nations/ussr.svg', alt: 'СССР' },
-  germany: { src: '/images/nations/germany.svg', alt: 'Германия' },
-  usa: { src: '/images/nations/usa.svg', alt: 'США' },
-  china: { src: '/images/nations/china.svg', alt: 'Китай' },
-  france: { src: '/images/nations/france.svg', alt: 'Франция' },
-  uk: { src: '/images/nations/uk.svg', alt: 'Великобритания' },
-  japan: { src: '/images/nations/japan.svg', alt: 'Япония' },
-  czech: { src: '/images/nations/czech.svg', alt: 'Чехословакия' },
-  sweden: { src: '/images/nations/sweden.svg', alt: 'Швеция' },
-  poland: { src: '/images/nations/poland.svg', alt: 'Польша' },
-  italy: { src: '/images/nations/italy.svg', alt: 'Италия' },
-  intunion: { src: '/images/nations/intunion.svg', alt: 'Сборная нация' },
+  ussr: { src: '/images/nations/ussr.png', alt: 'СССР' },
+  germany: { src: '/images/nations/germany.png', alt: 'Германия' },
+  usa: { src: '/images/nations/usa.png', alt: 'США' },
+  china: { src: '/images/nations/china.png', alt: 'Китай' },
+  france: { src: '/images/nations/france.png', alt: 'Франция' },
+  uk: { src: '/images/nations/uk.png', alt: 'Великобритания' },
+  japan: { src: '/images/nations/japan.png', alt: 'Япония' },
+  czech: { src: '/images/nations/czech.png', alt: 'Чехословакия' },
+  sweden: { src: '/images/nations/sweden.png', alt: 'Швеция' },
+  poland: { src: '/images/nations/poland.png', alt: 'Польша' },
+  italy: { src: '/images/nations/italy.png', alt: 'Италия' },
+  intunion: { src: '/images/nations/intunion.png', alt: 'Сборная нация' },
 };
 
 const TANK_PRIORITY_COLORS = [

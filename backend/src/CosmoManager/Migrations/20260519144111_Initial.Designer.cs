@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CosmoManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260517164800_Initial")]
+    [Migration("20260519144111_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -288,9 +288,9 @@ namespace CosmoManager.Migrations
                         new
                         {
                             Id = 716901,
-                            Equipment1Key = "hardening",
-                            Equipment2Key = "rammer",
-                            Equipment3Key = "stabilizer",
+                            Equipment1Key = "turbine__t3",
+                            Equipment2Key = "stabilizer__bonns",
+                            Equipment3Key = "rammer__t3",
                             ModeKey = "random",
                             SortOrder = 1,
                             StateKey = "default",
@@ -299,9 +299,9 @@ namespace CosmoManager.Migrations
                         new
                         {
                             Id = 716902,
-                            Equipment1Key = "hardening",
-                            Equipment2Key = "rammer",
-                            Equipment3Key = "turbo",
+                            Equipment1Key = "hardening__t3",
+                            Equipment2Key = "stabilizer__bonns",
+                            Equipment3Key = "rammer__t3",
                             ModeKey = "random",
                             SortOrder = 2,
                             StateKey = "state1",
@@ -310,9 +310,9 @@ namespace CosmoManager.Migrations
                         new
                         {
                             Id = 716903,
-                            Equipment1Key = "hardening",
-                            Equipment2Key = "rammer",
-                            Equipment3Key = "vents",
+                            Equipment1Key = "hardening__t3",
+                            Equipment2Key = "rammer__t3",
+                            Equipment3Key = "turbine__t3",
                             ModeKey = "fortified",
                             SortOrder = 3,
                             StateKey = "default",
@@ -356,39 +356,39 @@ namespace CosmoManager.Migrations
                     b.HasData(
                         new
                         {
-                            Key = "hardening",
-                            ImageUrl = "/images/equipment/hardening.png",
+                            Key = "hardening__t3",
+                            ImageUrl = "/images/equipment/hardening_t3.png",
                             IsActive = true,
-                            Label = "Улучшенная закалка",
+                            Label = "Комплекс улучшения выживаемости",
                             SortOrder = 1,
-                            Tier = "std"
+                            Tier = "t3"
                         },
                         new
                         {
-                            Key = "rammer",
-                            ImageUrl = "/images/equipment/rammer.png",
+                            Key = "rammer__t3",
+                            ImageUrl = "/images/equipment/rammer_t3.png",
                             IsActive = true,
-                            Label = "Орудийный досылатель",
+                            Label = "Многозубая каретка досылателя",
                             SortOrder = 2,
-                            Tier = "std"
+                            Tier = "t3"
                         },
                         new
                         {
-                            Key = "stabilizer",
-                            ImageUrl = "/images/equipment/stabilizer.png",
+                            Key = "stabilizer__bonns",
+                            ImageUrl = "/images/equipment/stabilizer_bonns.png",
                             IsActive = true,
-                            Label = "Стабилизатор вертикальной наводки",
+                            Label = "Боновый стабилизатор",
                             SortOrder = 3,
-                            Tier = "std"
+                            Tier = "bonns"
                         },
                         new
                         {
-                            Key = "turbo",
-                            ImageUrl = "/images/equipment/turbo.png",
+                            Key = "turbine__t3",
+                            ImageUrl = "/images/equipment/turbine_t3.png",
                             IsActive = true,
-                            Label = "Турбонагнетатель",
+                            Label = "Система повышения мобильности",
                             SortOrder = 4,
-                            Tier = "std"
+                            Tier = "t3"
                         },
                         new
                         {

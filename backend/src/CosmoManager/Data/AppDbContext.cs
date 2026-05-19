@@ -1215,37 +1215,37 @@ CosmoManager объединяет новости, события, турниры
         builder.Entity<DirectoryEquipmentItem>().HasData(
             new DirectoryEquipmentItem
             {
-                Key = "hardening",
-                Label = "Улучшенная закалка",
-                Tier = "std",
-                ImageUrl = "/images/equipment/hardening.png",
+                Key = "hardening__t3",
+                Label = "Комплекс улучшения выживаемости",
+                Tier = "t3",
+                ImageUrl = "/images/equipment/hardening_t3.png",
                 IsActive = true,
                 SortOrder = 1
             },
             new DirectoryEquipmentItem
             {
-                Key = "rammer",
-                Label = "Орудийный досылатель",
-                Tier = "std",
-                ImageUrl = "/images/equipment/rammer.png",
+                Key = "rammer__t3",
+                Label = "Многозубая каретка досылателя",
+                Tier = "t3",
+                ImageUrl = "/images/equipment/rammer_t3.png",
                 IsActive = true,
                 SortOrder = 2
             },
             new DirectoryEquipmentItem
             {
-                Key = "stabilizer",
-                Label = "Стабилизатор вертикальной наводки",
-                Tier = "std",
-                ImageUrl = "/images/equipment/stabilizer.png",
+                Key = "stabilizer__bonns",
+                Label = "Боновый стабилизатор",
+                Tier = "bonns",
+                ImageUrl = "/images/equipment/stabilizer_bonns.png",
                 IsActive = true,
                 SortOrder = 3
             },
             new DirectoryEquipmentItem
             {
-                Key = "turbo",
-                Label = "Турбонагнетатель",
-                Tier = "std",
-                ImageUrl = "/images/equipment/turbo.png",
+                Key = "turbine__t3",
+                Label = "Система повышения мобильности",
+                Tier = "t3",
+                ImageUrl = "/images/equipment/turbine_t3.png",
                 IsActive = true,
                 SortOrder = 4
             },
@@ -1352,9 +1352,9 @@ CosmoManager объединяет новости, события, турниры
                 VehicleId = is7VehicleId,
                 ModeKey = "random",
                 StateKey = "default",
-                Equipment1Key = "hardening",
-                Equipment2Key = "rammer",
-                Equipment3Key = "stabilizer",
+                Equipment1Key = "turbine__t3",
+                Equipment2Key = "stabilizer__bonns",
+                Equipment3Key = "rammer__t3",
                 SortOrder = 1
             },
             new DirectoryBuild
@@ -1363,9 +1363,9 @@ CosmoManager объединяет новости, события, турниры
                 VehicleId = is7VehicleId,
                 ModeKey = "random",
                 StateKey = "state1",
-                Equipment1Key = "hardening",
-                Equipment2Key = "rammer",
-                Equipment3Key = "turbo",
+                Equipment1Key = "hardening__t3",
+                Equipment2Key = "stabilizer__bonns",
+                Equipment3Key = "rammer__t3",
                 SortOrder = 2
             },
             new DirectoryBuild
@@ -1374,9 +1374,9 @@ CosmoManager объединяет новости, события, турниры
                 VehicleId = is7VehicleId,
                 ModeKey = "fortified",
                 StateKey = "default",
-                Equipment1Key = "hardening",
-                Equipment2Key = "rammer",
-                Equipment3Key = "vents",
+                Equipment1Key = "hardening__t3",
+                Equipment2Key = "rammer__t3",
+                Equipment3Key = "turbine__t3",
                 SortOrder = 3
             }
         );

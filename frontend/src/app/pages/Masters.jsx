@@ -15,18 +15,18 @@ import {
 import { LoadingSpinner } from '../components/ui/StatusComponents';
 
 const NATION_ICONS = {
-  ussr: { src: '/images/nations/ussr.svg', alt: 'СССР' },
-  germany: { src: '/images/nations/germany.svg', alt: 'Германия' },
-  usa: { src: '/images/nations/usa.svg', alt: 'США' },
-  china: { src: '/images/nations/china.svg', alt: 'Китай' },
-  france: { src: '/images/nations/france.svg', alt: 'Франция' },
-  uk: { src: '/images/nations/uk.svg', alt: 'Великобритания' },
-  japan: { src: '/images/nations/japan.svg', alt: 'Япония' },
-  czech: { src: '/images/nations/czech.svg', alt: 'Чехословакия' },
-  sweden: { src: '/images/nations/sweden.svg', alt: 'Швеция' },
-  poland: { src: '/images/nations/poland.svg', alt: 'Польша' },
-  italy: { src: '/images/nations/italy.svg', alt: 'Италия' },
-  intunion: { src: '/images/nations/intunion.svg', alt: 'Сборная нация' },
+  ussr: { src: '/images/nations/ussr.png', alt: 'СССР' },
+  germany: { src: '/images/nations/germany.png', alt: 'Германия' },
+  usa: { src: '/images/nations/usa.png', alt: 'США' },
+  china: { src: '/images/nations/china.png', alt: 'Китай' },
+  france: { src: '/images/nations/france.png', alt: 'Франция' },
+  uk: { src: '/images/nations/uk.png', alt: 'Великобритания' },
+  japan: { src: '/images/nations/japan.png', alt: 'Япония' },
+  czech: { src: '/images/nations/czech.png', alt: 'Чехословакия' },
+  sweden: { src: '/images/nations/sweden.png', alt: 'Швеция' },
+  poland: { src: '/images/nations/poland.png', alt: 'Польша' },
+  italy: { src: '/images/nations/italy.png', alt: 'Италия' },
+  intunion: { src: '/images/nations/intunion.png', alt: 'Сборная нация' },
 };
 
 function getTankNameColor(tank) {
@@ -623,39 +623,21 @@ function Masters() {
                             style={nameColor ? { color: nameColor } : {}}
                           >
                             {tank.name}
-
-                            {tank.is_premium && (
-                              <span className="masters-table__tag masters-table__tag--premium">
-                                P
-                              </span>
-                            )}
-
-                            {tank.is_special && (
-                              <span className="masters-table__tag masters-table__tag--special">
-                                S
-                              </span>
-                            )}
-
-                            {tank.is_collector && (
-                              <span className="masters-table__tag masters-table__tag--collector">
-                                C
-                              </span>
-                            )}
                           </td>
 
-                          <td className="masters-table__td masters-table__td--mastery masters-table__td--deg3">
+                          <td className="masters-table__td masters-table__td--mastery">
                             {fmt(tank.deg3)}
                           </td>
 
-                          <td className="masters-table__td masters-table__td--mastery masters-table__td--deg2">
+                          <td className="masters-table__td masters-table__td--mastery">
                             {fmt(tank.deg2)}
                           </td>
 
-                          <td className="masters-table__td masters-table__td--mastery masters-table__td--deg1">
+                          <td className="masters-table__td masters-table__td--mastery">
                             {fmt(tank.deg1)}
                           </td>
 
-                          <td className="masters-table__td masters-table__td--mastery masters-table__td--master">
+                          <td className="masters-table__td masters-table__td--mastery">
                             {fmt(tank.master)}
                           </td>
                         </tr>

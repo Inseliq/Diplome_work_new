@@ -32,10 +32,10 @@ export const TYPE_SVG = {
 };
 
 export const MASTERY_SVG = {
-  deg3: '/images/mastery/third_degree.svg',
-  deg2: '/images/mastery/second_degree.svg',
-  deg1: '/images/mastery/first_degree.svg',
-  master: '/images/mastery/master.svg',
+  deg3: '/images/mastery/third_degree.png',
+  deg2: '/images/mastery/second_degree.png',
+  deg1: '/images/mastery/first_degree.png',
+  master: '/images/mastery/master.png',
 };
 
 export const NATION_KEYS = Object.keys(NATION_LABELS);

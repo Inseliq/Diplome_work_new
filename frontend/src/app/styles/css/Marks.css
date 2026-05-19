@@ -193,7 +193,6 @@
         height: 24px;
         object-fit: contain;
         /* Пока SVG нет — покажем placeholder-цвет */
-        background: var(--glass-bg-strong);
         border-radius: var(--radius-xs);
         min-height: 20px;
       }
@@ -344,9 +343,7 @@
       object-fit: contain;
       display: inline-block;
       /* Placeholder пока SVG не готов */
-      background: var(--glass-bg-strong);
       border-radius: var(--radius-xs);
-      border: 1px solid var(--glass-border);
     }
   }
 
@@ -358,10 +355,7 @@
       width: 24px;
       height: 24px;
       object-fit: contain;
-
-      background: var(--glass-bg-strong);
       border-radius: var(--radius-xs);
-      border: 1px solid var(--glass-border);
     }
   }
 

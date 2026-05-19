@@ -1,0 +1,116 @@
+services:
+  traefik:
+    image: traefik:v3.7
+    container_name: cosmomanager_traefik
+    restart: unless-stopped
+    command:
+      - "--api.dashboard=true"
+
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - traefik_letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - web
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: cosmomanager_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend/src/CosmoManager
+      dockerfile: Dockerfile
+    container_name: cosmomanager_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+
+      Jwt__Issuer: ${JWT_ISSUER}
+      Jwt__Audience: ${JWT_AUDIENCE}
+      Jwt__Key: ${JWT_KEY}
+      Jwt__AccessTokenMinutes: 15
+      Jwt__RefreshTokenDays: 7
+
+      Seed__AdminEmail: ${SEED_ADMIN_EMAIL}
+
+      Cors__AllowedOrigins: https://cosmo-manager.ru;https://www.cosmo-manager.ru
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.cosmomanager-api.rule=Host(`${API_DOMAIN}`)"
+      - "traefik.http.routers.cosmomanager-api.entrypoints=websecure"
+      - "traefik.http.routers.cosmomanager-api.tls=true"
+      - "traefik.http.routers.cosmomanager-api.tls.certresolver=letsencrypt"
+
+      - "traefik.http.services.cosmomanager-api.loadbalancer.server.port=8080"
+    networks:
+      - web
+      - internal
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://${API_DOMAIN}
+        VITE_APP_ENV: production
+        VITE_TEST_AUTH: false
+    container_name: cosmomanager_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.cosmomanager-frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.cosmomanager-frontend.entrypoints=websecure"
+      - "traefik.http.routers.cosmomanager-frontend.tls=true"
+      - "traefik.http.routers.cosmomanager-frontend.tls.certresolver=letsencrypt"
+
+      - "traefik.http.services.cosmomanager-frontend.loadbalancer.server.port=80"
+    networks:
+      - web
+
+networks:
+  web:
+  internal:
+
+volumes:
+  postgres_data:
+  traefik_letsencrypt:

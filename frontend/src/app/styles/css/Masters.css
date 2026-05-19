@@ -178,7 +178,6 @@
         width: 32px;
         height: 24px;
         object-fit: contain;
-        background: var(--glass-bg-strong);
         border-radius: var(--radius-xs);
         min-height: 20px;
       }
@@ -201,7 +200,6 @@
         width: 24px;
         height: 24px;
         object-fit: contain;
-        background: var(--glass-bg-strong);
         border-radius: var(--radius-xs);
         display: block;
       }
@@ -309,13 +307,11 @@
 
     /* SVG иконка в заголовке степени */
     .masters-table__th-svg {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       object-fit: contain;
       /* placeholder пока SVG нет */
-      background: var(--glass-bg-strong);
       border-radius: var(--radius-xs);
-      border: 1px solid var(--glass-border);
       display: block;
     }
 
@@ -360,13 +356,11 @@
     text-align: center;
 
     .masters-table__nation-img {
-      width: 32px;
-      height: 24px;
+      width: 36px;
+      height: 26px;
       object-fit: contain;
       display: inline-block;
-      background: var(--glass-bg-strong);
       border-radius: var(--radius-xs);
-      border: 1px solid var(--glass-border);
     }
   }
 
@@ -376,13 +370,11 @@
     text-align: center;
 
     .masters-table__type-img {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       object-fit: contain;
       display: inline-block;
-      background: var(--glass-bg-strong);
       border-radius: var(--radius-xs);
-      border: 1px solid var(--glass-border);
     }
   }
 
@@ -397,8 +389,6 @@
   .masters-table__td--name {
     font-weight: 500;
     min-width: 180px;
-    display: flex;
-    align-items: center;
     gap: var(--sp-2);
     flex-wrap: wrap;
   }
@@ -436,7 +426,7 @@
 
   /* Степени мастерства */
   .masters-table__td--mastery {
-    text-align: right;
+    text-align: left;
     font-family: var(--font-main);
     font-weight: 600;
     white-space: nowrap;

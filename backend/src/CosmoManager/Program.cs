@@ -53,8 +53,7 @@ builder.Services.AddCorsPolicy(builder.Configuration);
 builder.Services.AddJwt(builder.Configuration);
 builder.Services.AddSwagger();
 
-//------
-
+// Services
 builder.Services.AddHttpClient<VehicleUpdater>(client =>
 {
     client.Timeout = TimeSpan.FromSeconds(30);
@@ -72,8 +71,7 @@ builder.Services.AddHttpClient<MastersUpdater>(client =>
 
 builder.Services.AddHostedService<GameDataUpdateHostedService>();
 
-//------
-
+// Traefik / Reverse Proxy
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
@@ -97,9 +95,11 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler();
+
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseCors("AllowReact");
 
